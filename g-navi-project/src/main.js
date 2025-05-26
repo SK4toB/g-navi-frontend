@@ -1,5 +1,8 @@
 import { createApp } from 'vue'
 import './style.css'
-import App from './App.vue'
+
+const App = {
+    template: '<div>새로운 프로젝트 시작!</div>',
+  }
 
 createApp(App).mount('#app')
