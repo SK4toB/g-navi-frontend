@@ -1,8 +1,5 @@
-import { createApp } from 'vue'
-import './style.css'
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router';
 
-const App = {
-    template: '<div>새로운 프로젝트 시작!</div>',
-  }
-
-createApp(App).mount('#app')
+createApp(App).use(router).mount('#app');
