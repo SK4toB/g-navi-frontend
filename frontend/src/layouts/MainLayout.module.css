@@ -1,0 +1,17 @@
+.container {
+  display: flex;
+  width: 1440px;
+  height: 1024px;
+  background-color: #FFFFFF;
+}
+
+.mainContentArea {
+    /* HomeMainContent의 width가 1071px이므로 나머지 공간을 차지하도록 */
+    flex-grow: 1;
+}
+
+/* RightBar 스타일 추가 */
+.rightBar {
+    width: 300px; /* 임의의 RightBar 너비 */
+    /* 필요한 추가 스타일 (배경색, 패딩 등) */
+} 
