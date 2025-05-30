@@ -1,23 +1,22 @@
-// frontend/src/components/common/InputField.tsx
+// frontend/src/components/common/AuthInputField.tsx
 import React from 'react';
 
 interface InputFieldProps {
   id: string;
   label: string;
-  type?: string; // "text", "password", "email" 등
+  type?: string; 
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
-  // 추가적인 Tailwind 클래스를 외부에서 받을 경우를 대비
-  className?: string; // input 필드 자체에 추가 클래스
-  labelClassName?: string; // label에 추가 클래스
-  containerClassName?: string; // 전체 input 그룹 컨테이너에 추가 클래스 (예: margin-bottom)
+  className?: string; 
+  labelClassName?: string; 
+  containerClassName?: string; 
 }
 
 export default function AuthInputField({
   id,
   label,
-  type = 'text',
+  type,
   value,
   onChange,
   placeholder,
@@ -25,16 +24,34 @@ export default function AuthInputField({
   labelClassName,
   containerClassName
 }: InputFieldProps) {
-  // 공통 label 스타일
-  const baseLabelClasses = "font-plusjakartasans font-bold text-[18px] leading-[1.33em] tracking-[-0.8%] text-[#1E293B] block mb-[8px] text-right";
+  const baseLabelClasses = `
+    font-dmsans                 /* 글꼴 */
+    font-bold                   /* 글꼴 굵기 */
+    text-[18px]                 /* 글꼴 크기 */
+    leading-[1.33em]            /* 줄 간격 */
+    tracking-[-0.8%]            /* 글자 간격 */
+    text-[#1E293B]              /* 글꼴 색상 */
+    flex-shrink-0               /* flex 컨테이너 안에서 내용이 길어져도 줄어들지 않게 함 */
+  `.replace(/\s+/g, ' ');
 
-  // 공통 input 필드 스타일
-  const baseInputClasses = "rounded-full px-6 py-4 border border-[#CDCDCD] bg-white/55 w-full text-[18px] h-[70px] focus:outline-none";
+  const baseInputClasses = `
+    rounded-full                /* 모서리 둥글게 */
+    px-6                        /* padding-left/right (좌우 패딩): 24픽셀 */
+    py-4                        /* padding-top/bottom (상하 패딩): 16픽셀 */
+    border                      /* 테두리 */
+    border-[#CDCDCD]            /* 테두리 색상 */
+    text-[18px]                 /* 글꼴 크기 */
+    w-[398px]                   /* 너비 */
+    h-[70px]                    /* 높이 */
+    bg-white/55                 /* 배경색(투명도) */
+    ml-[16px]                   /* 인풋 필드의 왼쪽 마진: 라벨과의 간격 */
+
+  `.replace(/\s+/g, ' ');
 
   return (
-    <div className={`w-full max-w-[398px] ${containerClassName || ''}`}> {/* 공통 컨테이너 너비와 외부 클래스 병합 */}
-      <label htmlFor={id} className={`${baseLabelClasses} ${labelClassName || ''}`}>
-        {label}
+    <div className={`flex items-center w-[534px] ${containerClassName || ''}`}>
+      <label htmlFor={id} className={`${baseLabelClasses} ${labelClassName || ''} w-[120px]`}>
+      {label}
       </label>
       <input
         type={type}
@@ -42,7 +59,7 @@ export default function AuthInputField({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`${baseInputClasses} ${className || ''}`}
+        className={`${baseInputClasses} ${className || ''} flex-1`}
       />
     </div>
   );

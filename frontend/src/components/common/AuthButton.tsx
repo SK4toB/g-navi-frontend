@@ -2,22 +2,38 @@
 import React from 'react';
 
 interface AuthButtonProps {
-  children: React.ReactNode; // 버튼 내부 텍스트나 다른 요소
+  children: React.ReactNode; 
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  type?: 'button' | 'submit' | 'reset'; // 버튼 타입
-  // 필요하다면, 외부에서 추가적인 Tailwind 클래스를 받을 수 있도록 className prop 유지
+  type?: 'button' | 'submit' | 'reset'; 
   className?: string;
 }
 
 export default function AuthButton({ children, onClick, type = 'button', className }: AuthButtonProps) {
-  // 로그인 및 회원가입 버튼에 공통적으로 적용될 Tailwind 클래스 정의
-  const baseClasses = "rounded-[1234px] bg-[#122250] text-white px-10 h-[69px] w-[257px] flex items-center justify-center border-none cursor-pointer font-sourcecodepro font-bold text-[18px] leading-[1.11em] tracking-[-0.6%] text-center";
+  const baseClasses = `
+    rounded-[1234px]            /* 모서리 둥글게 */
+    bg-[#122250]                /* 배경색 */
+    text-white                  /* 글꼴 색상 */
+    px-10                       /* 좌우 패딩 */
+    h-[69px]                    /* 높이 */
+    w-[257px]                   /* 너비 */
+    flex                        /* flexbox 컨테이너 */
+    items-center                /* 세로 중앙 정렬 */
+    justify-center              /* 가로 중앙 정렬 */
+    border-none                 /* 테두리 없음 */
+    cursor-pointer              /* 마우스 커서 */
+    font-sourcecodepro          /* 글꼴 */
+    font-bold                   /* 글꼴 굵기 */
+    text-[18px]                 /* 글꼴 크기 */
+    leading-[1.11em]            /* 줄 간격 */
+    tracking-[-0.6%]            /* 글자 간격 */
+    text-center                 /* 텍스트 정렬 */
+  `.replace(/\s+/g, ' ');
 
   return (
     <button
       type={type}
       onClick={onClick}
-      className={`${baseClasses} ${className || ''}`} // 기본 클래스와 외부에서 전달받은 클래스 병합
+      className={`${baseClasses} ${className || ''}`}
     >
       {children}
     </button>
