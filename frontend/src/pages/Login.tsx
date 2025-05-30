@@ -1,6 +1,6 @@
 import React from 'react';
 import AuthInputField from '../components/common/AuthInputField';
-import AuthButton from '../components/common/AuthButton';
+import AuthButton from '../components/common/Button';
 import PageTitle from '../components/common/PageTitle';
 
 // 폼 데이터의 타입을 정의하는 인터페이스
@@ -104,7 +104,6 @@ export default function Login() {
           />
         ))}
 
-        {/* 로그인 버튼 컴포넌트 사용 */}
         <AuthButton type="submit">
           로그인
         </AuthButton>
