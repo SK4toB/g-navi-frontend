@@ -1,0 +1,10 @@
+/* src/components/common/Footer.module.css */
+.footer {
+    background-color: #f3f4f6; /* Tailwind bg-gray-100 */
+    text-align: center; /* Tailwind text-center */
+    color: #6b7280; /* Tailwind text-gray-500 */
+    font-size: 0.875rem; /* Tailwind text-sm */
+    padding-top: 1rem; /* Tailwind py-4 */
+    padding-bottom: 1rem; /* Tailwind py-4 */
+    margin-top: auto; /* Tailwind mt-auto */
+  }

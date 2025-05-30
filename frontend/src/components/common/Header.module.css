@@ -1,0 +1,33 @@
+/* src/components/common/Header.module.css */
+.header {
+    background-color: #ffffff; /* Tailwind bg-white */
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); /* Tailwind shadow */
+    padding-left: 1.5rem; /* Tailwind px-6 */
+    padding-right: 1.5rem; /* Tailwind px-6 */
+    padding-top: 1rem; /* Tailwind py-4 */
+    padding-bottom: 1rem; /* Tailwind py-4 */
+    display: flex; /* Tailwind flex */
+    justify-content: space-between; /* Tailwind justify-between */
+    align-items: center; /* Tailwind items-center */
+  }
+  
+  .title {
+    font-size: 1.25rem; /* Tailwind text-xl */
+    font-weight: 700; /* Tailwind font-bold */
+    color: #374151; /* Tailwind text-gray-800 */
+  }
+  
+  .nav {
+    /* Tailwind space-x-4 */
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .navLink {
+    color: #4b5563; /* Tailwind text-gray-600 */
+    transition: color 0.3s ease-in-out; /* Tailwind hover:text-blue-500 */
+  }
+  
+  .navLink:hover {
+    color: #3b82f6; /* Tailwind hover:text-blue-500 */
+  }

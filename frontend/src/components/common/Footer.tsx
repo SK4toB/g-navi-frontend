@@ -1,8 +1,9 @@
+import styles from './Footer.module.css'; // CSS Modules import
+
 export default function Footer() {
     return (
-      <footer className="bg-gray-100 text-center text-gray-500 text-sm py-4 mt-auto">
+      <footer className={styles.footer}>
         © 2025 G-Navi. All rights reserved.
       </footer>
     );
   }
-  

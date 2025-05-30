@@ -1,18 +1,24 @@
-import styles from './MainLayout.module.css'; // CSS Modules 예정
-import { Outlet } from 'react-router-dom'; // Outlet import 추가
-import RightBar from '../components/RightBar'; // RightBar 컴포넌트 import (경로는 프로젝트 구조에 맞게 조정 필요)
+import styles from './MainLayout.module.css';
+import { Outlet } from 'react-router-dom';
+import RightBar from '../components/rightBar/RightBar'; // 경로: src/components/rightBar/RightBar.tsx
+import Header from '../components/common/Header'; // 경로: src/components/common/Header.tsx
+import Footer from '../components/common/Footer'; // 경로: src/components/common/Footer.tsx
 
 interface MainLayoutProps {
-  showRightBar?: boolean; // RightBar 표시 여부를 결정하는 prop
+  showRightBar?: boolean;
 }
 
 export default function MainLayout({ showRightBar = true }: MainLayoutProps) {
   return (
     <div className={styles.container}>
-      <div className={styles.mainContentArea}>
-        <Outlet /> {/* children 대신 Outlet 사용 */}
+      <Header /> {/* Header 추가 */}
+      <div className={styles.contentWrapper}> {/* 새로운 컨테이너 추가 */}
+        <div className={styles.mainContentArea}>
+          <Outlet />
+        </div>
+        {showRightBar && <RightBar className={styles.rightBar} />}
       </div>
-      {showRightBar && <RightBar className={styles.rightBar} />} {/* showRightBar가 true일 때만 RightBar 렌더링 및 클래스 적용 */}
+      <Footer /> {/* Footer 추가 */}
     </div>
   );
 }
