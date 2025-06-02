@@ -52,12 +52,12 @@ export default function NewChatInput({ placeholder = "궁금하거나 필요한 
         onClick={handleSendClick} // 버튼 클릭 핸들러
       >
         {/* Send 문자 */}
-        <p className="text-[#FFFFFF] text-[16px] font-pretendard font-medium mr-1">Send</p>
+        <p className="text-[#FFFFFF] text-[16px] font-pretendard font-medium ml-[8px]">Send</p>
         {/* 화살표 아이콘 */} 
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M5 12H19" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M12 5L19 12L12 19" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="#FFFFFF" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
         </svg>
+    
       </button>
     </div>
   );

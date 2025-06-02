@@ -1,5 +1,5 @@
 import HomeSection from '../components/home/HomeSection';
-import RightBar from '../components/rightBar/RightBar';
+import RightBar from '../components/myPage/RightBar';
 import useAuthStore from '../store/authStore';
 
 export default function Home() {
