@@ -1,8 +1,8 @@
+// frontend/src/components/form/LoginForm.tsx
 import React from 'react';
-import CommonTitle from '../components/common/CommonTitle';
-import CommonInputField from '../components/common/CommonInputField';
-import CommonButton from '../components/common/CommonButton';
-import { authApi } from '../api/auth';
+import CommonInputField from '../common/CommonInputField';
+import CommonButton from '../common/CommonButton';
+import { authApi } from '../../api/auth';
 import { useNavigate } from 'react-router-dom';
 
 interface LoginFormData {
@@ -10,7 +10,7 @@ interface LoginFormData {
   password: string;
 }
 
-export default function Login() {
+export default function LoginForm() {
   const [formData, setFormData] = React.useState<LoginFormData>({
     employeeId: '',
     password: '',
@@ -28,13 +28,14 @@ export default function Login() {
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
-    console.log("로그인 버튼 클릭됨");
 
     try {
       const response = await authApi.login(formData);
       console.log("로그인 성공:", response);
+      navigate('/');
     } catch (error) {
-      console.error(error);
+      console.error("로그인 실패:", error);
+      alert("로그인 실패");
     }
   };
 
@@ -44,9 +45,8 @@ export default function Login() {
   ];
 
   return (
-    <div className="w-[100%] h-[100%] flex flex-col items-center justify-center">
-      <CommonTitle>Login</CommonTitle>
-      <div className="flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center">
+      <form onSubmit={handleLogin} className="flex flex-col items-center">
         {formFields.map(field => (
           <CommonInputField
             key={field.id}
@@ -57,16 +57,11 @@ export default function Login() {
             onChange={handleChange}
           />
         ))}
-
-        <CommonButton type="submit" onClick={handleLogin}>
+        <div className='mt-[50px]'></div>
+        <CommonButton type="submit">
           로그인
         </CommonButton>
-
-        <div className="text-center">
-          <p onClick={() => navigate('/signup')}>회원가입하기</p>
-        </div>
-
-      </div>
+      </form>
     </div>
   );
 }

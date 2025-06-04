@@ -15,11 +15,8 @@ export default function CommonButton({ children, onClick, type }: CommonButtonPr
     w-[257px]                   /* 너비 */
     h-[69px]                    /* 높이 */
     px-10                       /* 좌우 패딩 */
-    font-sourcecodepro          /* 글꼴 */
     font-bold                   /* 글꼴 굵기 */
     text-[18px]                 /* 글꼴 크기 */
-    leading-[1.11em]            /* 줄 간격 */
-    tracking-[-0.6%]            /* 글자 간격 */
     text-center                 /* 텍스트 정렬 */
     text-[#FFFFFF]              /* 글꼴 색상 */
     bg-[#122250]                /* 배경색 */

@@ -6,9 +6,7 @@ import router from './router';
 export default function App() {
   return (
     <React.StrictMode>
-      <div className="w-full h-full flex flex-col">
-        <RouterProvider router={router} />
-      </div>
+      <RouterProvider router={router} />
     </React.StrictMode>
   );
 }

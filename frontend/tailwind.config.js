@@ -1,3 +1,4 @@
+// frontend/tailwind.config.js
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -6,12 +7,12 @@ export default {
   ],
   theme: {
     extend: {
+      colors: {
+        'main-color': '#122250',
+        'text-color': '#1E293B',
+      },
       fontFamily: {
-        'dmsans': ['DM Sans', 'sans-serif'],
-        'plusjakartasans': ['Plus Jakarta Sans', 'sans-serif'],
-        'sourcecodepro': ['Source Code Pro', 'monospace'],
         'pretendard': ['Pretendard', 'sans-serif'],
-        'notosanskr': ['Noto Sans KR', 'sans-serif'],
       },
     },
   },

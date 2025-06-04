@@ -2,12 +2,11 @@
 import React from 'react';
 
 interface CommonTitleProps {
- children: React.ReactNode; 
+  children: React.ReactNode; 
 }
 
 export default function CommonTitle({ children }: CommonTitleProps) {
   const titleClasses = `
-    font-dmsans                 /* 글꼴 */
     font-bold                   /* 글꼴 굵기 */
     text-[40px]                 /* 글꼴 크기 */
     text-[#122250]              /* 글꼴 색 */
