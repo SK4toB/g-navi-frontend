@@ -46,7 +46,7 @@ G-Navi 커리어 내비게이션 서비스의 프론트엔드 프로젝트입니
 ## 프로젝트 구조
 
 주요 디렉토리 구조는 다음과 같습니다:
-
+```
 src/
 ├── pages/            # 라우터 경로별 전체 화면 컴포넌트 (Home, Login, Mypage 등)
 ├── layouts/          # 공통 레이아웃 (MainLayout)
@@ -62,7 +62,7 @@ src/
 ├── router.tsx        # React Router 경로 설정
 ├── main.tsx          # 애플리케이션 진입점
 └── index.css         # 전역 스타일 및 Tailwind CSS
-
+```
 
 ## 코딩 컨벤션 및 모범 사례
 
