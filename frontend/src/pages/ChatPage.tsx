@@ -1,6 +1,6 @@
 // frontend/src/pages/ChatPage.tsx
-import React from 'react'; // React 임포트 추가
-import { useParams, useNavigate } from 'react-router-dom'; // useParams, useNavigate 임포트 추가
+import React from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import Title from '../components/common/CommonTitle';
 import ChatInput from '../components/chat/ChatInput';
 import RecommendationCards from '../components/chat/RecommendationCards';
@@ -8,8 +8,8 @@ import ChatContent from '../components/chat/ChatContent';
 import useChatStore from '../store/chatStore';
 import type { ChatMessage } from '../store/chatStore';
 
-export default function ChatPage() { // 컴포넌트 이름 ChatPage 유지
-  const { chatId } = useParams<{ chatId: string }>(); // URL에서 chatId 가져오기
+export default function ChatPage() {
+  const { chatId } = useParams<{ chatId: string }>();
   const navigate = useNavigate();
 
   const currentChatMessages = useChatStore((state) => state.currentChatMessages);
@@ -67,14 +67,14 @@ export default function ChatPage() { // 컴포넌트 이름 ChatPage 유지
 
   return (
     <div className="flex flex-col items-center justify-start">
-      <div className="w-[816px]">
-        <Title>G Navi</Title>
+      <div className={isNewChatSession ? "w-[816px]" : "w-[1000px]"}>
+        {isNewChatSession ? <Title>G Navi</Title> : <div className='h-[100px]'></div>}
 
         <ChatContent messages={currentChatMessages} />
 
         <ChatInput onSendMessage={handleSendMessage} />
 
-        {!isNewChatSession && <RecommendationCards />} {/* 새 채팅일 때만 추천 카드 표시 */}
+        {isNewChatSession && <RecommendationCards />}
       </div>
     </div>
   );

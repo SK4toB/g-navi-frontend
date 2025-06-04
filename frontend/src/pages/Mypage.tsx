@@ -1,7 +1,7 @@
 import CommonTitle from '../components/common/CommonTitle';
-import ProfileSection from '../components/myPage/ProfileSection';
-import SkillSetSection from '../components/myPage/SkillSetSection';
-import ProjectSection from '../components/myPage/ProjectSection';
+import ProfileSection from '../components/profile/ProfileSection';
+import SkillSetSection from '../components/profile/SkillSetSection';
+import ProjectSection from '../components/profile/ProjectSection';
 
 export default function Mypage() {
 

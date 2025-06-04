@@ -1,52 +1,65 @@
 // frontend/src/api/client.ts
-const API_BASE_URL = 'http://localhost:8080/api'; // 백엔드 API 기본 URL
+import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 
-interface RequestOptions extends RequestInit {
-  headers?: HeadersInit;
-}
+// 수정필요: 백엔드 API의 기본 주소를 설정합니다.
+const API_BASE_URL = 'http://localhost:8080/api'; 
 
-async function apiFetch<T>(
-  endpoint: string,
-  options?: RequestOptions
-): Promise<T> {
-  const token = localStorage.getItem('accessToken');
-  
-  // Headers 객체를 사용하여 헤더를 안전하게 구성
-  const headers = new Headers(options?.headers); // 기존 헤더를 Headers 객체로 변환
+const apiClient: AxiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  timeout: 10000,
+});
 
-  if (token) {
-    headers.set('Authorization', `Bearer ${token}`); // set 메서드를 사용하여 Authorization 헤더 추가
-  }
-  
-  // Content-Type이 JSON이 아니라면 명시적으로 설정
-  if (!headers.has('Content-Type')) {
-    headers.set('Content-Type', 'application/json');
-  }
-
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    ...options,
-    headers, // Headers 객체를 그대로 전달
-  });
-
-  if (!response.ok) {
-    if (response.status === 401) {
-      console.error('인증 실패: 토큰 만료 또는 유효하지 않음');
-      // 여기에 주스탠드 logout 액션 호출 및 로그인 페이지 리디렉션 로직 추가
-      // 예시:
-      // import useAuthStore from '../store/authStore';
-      // useAuthStore.getState().logout();
-      // window.location.href = '/login'; 
+apiClient.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      if (config.headers) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
-    const errorData = await response.json().catch(() => ({ message: '서버 오류' }));
-    throw new Error(errorData.message || 'API 요청 실패');
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
+);
 
-  return response.json() as Promise<T>;
-}
+apiClient.interceptors.response.use(
+  (response: AxiosResponse) => {
+    return response;
+  },
+  (error) => {
+    if (error.response) {
+      console.error('API 응답 오류:', error.response.status, error.response.data);
+      if (error.response.status === 401) {
+        console.error('인증 실패: 토큰이 만료되었거나 유효하지 않습니다.');
+      }
+      return Promise.reject(new Error(error.response.data.message || 'API 요청 실패'));
+    } else if (error.request) {
+      console.error('API 요청 실패: 서버로부터 응답이 없습니다.', error.request);
+      return Promise.reject(new Error('네트워크 오류: 서버에 연결할 수 없습니다.'));
+    } else {
+      console.error('API 요청 설정 오류:', error.message);
+      return Promise.reject(new Error(`요청 설정 오류: ${error.message}`));
+    }
+  }
+);
 
 export const api = {
-  get: <T>(endpoint: string, options?: RequestOptions) => apiFetch<T>(endpoint, { method: 'GET', ...options }),
-  post: <T>(endpoint: string, data?: any, options?: RequestOptions) => apiFetch<T>(endpoint, { method: 'POST', body: JSON.stringify(data), ...options }),
-  put: <T>(endpoint: string, data?: any, options?: RequestOptions) => apiFetch<T>(endpoint, { method: 'PUT', body: JSON.stringify(data), ...options }),
-  delete: <T>(endpoint: string, options?: RequestOptions) => apiFetch<T>(endpoint, { method: 'DELETE', ...options }),
+  get: <T>(endpoint: string, config?: AxiosRequestConfig): Promise<T> =>
+    apiClient.get<T>(endpoint, config).then(res => res.data),
+
+  post: <T>(endpoint: string, data?: any, config?: AxiosRequestConfig): Promise<T> =>
+    apiClient.post<T>(endpoint, data, config).then(res => res.data),
+
+  put: <T>(endpoint: string, data?: any, config?: AxiosRequestConfig): Promise<T> =>
+    apiClient.put<T>(endpoint, data, config).then(res => res.data),
+
+  delete: <T>(endpoint: string, config?: AxiosRequestConfig): Promise<T> =>
+    apiClient.delete<T>(endpoint, config).then(res => res.data),
 };
+
+export default apiClient;
