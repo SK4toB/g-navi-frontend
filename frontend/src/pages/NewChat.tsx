@@ -1,5 +1,5 @@
 import NewChatSection from '../components/newChat/NewChatSection';
-import RightBar from '../components/myPage/RightBar';
+import RightBar from '../components/home/RightBar';
 export default function NewChat() {
   return (
     <div className="flex">

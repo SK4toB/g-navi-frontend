@@ -5,6 +5,8 @@ import useAuthStore from '../../store/authStore';
 
 export default function HomeSection() {
   const navigate = useNavigate();
+  const IntroMessage = "안녕하세요, 커리어 성장 여정을 함께할 지나비입니다.";
+  // 로그인 여부 확인
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
   const handleNewChat = () => {
@@ -16,13 +18,13 @@ export default function HomeSection() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="w-full h-full flex flex-col items-center justify-center">
       <CommonTitle>G Navi</CommonTitle>
-
-      <p className="font-pretendard font-bold text-[30px] leading-[0.8em] tracking-[-0.8%] text-[#636363] text-center mb-[111px]">
-        안녕하세요, 커리어 성장 여정을 함께할 지나비입니다.
-      </p>
-      {/* 버튼 */}
+      <div className="h-[30%] flex flex-col items-center justify-center">
+        <p className="font-bold text-[30px] text-[#636363] text-center mb-[50px]">
+        {IntroMessage}
+        </p>
+      </div>
       <Button
         type="button"
         onClick={handleNewChat}
