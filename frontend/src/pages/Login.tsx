@@ -44,7 +44,7 @@ export default function Login() {
   ];
 
   return (
-    <div className="w-[1440px] h-[1024px] bg-white">
+    <div className="w-[100%] h-[100%] flex flex-col items-center justify-center">
       <CommonTitle>Login</CommonTitle>
       <div className="flex flex-col items-center justify-center">
         {formFields.map(field => (

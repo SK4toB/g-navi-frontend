@@ -9,7 +9,6 @@ import type { ChatMessage } from '../chat/ChatContent';
 export default function NewChatSection() {
   const [chatMessages, setChatMessages] = React.useState<ChatMessage[]>([]);
   const [messageIdCounter, setMessageIdCounter] = React.useState(0);
-  const [isBotResponding, setIsBotResponding] = React.useState(false);
 
   React.useEffect(() => {
       const initialId = messageIdCounter + 1;
@@ -53,13 +52,15 @@ export default function NewChatSection() {
 
   return (
     <div className="flex flex-col items-center justify-start">
-      <CommonTitle>G Navi</CommonTitle>
+      <div className="w-[816px]">
+        <CommonTitle>G Navi</CommonTitle>
 
-      <ChatContent messages={chatMessages} />
+        <ChatContent messages={chatMessages} />
 
-      <NewChatInput onSendMessage={handleSendMessage} />
+        <NewChatInput onSendMessage={handleSendMessage} />
 
-      <RecommendationCards />
+        <RecommendationCards />
+      </div>
     </div>
   );
 }

@@ -14,12 +14,12 @@ export default function RecommendationCards() {
         style={{ boxShadow: '0 4px 8px 0 rgba(0,0,0,0.08)' }}
       >
         <span className={`
-          text-[#122250] text-[14px] font-bold leading-[1.4em] font-pretendard
+          text-[#122250] text-[14px] font-bold
         `}>
           {label}
         </span>
         <p className="
-          mt-[8px] text-center text-[#090909] text-[12px] leading-[1.4em] font-pretendard
+          mt-[8px] text-center text-[#090909] text-[12px]
         ">
           {description}
         </p>

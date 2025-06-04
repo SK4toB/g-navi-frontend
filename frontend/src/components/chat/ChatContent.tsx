@@ -15,17 +15,9 @@ interface ChatContentProps {
   
 export default function ChatContent({ messages }: ChatContentProps) {
 
-  const messagesEndRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages]);
-
   return (
     <div className="
-      w-[816px] min-h-[300px] flex flex-col overflow-y-auto">
+      h-[400px] flex flex-col overflow-y-auto">
         {messages.map((msg) => (
           <React.Fragment key={msg.id}>
             {msg.sender === 'bot' ? (
@@ -35,7 +27,6 @@ export default function ChatContent({ messages }: ChatContentProps) {
             )}
           </React.Fragment>
         ))}
-        <div ref={messagesEndRef} />
       </div>
     );
   }
