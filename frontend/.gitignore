@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Add .env files
+.env             # 모든 .env 파일 무시
+.env.development # .env.development 파일 무시
+.env.production  # .env.production 파일 무시
+.env.*.local     # 추가적인 로컬 환경 파일 무시
