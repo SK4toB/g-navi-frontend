@@ -20,7 +20,7 @@ environment {
 
         IMAGE_TAG_BASE = '1.0'
 
-        DOCKER_CREDENTIAL_ID = 'skala-credential'
+        DOCKER_CREDENTIAL_ID = 'skala-harbor-credential'
     }
 
     stages {
