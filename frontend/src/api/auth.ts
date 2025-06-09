@@ -19,7 +19,6 @@ export interface LoginResponseData {
 // 회원가입 요청 시 사용될 데이터의 공통 타입 정의
 export interface SignupData {
   name: string;
-  email: string;
   employeeId: string;
   password: string;
   confirmPassword: string;
