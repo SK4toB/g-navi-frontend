@@ -26,30 +26,23 @@ environment {
     stages {
         stage('Clean Workspace') {
             steps {
-                // cleanWs() // 플러그인이 설치되지 않은 경우 주석 해제된 상태로 오류를 발생시킬 수 있습니다.
-                           // 따라서 이 스테이지는 아예 삭제하거나,
-                           // 또는 Jenkins가 플러그인을 찾을 때까지는 임시로 echo 명령을 넣어 비어있지 않게 해야 합니다.
-                echo "Workspace cleanup step (cleanWs) is intentionally skipped or will be handled by plugin if available." // <--- 이 라인을 추가하거나 주석 해제하여 `steps` 블록이 비어있지 않도록 합니다.
+                // 'Pipeline Utility Steps' 플러그인이 설치되어 있지 않으므로 'cleanWs()' 대신 echo 사용.
+                // 이 스테이지는 워크스페이스 정리의 의미를 남기기 위해 유지합니다.
+                echo "Workspace cleanup step (cleanWs) is intentionally skipped or will be handled by plugin if available."
             }
         }
 
-        stage('Clone Repository') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: env.GIT_ID, usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PAT')]) {
-                        sh "git config --global credential.helper store"
-                        sh "echo \"https://${GIT_USER}:${GIT_PAT}@github.com\" > ~/.git-credentials"
-                        def repoName = env.GIT_URL.split('/')[-1].replace('.git', '')
-                        sh "git clone https://github.com/${env.GIT_USER_NAME}/${repoName} ."
-                        sh "git checkout ${env.GIT_BRANCH}"
-                    }
-                }
-            }
-        }
+        // --- 'Clone Repository' 스테이지를 삭제합니다. ---
+        // Jenkins Pipeline은 시작 시 자동으로 SCM (Git)에서 코드를 체크아웃합니다.
+        // 따라서 수동으로 git clone을 시도하는 이 스테이지는 중복이며 오류의 원인이 됩니다.
+        // 이 스테이지는 Jenkinsfile에서 완전히 삭제되었습니다.
+
 
         stage('Install Node.js Dependencies & Build Frontend') {
             steps {
                 script {
+                    // 이 스테이지는 현재 Dockerfile 내에서 Node.js 의존성 설치 및 프론트엔드 빌드를 처리하므로,
+                    // 여기서는 설명 메시지만 출력합니다.
                     echo "Node.js dependencies and frontend build will be handled inside Dockerfile."
                 }
             }
@@ -58,61 +51,36 @@ environment {
         stage('Docker Build & Push') {
             steps {
                 script {
+                    // 고유한 이미지 태그를 위해 해시코드 12자리 생성
                     def hashcode = sh(
                         script: "date +%s%N | sha256sum | cut -c1-12",
                         returnStdout: true
                     ).trim()
 
+                    // 최종 이미지 태그 조합: 기본 태그 + Jenkins 빌드 번호 + 해시 코드
                     def FINAL_IMAGE_TAG = "${env.IMAGE_TAG_BASE}-${BUILD_NUMBER}-${hashcode}"
                     echo "Final Image Tag: ${FINAL_IMAGE_TAG}"
 
+                    // Docker Build 및 Harbor로 푸시
+                    // Dockerfile은 Git 리포지토리 루트에 위치하므로 컨텍스트는 '.' 입니다.
                     docker.withRegistry("https://${env.IMAGE_REGISTRY_BASE}", "${env.DOCKER_CREDENTIAL_ID}") {
+                        // 빌드된 이미지는 ${IMAGE_HARBOR_PROJECT} 프로젝트에 푸시됩니다.
                         def appImage = docker.build("${env.IMAGE_REGISTRY_BASE}/${env.IMAGE_HARBOR_PROJECT}/${env.IMAGE_NAME}:${FINAL_IMAGE_TAG}", "--platform linux/amd64 .")
-                        appImage.push()
-                        appImage.push("latest")
+                        appImage.push() // 최종 태그로 푸시
+                        appImage.push("latest") // 'latest' 태그로도 푸시 (선택 사항, 편리함)
                     }
 
+                    // (선택 사항) 최종 이미지 태그를 env에 등록.
+                    // CD 단계가 없으므로 현재 직접적으로 사용되지는 않지만,
+                    // 나중에 CD 단계를 추가할 경우를 대비하여 유지할 수 있습니다.
                     env.FINAL_IMAGE_TAG = FINAL_IMAGE_TAG
                 }
             }
         }
 
-        stage('Update Kubernetes Manifest and Git Push') {
-            steps {
-                script {
-                    def deployYamlPath = './k8s/deployment.yaml' // <--- 이 경로가 정확한지 확인하고 수정하세요.
-
-                    def fullImageName = "${env.IMAGE_REGISTRY_BASE}/${env.IMAGE_HARBOR_PROJECT}/${env.IMAGE_NAME}:${env.FINAL_IMAGE_TAG}"
-                    def newImageLine = "        image: ${fullImageName}"
-
-                    sh """
-                        sed -i 's|^[[:space:]]*image:.*\$|${newImageLine}|g' ${deployYamlPath}
-                        echo "--- Updated ${deployYamlPath} content ---"
-                        cat ${deployYamlPath}
-                        echo "---------------------------------------"
-                    """
-
-                    sh """
-                        git config user.name "$GIT_USER_NAME"
-                        git config user.email "$GIT_USER_EMAIL"
-                        git add ${deployYamlPath} || true
-                    """
-
-                    withCredentials([usernamePassword(credentialsId: env.GIT_ID, usernameVariable: 'GIT_PUSH_USER', passwordVariable: 'GIT_PUSH_PASSWORD')]) {
-                        sh """
-                            if ! git diff --cached --quiet; then
-                                git commit -m "[AUTO] Update ${deployYamlPath} image to ${env.FINAL_IMAGE_TAG}"
-                                def repoHostPath = env.GIT_URL.replaceFirst('https://', '').replaceFirst('http://', '')
-                                git remote set-url origin https://${GIT_PUSH_USER}:${GIT_PUSH_PASSWORD}@${repoHostPath}
-                                git push origin ${env.GIT_BRANCH}
-                            else
-                                echo "No changes to commit in ${deployYamlPath}."
-                            fi
-                        """
-                    }
-                }
-            }
-        }
+        // --- 'Update Kubernetes Manifest and Git Push' 스테이지를 삭제합니다. ---
+        // CI (빌드 및 푸시)에만 집중하므로 CD (배포 YAML 업데이트 및 Git 푸시) 단계는 제외합니다.
+        // stage('Update Kubernetes Manifest and Git Push') { ... } // 이 스테이지 전체가 삭제되었습니다.
     }
 
     post {
@@ -120,7 +88,7 @@ environment {
             echo "Pipeline finished."
         }
         success {
-            echo "Pipeline succeeded! Image pushed to Harbor and deploy.yaml updated in Git."
+            echo "Pipeline succeeded! Image pushed to Harbor." // 성공 메시지 변경
         }
         failure {
             echo "Pipeline failed! Check the logs for errors."
