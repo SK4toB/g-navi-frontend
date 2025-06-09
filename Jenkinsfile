@@ -26,7 +26,7 @@ environment {
     stages {
         stage('Clean Workspace') {
             steps {
-                cleanWs() // Jenkins 워크스페이스를 깨끗하게 정리합니다.
+                // cleanWs() // Jenkins 워크스페이스를 깨끗하게 정리합니다.
             }
         }
 
