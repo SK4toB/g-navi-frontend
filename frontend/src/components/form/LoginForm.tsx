@@ -2,16 +2,12 @@
 import React from 'react';
 import CommonInputField from '../common/CommonInputField';
 import CommonButton from '../common/CommonButton';
-import { authApi } from '../../api/auth';
+import { authApi, type LoginData } from '../../api/auth';
 import { useNavigate } from 'react-router-dom';
 
-interface LoginFormData {
-  email: string;
-  password: string;
-}
-
+// 중복 인터페이스 제거하고 auth.ts의 LoginData 사용
 export default function LoginForm() {
-  const [formData, setFormData] = React.useState<LoginFormData>({
+  const [formData, setFormData] = React.useState<LoginData>({
     email: '',
     password: '',
   });

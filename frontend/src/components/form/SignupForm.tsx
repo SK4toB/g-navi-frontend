@@ -2,13 +2,11 @@
 import React from 'react';
 import CommonInputField from '../common/CommonInputField';
 import CommonButton from '../common/CommonButton';
-import { authApi } from '../../api/auth';
+import { authApi, type SignupData } from '../../api/auth';
 import { useNavigate } from 'react-router-dom';
 
-interface SignupFormData {
-  name: string;
-  email: string;
-  password: string;
+// SignupData를 확장해서 confirmPassword 추가
+interface SignupFormData extends SignupData {
   confirmPassword: string;
 }
 
@@ -40,14 +38,13 @@ export default function SignupForm() {
     }
 
     try {
-      // API 스펙에 맞게 confirmPassword 제외하고 전송
       const { confirmPassword, ...signupPayload } = formData;
       const response = await authApi.signup(signupPayload);
       
       if (response.isSuccess) {
         console.log("회원가입 성공:", response);
         alert(`회원가입이 완료되었습니다. ${response.result.message}`);
-        navigate('/join'); // 로그인 페이지로 이동
+        navigate('/join');
       } else {
         alert(`회원가입 실패: ${response.message}`);
       }
