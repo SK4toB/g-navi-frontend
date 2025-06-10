@@ -6,13 +6,13 @@ import { authApi } from '../../api/auth';
 import { useNavigate } from 'react-router-dom';
 
 interface LoginFormData {
-  employeeId: string;
+  email: string;
   password: string;
 }
 
 export default function LoginForm() {
   const [formData, setFormData] = React.useState<LoginFormData>({
-    employeeId: '',
+    email: '',
     password: '',
   });
 
@@ -31,16 +31,22 @@ export default function LoginForm() {
 
     try {
       const response = await authApi.login(formData);
-      console.log("로그인 성공:", response);
-      navigate('/');
+      
+      if (response.isSuccess) {
+        console.log("로그인 성공:", response);
+        alert(`안녕하세요, ${response.result.name}님! 로그인되었습니다.`);
+        navigate('/');
+      } else {
+        alert(`로그인 실패: ${response.message}`);
+      }
     } catch (error) {
       console.error("로그인 실패:", error);
-      alert("로그인 실패");
+      alert("로그인 중 오류가 발생했습니다.");
     }
   };
 
   const formFields = [
-    { id: 'employeeId', label: '사번', type: 'text', value: formData.employeeId },
+    { id: 'email', label: '이메일', type: 'email', value: formData.email },
     { id: 'password', label: '비밀번호', type: 'password', value: formData.password },
   ];
 

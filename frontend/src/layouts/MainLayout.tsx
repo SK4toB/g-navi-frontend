@@ -20,7 +20,7 @@ export default function MainLayout() {
         <div className="flex-grow">
           <Outlet />
         </div>
-        {!isLoggedIn && (
+        {isLoggedIn && (
           <RightBar />
         )}
       </div>

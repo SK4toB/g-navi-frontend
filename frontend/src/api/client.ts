@@ -1,8 +1,8 @@
 // frontend/src/api/client.ts
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
+import useAuthStore from '../store/authStore';
 
-// 수정필요: 백엔드 API의 기본 주소를 설정합니다.
-const API_BASE_URL = 'http://localhost:8080/api'; 
+const API_BASE_URL = import.meta.env.API_BASE_URL;
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -14,10 +14,10 @@ const apiClient: AxiosInstance = axios.create({
 
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
+    const memberId = useAuthStore.getState().memberId;
+    if (memberId) {
       if (config.headers) {
-        config.headers.Authorization = `Bearer ${token}`;
+        config.headers['X-Member-Id'] = memberId.toString();
       }
     }
     return config;
@@ -35,7 +35,8 @@ apiClient.interceptors.response.use(
     if (error.response) {
       console.error('API 응답 오류:', error.response.status, error.response.data);
       if (error.response.status === 401) {
-        console.error('인증 실패: 토큰이 만료되었거나 유효하지 않습니다.');
+        console.error('인증 실패: 회원 ID가 유효하지 않습니다.');
+        useAuthStore.getState().logout();
       }
       return Promise.reject(new Error(error.response.data.message || 'API 요청 실패'));
     } else if (error.request) {
