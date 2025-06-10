@@ -30,8 +30,8 @@ export default function CommonInputField({
   `.replace(/\s+/g, ' ');
 
   const inputClasses = `
-    w-[398px]                   /* 너비 */
-    h-[70px]                    /* 높이 */
+    w-[300px]                   /* 너비 */
+    h-[50px]                    /* 높이 */
     mt-[16px]                   /* 위쪽 마진 */
     px-6                        /* padding-left/right (좌우 패딩): 24픽셀 */
     py-4                        /* padding-top/bottom (상하 패딩): 16픽셀 */
@@ -41,7 +41,7 @@ export default function CommonInputField({
     rounded-full                /* 모서리 둥글게 */
     border                      /* 테두리 */
     border-[#CDCDCD]            /* 테두리 색상 */
-    focus:border-[#122250]      /* 포커스 시 테두리 색상 */
+    pl-[16px]                   /* 텍스트 왼쪽 정렬 */
   `.replace(/\s+/g, ' ');
 
   const containerClasses = `

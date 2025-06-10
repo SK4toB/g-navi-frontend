@@ -9,7 +9,7 @@ export default function MainLayout() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
   return (
-    <div className="flex flex-col">
+    <div className="w-full h-full flex flex-col">
       {/* 헤더 */}
       <div className='fixed top-0 left-0 z-999'>
         <Header />

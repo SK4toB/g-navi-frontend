@@ -49,13 +49,17 @@ export const authApi = {
 
   login: async (payload: LoginData): Promise<LoginResponseData> => {
     const data = await api.post<LoginResponseData>('/auth/login', payload);
-    if (data.isSuccess && data.result.memberId) {
+    //memberId를 localstorage에 저장
+    if (data.result.memberId) {
+      localStorage.setItem('memberId', data.result.memberId.toString());
+      //memberId를 zustand에 저장
       useAuthStore.getState().login(data.result.memberId, data.result.name, data.result.email);
     }
     return data;
   },
 
   logout: async (): Promise<void> => {
+    localStorage.removeItem('memberId');
     useAuthStore.getState().logout();
   },
 };
