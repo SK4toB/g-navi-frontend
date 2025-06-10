@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 interface SignupFormData {
   name: string;
-  employeeId: string;
+  email: string;
   password: string;
   confirmPassword: string;
 }
@@ -15,7 +15,7 @@ interface SignupFormData {
 export default function SignupForm() {
   const [formData, setFormData] = React.useState<SignupFormData>({
     name: '',
-    employeeId: '',
+    email: '',
     password: '',
     confirmPassword: '',
   });
@@ -33,18 +33,33 @@ export default function SignupForm() {
   const handleSignup = async (event: React.FormEvent) => {
     event.preventDefault();
 
+    // 비밀번호 확인 검증
+    if (formData.password !== formData.confirmPassword) {
+      alert("비밀번호가 일치하지 않습니다.");
+      return;
+    }
+
     try {
-      const response = await authApi.signup(formData);
-      console.log("회원가입 성공:", response);
+      // API 스펙에 맞게 confirmPassword 제외하고 전송
+      const { confirmPassword, ...signupPayload } = formData;
+      const response = await authApi.signup(signupPayload);
+      
+      if (response.isSuccess) {
+        console.log("회원가입 성공:", response);
+        alert(`회원가입이 완료되었습니다. ${response.result.message}`);
+        navigate('/join'); // 로그인 페이지로 이동
+      } else {
+        alert(`회원가입 실패: ${response.message}`);
+      }
     } catch (error) {
       console.error("회원가입 실패:", error);
-      alert("회원가입 실패");
+      alert("회원가입 중 오류가 발생했습니다.");
     }
   };
 
   const formFields = [
     { id: 'name', label: '이름', type: 'text', value: formData.name },
-    { id: 'employeeId', label: '사번', type: 'text', value: formData.employeeId },
+    { id: 'email', label: '이메일', type: 'email', value: formData.email },
     { id: 'password', label: '비밀번호', type: 'password', value: formData.password },
     { id: 'confirmPassword', label: '비밀번호 확인', type: 'password', value: formData.confirmPassword },
   ];

@@ -2,6 +2,25 @@
 import { api } from './client';
 import useAuthStore from '../store/authStore';
 
+// 회원가입 요청 시 사용될 데이터의 타입 정의
+export interface SignupData {
+  name: string;
+  email: string;
+  password: string;
+}
+
+// 회원가입 응답 시 서버로부터 받을 데이터의 타입 정의
+export interface SignupResponseData {
+  code: string;
+  message: string;
+  result: {
+    name: string;
+    email: string;
+    message: string;
+  };
+  isSuccess: boolean;
+}
+
 // 로그인 요청 시 사용될 데이터의 공통 타입 정의
 export interface LoginData {
   employeeId: string;
@@ -16,20 +35,13 @@ export interface LoginResponseData {
   name: string;
 }
 
-// 회원가입 요청 시 사용될 데이터의 공통 타입 정의
-export interface SignupData {
-  name: string;
-  employeeId: string;
-  password: string;
-  confirmPassword: string;
-}
-
-// 회원가입 응답 시 서버로부터 받을 데이터의 공통 타입 정의
-export interface SignupResponseData {
-  message: string;
-}
 
 export const authApi = {
+  signup: async (payload: SignupData): Promise<SignupResponseData> => {
+    const data = await api.post<SignupResponseData>('/auth/signup', payload);
+    return data;
+  },
+
   login: async (payload: LoginData): Promise<LoginResponseData> => {
     const data = await api.post<LoginResponseData>('/auth/login', payload);
     if (data.accessToken) {
@@ -37,11 +49,6 @@ export const authApi = {
       localStorage.setItem('refreshToken', data.refreshToken);
       useAuthStore.getState().login(data.employeeId, data.name);
     }
-    return data;
-  },
-
-  signup: async (payload: SignupData): Promise<SignupResponseData> => {
-    const data = await api.post<SignupResponseData>('/auth/signup', payload);
     return data;
   },
 
