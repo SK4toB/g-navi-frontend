@@ -40,6 +40,27 @@ export interface LoginResponseData {
   isSuccess: boolean;
 }
 
+// 최근 대화 정보 타입 정의
+export interface RecentChatItem {
+  conversationId: string;
+  title: string;
+  lastUpdated: string;
+  hasMessages: boolean;
+  messageCount: number;
+}
+
+// 홈에서 불러올 정보 타입 정의
+export interface HomeResponseData {
+  code: string;
+  message: string;
+  result: {
+    userName: string;
+    skills: string[];
+    projectNames: string[];
+    recentChats: RecentChatItem[];
+  };
+  isSuccess: boolean;
+}
 
 export const authApi = {
   signup: async (payload: SignupData): Promise<SignupResponseData> => {
@@ -49,17 +70,45 @@ export const authApi = {
 
   login: async (payload: LoginData): Promise<LoginResponseData> => {
     const data = await api.post<LoginResponseData>('/auth/login', payload);
-    //memberId를 localstorage에 저장
+    
+    // 로그인 성공 시 처리
     if (data.result.memberId) {
+      // localStorage에 memberId 저장
       localStorage.setItem('memberId', data.result.memberId.toString());
-      //memberId를 zustand에 저장
+      
+      // zustand에 사용자 정보 저장
       useAuthStore.getState().login(data.result.memberId, data.result.name, data.result.email);
+      
+      // 홈 정보 가져와서 스토어에 저장
+      try {
+        const homeData = await api.get<HomeResponseData>(`/auth/${data.result.memberId}/home`, {
+          params: { memberId: data.result.memberId }
+        });
+        
+        if (homeData.isSuccess) {
+          useAuthStore.getState().setHomeInfo(homeData.result);
+        }
+      } catch (error) {
+        console.error('홈 정보 로드 실패:', error);
+        // 홈 정보 로드 실패해도 로그인은 유지
+      }
     }
+    
     return data;
   },
 
   logout: async (): Promise<void> => {
     localStorage.removeItem('memberId');
     useAuthStore.getState().logout();
+  },
+
+  // 홈 정보 조회 API
+  getHomeInfo: async (): Promise<HomeResponseData> => {
+    const user = useAuthStore.getState().user;
+    const data = await api.get<HomeResponseData>(`/auth/${user.memberId}/home`, {
+      params: { memberId: user.memberId }
+    });
+    console.log(data);
+    return data;
   },
 };

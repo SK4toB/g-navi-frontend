@@ -1,4 +1,5 @@
 // frontend/src/pages/HomePage.tsx
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import CommonTitle from '../components/common/CommonTitle';
 import CommonButton from '../components/common/CommonButton';
@@ -9,9 +10,13 @@ export default function HomePage() {
   const IntroMessage = "안녕하세요, 커리어 성장 여정을 함께할 지나비입니다.";
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
+  React.useEffect(() => {
+    
+  }, []);
+
   const handleNewChat = () => {
     if (isLoggedIn) {
-      navigate('/chat');
+      navigate('/conversation');
     } else {
       navigate('/join');
     }

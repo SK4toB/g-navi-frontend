@@ -9,15 +9,15 @@ const apiClient: AxiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000,
+  timeout: 20000,
 });
 
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const memberId = useAuthStore.getState().memberId;
-    if (memberId) {
+    const user = useAuthStore.getState().user;
+    if (user) {
       if (config.headers) {
-        config.headers['X-Member-Id'] = memberId.toString();
+        config.headers['X-Member-Id'] = user.memberId.toString();
       }
     }
     return config;

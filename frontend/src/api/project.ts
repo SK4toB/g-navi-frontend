@@ -6,7 +6,7 @@ import useAuthStore from '../store/authStore';
 export interface Project {
   projectId: number;
   projectName: string;
-  UserRole: string;
+  userRole: string;
   domain: string;
   projectScale: string;
   startDate: string;
