@@ -66,15 +66,22 @@ export interface ConversationHistoryResponse {
 }
 
 export const conversationApi = {
-  // 새 대화 시작 또는 기존 대화 이어서 하기 (POST /api/conversations)
-  startConversation: async (payload: StartConversationRequest): Promise<StartConversationResponse> => {
+  // 새 대화 시작 (POST /api/conversations)
+  startConversation: async (memberId: number): Promise<StartConversationResponse> => {
+    const payload: StartConversationRequest = {
+      memberId,
+      conversationId: null // 새 대화이므로 null
+    };
+    
     const data = await api.post<StartConversationResponse>('/conversations', payload);
     return data;
   },
 
   // 기존 대화 내역 조회 (GET /api/conversations/{conversationId})
   getConversationHistory: async (conversationId: string): Promise<ConversationHistoryResponse> => {
-    const data = await api.get<ConversationHistoryResponse>(`/conversations/${conversationId}`);
+    const data = await api.get<ConversationHistoryResponse>(`/conversations/${conversationId}`, {
+      params: { conversationId } // Parameters에 conversationId 추가
+    });
     return data;
   },
 

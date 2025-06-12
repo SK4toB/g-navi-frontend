@@ -5,25 +5,22 @@ import useAuthStore from '../../store/authStore';
 import { authApi } from '../../api/auth';
 
 export default function RightBar() {
+  const { user, homeInfo } = useAuthStore();
   const [isOpen, setIsOpen] = React.useState(true);
   const navigate = useNavigate();
-
-  const { user, homeInfo } = useAuthStore();
 
   const toggleOpen = () => {
     setIsOpen(!isOpen);
   };
 
-  // RightBar가 열릴 때마다 홈 정보 새로고침
+  // RightBar가 열릴 때마다 새로고침
   React.useEffect(() => {
     if (isOpen && user) {
       authApi.getHomeInfo().then((response) => {
         if (response.isSuccess) {
           useAuthStore.getState().setHomeInfo(response.result);
         }
-      }).catch((error) => {
-        console.error('홈 정보 새로고침 중 오류:', error);
-      });
+      })
     }
   }, [isOpen, user]);
 
