@@ -40,6 +40,28 @@ export interface LoginResponseData {
   isSuccess: boolean;
 }
 
+// 최근 대화 정보 타입 정의
+export interface RecentChatItem {
+  conversationId: string;
+  title: string;
+  lastUpdated: string;
+  hasMessages: boolean;
+  messageCount: number;
+}
+
+// 홈에서 불러올 정보 타입 정의
+export interface HomeResponseData {
+  code: string;
+  message: string;
+  result: {
+    userName: string;
+    skills: string[];
+    projectNames: string[];
+    recentChats: RecentChatItem[];
+  };
+  isSuccess: boolean;
+}
+
 
 export const authApi = {
   signup: async (payload: SignupData): Promise<SignupResponseData> => {
@@ -61,5 +83,15 @@ export const authApi = {
   logout: async (): Promise<void> => {
     localStorage.removeItem('memberId');
     useAuthStore.getState().logout();
+  },
+
+  // 홈 정보 조회 API 추가
+  getHomeInfo: async (): Promise<HomeResponseData> => {
+    const user = useAuthStore.getState().user;
+    const data = await api.get<HomeResponseData>(`/auth/${user.memberId}/home`, {
+      params: { memberId: user.memberId }
+    });
+    console.log(data);
+    return data;
   },
 };

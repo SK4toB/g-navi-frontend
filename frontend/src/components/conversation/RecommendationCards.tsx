@@ -1,3 +1,6 @@
+// frontend/src/components/conversation/RecommendationCards.tsx
+import React from 'react';
+
 interface CardItemProps {
   label: string;
   description: React.ReactNode;

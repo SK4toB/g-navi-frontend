@@ -3,7 +3,7 @@ import MainLayout from './layouts/MainLayout';
 import HomePage from './pages/HomePage';
 import JoinPage from './pages/JoinPage';
 import MyPage from './pages/Mypage';
-import ChatPage from './pages/ChatPage';
+import ConversationPage from './pages/ConversationPage';
 
 
 const router = createBrowserRouter([
@@ -23,8 +23,8 @@ const router = createBrowserRouter([
                 element: <MyPage />,
             },
             {
-                path: 'chat/:chatId?',
-                element: <ChatPage />,
+                path: 'conversation/:conversationId?',
+                element: <ConversationPage />,
             }
         ]
     }
