@@ -2,28 +2,27 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
-import { authApi, type HomeResponseData } from '../../api/auth';
+import { authApi } from '../../api/auth';
 
 export default function RightBar() {
   const [isOpen, setIsOpen] = React.useState(true);
-  const [homeInfo, setHomeInfo] = React.useState<HomeResponseData['result'] | null>(null);
   const navigate = useNavigate();
 
-  const { user } = useAuthStore();
+  const { user, homeInfo } = useAuthStore();
 
   const toggleOpen = () => {
     setIsOpen(!isOpen);
   };
 
-  // 컴포넌트 마운트 시 목록 로드
+  // RightBar가 열릴 때마다 홈 정보 새로고침
   React.useEffect(() => {
     if (isOpen && user) {
       authApi.getHomeInfo().then((response) => {
         if (response.isSuccess) {
-          setHomeInfo(response.result);
+          useAuthStore.getState().setHomeInfo(response.result);
         }
       }).catch((error) => {
-        console.error('홈 정보 로드 중 오류:', error);
+        console.error('홈 정보 새로고침 중 오류:', error);
       });
     }
   }, [isOpen, user]);
@@ -57,6 +56,7 @@ export default function RightBar() {
           )}
         </button>
       </div>
+      
       {/* 대화 목록 영역 */}
       {isOpen && (
         <>
@@ -79,7 +79,7 @@ export default function RightBar() {
             
             {/* 대화 목록 */}
             <div className="flex flex-col px-[24px] overflow-y-auto flex-1">
-              {homeInfo?.recentChats.map((recentChat) => (
+              {homeInfo?.recentChats?.map((recentChat) => (
                 <div
                   key={recentChat.conversationId || 'new-chat'}
                   className="py-[16px] border-b border-[#E2E8F0] cursor-pointer hover:bg-gray-50 rounded-lg px-2 transition-colors"
@@ -96,6 +96,13 @@ export default function RightBar() {
                   </div>
                 </div>
               ))}
+              
+              {/* 대화 목록이 없을 때 - 전역 데이터가 있으면 표시, 없으면 기본 메시지 */}
+              {(!homeInfo?.recentChats || homeInfo.recentChats.length === 0) && (
+                <div className="text-center text-gray-500 py-8">
+                  아직 대화가 없습니다
+                </div>
+              )}
             </div>
           </div>
         </>
