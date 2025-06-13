@@ -5,17 +5,11 @@ import CommonButton from '../common/CommonButton';
 import { authApi, type SignupData } from '../../api/auth';
 import { useNavigate } from 'react-router-dom';
 
-// SignupData를 확장해서 confirmPassword 추가
-interface SignupFormData extends SignupData {
-  confirmPassword: string;
-}
-
 export default function SignupForm() {
-  const [formData, setFormData] = React.useState<SignupFormData>({
+  const [formData, setFormData] = React.useState<SignupData>({
     name: '',
     email: '',
     password: '',
-    confirmPassword: '',
   });
   
   const navigate = useNavigate();
@@ -31,15 +25,8 @@ export default function SignupForm() {
   const handleSignup = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    // 비밀번호 확인 검증
-    if (formData.password !== formData.confirmPassword) {
-      alert("비밀번호가 일치하지 않습니다.");
-      return;
-    }
-
     try {
-      const { confirmPassword, ...signupPayload } = formData;
-      const response = await authApi.signup(signupPayload);
+      const response = await authApi.signup(formData);
       
       if (response.isSuccess) {
         alert(`회원가입이 완료되었습니다. ${response.result.message}`);
@@ -57,7 +44,6 @@ export default function SignupForm() {
     { id: 'name', label: '이름', type: 'text', value: formData.name },
     { id: 'email', label: '이메일', type: 'email', value: formData.email },
     { id: 'password', label: '비밀번호', type: 'password', value: formData.password },
-    { id: 'confirmPassword', label: '비밀번호 확인', type: 'password', value: formData.confirmPassword },
   ];
 
   return (
