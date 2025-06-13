@@ -42,7 +42,6 @@ export default function SignupForm() {
       const response = await authApi.signup(signupPayload);
       
       if (response.isSuccess) {
-        console.log("회원가입 성공:", response);
         alert(`회원가입이 완료되었습니다. ${response.result.message}`);
         navigate('/join');
       } else {
@@ -63,7 +62,7 @@ export default function SignupForm() {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <form onSubmit={handleSignup} className="flex flex-col items-center">
+      <form onSubmit={handleSignup} className="h-[380px] flex flex-col items-center">
         {formFields.map(field => (
           <CommonInputField
             key={field.id}
@@ -74,10 +73,11 @@ export default function SignupForm() {
             onChange={handleChange}
           />
         ))}
-        <div className='mt-[50px]'></div>
-        <CommonButton type="submit">
-          회원가입
-        </CommonButton>
+        <div className='flex flex-col flex-grow items-center justify-end'>
+          <CommonButton type="submit">
+            회원가입
+          </CommonButton>
+        </div>
       </form>
     </div>
   );

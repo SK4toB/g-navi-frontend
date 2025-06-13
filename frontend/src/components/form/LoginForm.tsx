@@ -29,7 +29,6 @@ export default function LoginForm() {
       const response = await authApi.login(formData);
       
       if (response.isSuccess) {
-        console.log("로그인 성공:", response);
         alert(`안녕하세요, ${response.result.name}님! 로그인되었습니다.`);
         navigate('/');
       } else {
@@ -48,7 +47,7 @@ export default function LoginForm() {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <form onSubmit={handleLogin} className="flex flex-col items-center">
+      <form onSubmit={handleLogin} className="h-[380px] flex flex-col items-center">
         {formFields.map(field => (
           <CommonInputField
             key={field.id}
@@ -59,10 +58,11 @@ export default function LoginForm() {
             onChange={handleChange}
           />
         ))}
-        <div className='mt-[50px]'></div>
-        <CommonButton type="submit">
-          로그인
-        </CommonButton>
+        <div className='flex flex-col flex-grow items-center justify-end'>
+          <CommonButton type="submit">
+            로그인
+          </CommonButton>
+        </div>
       </form>
     </div>
   );
