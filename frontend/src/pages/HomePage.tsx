@@ -22,6 +22,14 @@ export default function HomePage() {
     }
   };
 
+  const handleMyPage = () => {
+    if (isLoggedIn) {
+      navigate('/myPage');
+    } else {
+      navigate('/join');
+    }
+  };
+
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
       <CommonTitle>G Navi</CommonTitle>
@@ -35,6 +43,13 @@ export default function HomePage() {
         onClick={handleNewChat}
       >
         {'새로운 채팅 시작하기'}
+      </CommonButton>
+      <div className="mt-[20px]"></div>
+      <CommonButton
+        type="button"
+        onClick={handleMyPage}
+      >
+        {'내 정보 확인하기'}
       </CommonButton>
     </div>
   );

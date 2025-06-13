@@ -24,6 +24,7 @@ dist-ssr
 *.sw?
 
 # Add .env files
+frontend/.env
 .env             # 모든 .env 파일 무시
 .env.development # .env.development 파일 무시
 .env.production  # .env.production 파일 무시
