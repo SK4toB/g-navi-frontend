@@ -1,10 +1,10 @@
-// frontend/src/components/layout/RightBar.tsx
+// frontend/src/components/layout/SideBar.tsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import { authApi } from '../../api/auth';
 
-export default function RightBar() {
+export default function SideBar() {
   const { user, homeInfo } = useAuthStore();
   const [isOpen, setIsOpen] = React.useState(true);
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ export default function RightBar() {
     setIsOpen(!isOpen);
   };
 
-  // RightBar가 열릴 때마다 새로고침
+  // SideBar가 열릴 때마다 새로고침
   React.useEffect(() => {
     if (isOpen && user) {
       authApi.getHomeInfo().then((response) => {

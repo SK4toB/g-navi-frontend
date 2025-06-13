@@ -2,7 +2,7 @@
 import { Outlet } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
-import RightBar from '../components/layout/RightBar';
+import SideBar from '../components/layout/SideBar';
 import useAuthStore from '../store/authStore';
 
 export default function MainLayout() {
@@ -26,7 +26,7 @@ export default function MainLayout() {
           </div>
         </div>
         {isLoggedIn && (
-          <RightBar />
+          <SideBar />
         )}
         </div>
       </div>

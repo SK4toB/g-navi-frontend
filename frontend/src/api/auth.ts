@@ -71,27 +71,9 @@ export const authApi = {
   login: async (payload: LoginData): Promise<LoginResponseData> => {
     const data = await api.post<LoginResponseData>('/auth/login', payload);
     
-    // 로그인 성공 시 처리
     if (data.result.memberId) {
-      // localStorage에 memberId 저장
       localStorage.setItem('memberId', data.result.memberId.toString());
-      
-      // zustand에 사용자 정보 저장
       useAuthStore.getState().login(data.result.memberId, data.result.name, data.result.email);
-      
-      // 홈 정보 가져와서 스토어에 저장
-      try {
-        const homeData = await api.get<HomeResponseData>(`/auth/${data.result.memberId}/home`, {
-          params: { memberId: data.result.memberId }
-        });
-        
-        if (homeData.isSuccess) {
-          useAuthStore.getState().setHomeInfo(homeData.result);
-        }
-      } catch (error) {
-        console.error('홈 정보 로드 실패:', error);
-        // 홈 정보 로드 실패해도 로그인은 유지
-      }
     }
     
     return data;

@@ -5,7 +5,6 @@ import CommonButton from '../common/CommonButton';
 import { authApi, type LoginData } from '../../api/auth';
 import { useNavigate } from 'react-router-dom';
 
-// 중복 인터페이스 제거하고 auth.ts의 LoginData 사용
 export default function LoginForm() {
   const [formData, setFormData] = React.useState<LoginData>({
     email: '',
