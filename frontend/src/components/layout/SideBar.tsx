@@ -33,6 +33,7 @@ export default function SideBar() {
       ${isOpen ? 'w-[365px]' : 'w-[70px]'}
       border-l border-[#E2E8F0] h-[1024px] flex flex-col
     `}>
+      
       {/* 헤더 영역 */}
       <div className="
         flex flex-row justify-between items-center py-[12px] px-[12px]
@@ -57,21 +58,18 @@ export default function SideBar() {
       {/* 대화 목록 영역 */}
       {isOpen && (
         <>
-          <div className="flex flex-row items-center gap-[12px] p-[12px]">
-            <div className="w-[48px] h-[48px] rounded-full flex items-center justify-center bg-gray-200 text-gray-500 text-lg font-bold">
-              {user?.name?.charAt(0) || 'U'}
-            </div>
-            <div className="font-bold text-[24px] text-[#1E293B]">
-              {user?.name || '사용자'}
+          <div className="flex flex-row items-center">
+            <div className="fixed top-[20px] right-[12px] font-bold text-[20px] text-text-primary">
+              {user.name}
             </div>
           </div>
 
-          <div className="flex flex-col flex-1">
+          <div className="flex flex-col">
             <div className="
-              flex flex-row items-center justify-center p-[24px]
-              border-b border-[#E2E8F0]
+              flex flex-row p-[20px]
+              border-t border-b border-[#E2E8F0]
             ">
-              <div className="font-bold text-[24px] text-[#1E293B]">최근 대화</div>
+              <div className="font-bold text-[18px] text-text-primary">최근 대화</div>
             </div>
             
             {/* 대화 목록 */}
@@ -80,24 +78,18 @@ export default function SideBar() {
                 <div
                   key={recentChat.conversationId || 'new-chat'}
                   className="py-[16px] border-b border-[#E2E8F0] cursor-pointer hover:bg-gray-50 rounded-lg px-2 transition-colors"
-                  onClick={() => {
-                    if (recentChat.conversationId) {
-                      navigate(`/conversation/${recentChat.conversationId}`);
-                    } else {
-                      navigate('/conversation');
-                    }
-                  }}
+                  onClick={() => handleChatClick(recentChat.conversationId)}
                 >
-                  <div className="text-[16px] text-[#1E293B] font-medium">
+                  <div className="text-[16px] text-text-primary">
                     {recentChat.title}
                   </div>
                 </div>
               ))}
               
-              {/* 대화 목록이 없을 때 - 전역 데이터가 있으면 표시, 없으면 기본 메시지 */}
+              {/* 대화 목록이 없으면 기본 메시지 */}
               {(!homeInfo?.recentChats || homeInfo.recentChats.length === 0) && (
-                <div className="text-center text-gray-500 py-8">
-                  아직 대화가 없습니다
+                <div className="mt-[20px]">
+                  아직 대화가 없습니다.
                 </div>
               )}
             </div>
