@@ -1,5 +1,6 @@
 // frontend/src/store/authStore.ts
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import type { RecentChatItem, HomeResponseData } from '../api/auth';
 
 // 사용자 정보 타입
@@ -9,7 +10,6 @@ interface UserInfo {
   email: string;
 }
 
-// 홈 정보 타입 (auth.ts의 HomeResponseData.result 타입 사용)
 type HomeInfo = HomeResponseData['result'];
 
 interface AuthState {
@@ -20,25 +20,66 @@ interface AuthState {
   login: (memberId: number, name: string, email: string) => void;
   logout: () => void;
   setHomeInfo: (homeInfo: HomeInfo) => void;
+  initializeAuth: () => void;
 }
 
-const useAuthStore = create<AuthState>((set) => ({
-  isLoggedIn: false,
-  user: null,
-  homeInfo: null,
+const useAuthStore = create<AuthState>()(
+  persist(
+    (set, get) => ({
+      isLoggedIn: false,
+      user: null,
+      homeInfo: null,
 
-  login: (memberId, name, email) => set({ 
-    isLoggedIn: true, 
-    user: { memberId, name, email }
-  }),
-  
-  logout: () => set({ 
-    isLoggedIn: false, 
-    user: null,
-    homeInfo: null
-  }),
+      login: (memberId, name, email) => {
+        const userInfo = { memberId, name, email };
+        localStorage.setItem('memberId', memberId.toString());
+        set({ 
+          isLoggedIn: true, 
+          user: userInfo
+        });
+      },
+      
+      logout: () => {
+        localStorage.removeItem('memberId');
+        set({ 
+          isLoggedIn: false, 
+          user: null,
+          homeInfo: null
+        });
+      },
 
-  setHomeInfo: (homeInfo) => set({ homeInfo }),
-}));
+      setHomeInfo: (homeInfo) => set({ homeInfo }),
+
+      initializeAuth: () => {
+        const storedMemberId = localStorage.getItem('memberId');
+        const currentState = get();
+        
+        if (storedMemberId && !currentState.isLoggedIn) {
+          console.log('localStorage에서 로그인 정보 복원 필요');
+          
+          if (currentState.user && currentState.user.memberId.toString() === storedMemberId) {
+            set({ isLoggedIn: true });
+          }
+        }
+        
+        if (!storedMemberId && currentState.isLoggedIn) {
+          set({ 
+            isLoggedIn: false, 
+            user: null, 
+            homeInfo: null 
+          });
+        }
+      },
+    }),
+    {
+      name: 'auth-storage',
+
+      partialize: (state) => ({
+        user: state.user,
+        isLoggedIn: state.isLoggedIn,
+      }),
+    }
+  )
+);
 
 export default useAuthStore;

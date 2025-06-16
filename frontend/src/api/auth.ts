@@ -72,7 +72,6 @@ export const authApi = {
     const data = await api.post<LoginResponseData>('/auth/login', payload);
     
     if (data.result.memberId) {
-      localStorage.setItem('memberId', data.result.memberId.toString());
       useAuthStore.getState().login(data.result.memberId, data.result.name, data.result.email);
     }
     
@@ -80,13 +79,40 @@ export const authApi = {
   },
 
   logout: async (): Promise<void> => {
-    localStorage.removeItem('memberId');
     useAuthStore.getState().logout();
+  },
+
+  // 현재 사용자 정보 확인 (새로고침 시 사용)
+  getCurrentUser: async (): Promise<LoginResponseData | null> => {
+    try {
+      const memberId = localStorage.getItem('memberId');
+      if (!memberId) return null;
+
+      // 서버에서 현재 사용자 정보 확인
+      const data = await api.get<LoginResponseData>(`/auth/user/${memberId}`);
+      
+      if (data.isSuccess) {
+        // 로그인 상태 복원
+        useAuthStore.getState().login(data.result.memberId, data.result.name, data.result.email);
+        return data;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('사용자 정보 확인 실패:', error);
+      useAuthStore.getState().logout();
+      return null;
+    }
   },
 
   // 홈 정보 조회 API
   getHomeInfo: async (): Promise<HomeResponseData> => {
     const user = useAuthStore.getState().user;
+    
+    if (!user) {
+      throw new Error('로그인이 필요합니다.');
+    }
+    
     const data = await api.get<HomeResponseData>(`/auth/${user.memberId}/home`, {
       params: { memberId: user.memberId }
     });
