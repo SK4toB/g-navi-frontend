@@ -6,7 +6,7 @@ export default function Header() {
   return (
     <header className='cursor-pointer'>
       <Link to="/">
-        <img src={logo} alt="G-Navi Logo" className='w-[100px] h-[100px]' />
+        <img src={logo} alt="G-Navi Logo" className='w-[100px] h-[80px]' />
       </Link>
     </header>
   );
