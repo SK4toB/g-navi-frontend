@@ -127,7 +127,7 @@ export default function ChatPage() {
             <Title>G Navi</Title>
             <ConversationContent 
               messages={messages} 
-              height="h-[500px]"
+              height="h-[400px]"
             />
             <ConversationInput onSendMessage={handleSendMessage} />
             <RecommendationCards />
@@ -138,7 +138,7 @@ export default function ChatPage() {
             <Title>G Navi</Title>
             <ConversationContent 
               messages={messages} 
-              height="h-[650px]"
+              height="h-[550px]"
             />
             <ConversationInput onSendMessage={handleSendMessage} />
           </>

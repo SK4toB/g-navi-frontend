@@ -7,6 +7,7 @@ interface CommonTitleProps {
 
 export default function CommonTitle({ children }: CommonTitleProps) {
   const titleClasses = `
+    mt-5
     font-bold                   /* 글꼴 굵기 */
     text-[40px]                 /* 글꼴 크기 */
     text-[#122250]              /* 글꼴 색 */

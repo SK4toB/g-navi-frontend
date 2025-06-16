@@ -14,7 +14,7 @@ export default function CommonButton({ children, onClick, type }: CommonButtonPr
     justify-center              /* 가로 중앙 정렬 */
     w-[240px]                   /* 너비 */
     h-[60px]                    /* 높이 */
-    px-10                       /* 좌우 패딩 */
+    px-3                       /* 좌우 패딩 */
     font-bold                   /* 글꼴 굵기 */
     text-[18px]                 /* 글꼴 크기 */
     text-center                 /* 텍스트 정렬 */
