@@ -64,7 +64,7 @@ export interface HomeResponseData {
 
 export const authApi = {
   signup: async (payload: SignupData): Promise<SignupResponseData> => {
-    const data = await api.post<SignupResponseData>('/auth/signup', payload);
+    const data = await api.post<SignupResponseData>('/api/auth/signup', payload);
     return data;
   },
 
@@ -89,7 +89,7 @@ export const authApi = {
       if (!memberId) return null;
 
       // 서버에서 현재 사용자 정보 확인
-      const data = await api.get<LoginResponseData>(`/auth/user/${memberId}`);
+      const data = await api.get<LoginResponseData>(`/api/auth/user/${memberId}`);
       
       if (data.isSuccess) {
         // 로그인 상태 복원
@@ -113,7 +113,7 @@ export const authApi = {
       throw new Error('로그인이 필요합니다.');
     }
     
-    const data = await api.get<HomeResponseData>(`/auth/${user.memberId}/home`, {
+    const data = await api.get<HomeResponseData>(`/api/auth/${user.memberId}/home`, {
       params: { memberId: user.memberId }
     });
     console.log(data);

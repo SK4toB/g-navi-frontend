@@ -25,7 +25,7 @@ export interface ProjectResponse {
 export const projectApi = {
   // 사용자의 프로젝트 목록 조회 (GET /api/projects?memberId={memberId})
   getProjectList: async (memberId: number): Promise<ProjectResponse> => {
-    const data = await api.get<ProjectResponse>('/projects', {
+    const data = await api.get<ProjectResponse>('/api/projects', {
       params: { memberId }
     });
     return data;
@@ -44,13 +44,13 @@ export const projectApi = {
       memberId: user.memberId
     };
 
-    const data = await api.post<ProjectResponse>('/projects', requestData);
+    const data = await api.post<ProjectResponse>('/api/projects', requestData);
     return data;
   },
 
   // 프로젝트 삭제 (DELETE /api/projects)
   deleteProject: async (projectId: number): Promise<ProjectResponse> => {
-    const data = await api.delete<ProjectResponse>('/projects', {
+    const data = await api.delete<ProjectResponse>('/api/projects', {
       params: { projectId }
     });
     return data;

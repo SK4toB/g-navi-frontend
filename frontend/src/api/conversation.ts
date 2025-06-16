@@ -73,13 +73,13 @@ export const conversationApi = {
       conversationId: null // 새 대화이므로 null
     };
     
-    const data = await api.post<StartConversationResponse>('/conversations', payload);
+    const data = await api.post<StartConversationResponse>('/api/conversations', payload);
     return data;
   },
 
   // 기존 대화 내역 조회 (GET /api/conversations/{conversationId})
   getConversationHistory: async (conversationId: string): Promise<ConversationHistoryResponse> => {
-    const data = await api.get<ConversationHistoryResponse>(`/conversations/${conversationId}`, {
+    const data = await api.get<ConversationHistoryResponse>(`/api/conversations/${conversationId}`, {
       params: { conversationId } // Parameters에 conversationId 추가
     });
     return data;
@@ -93,7 +93,7 @@ export const conversationApi = {
       memberId
     };
     
-    const data = await api.post<SendMessageResponse>(`/conversations/${conversationId}/messages`, payload);
+    const data = await api.post<SendMessageResponse>(`/api/conversations/${conversationId}/messages`, payload);
     return data;
   },
 };
