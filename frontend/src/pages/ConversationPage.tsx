@@ -24,7 +24,7 @@ export default function ChatPage() {
   const [currentConversationId, setCurrentConversationId] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
   const [messageIdCounter, setMessageIdCounter] = React.useState(0);
-  const [hasUserSentMessage, setHasUserSentMessage] = React.useState(false);
+  const [isNewChat, setIsNewChat] = React.useState(true); // 초기값은 true
 
   // 서버 메시지를 UI 메시지로 변환
   const convertToUIMessage = (msg: ConversationMessage, id: number): Message => ({
@@ -51,6 +51,7 @@ export default function ChatPage() {
         timestamp: new Date(response.result.timestamp).getTime(),
       }]);
       setMessageIdCounter(1);
+      setIsNewChat(true); // 새 대화이므로 true
       navigate(`/conversation/${response.result.conversationId}`, { replace: true });
     }
   };
@@ -68,16 +69,15 @@ export default function ChatPage() {
       );
       setMessages(convertedMessages);
       setMessageIdCounter(response.result.messageCount || convertedMessages.length);
-      setHasUserSentMessage(convertedMessages.some(msg => msg.sender === 'user'));
+      
+      // 기존 대화에 메시지가 1개(봇의 첫 인사만)이면 isNewChat = true
+      setIsNewChat(convertedMessages.length <= 1);
     }
   };
 
   // 메시지 전송
   const handleSendMessage = async (message: string) => {
     if (!currentConversationId || !user?.memberId) return;
-
-    // 첫 메시지 전송 시 추천 카드 숨김
-    setHasUserSentMessage(true);
 
     // 사용자 메시지 즉시 추가
     const userMessage: Message = {
@@ -117,44 +117,33 @@ export default function ChatPage() {
     }
   }, [conversationId, user?.memberId]);
 
-  if (!user) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full">
-        <p className="text-gray-600">로그인이 필요합니다.</p>
-      </div>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full">
-        <div className="animate-spin w-8 h-8 border-2 border-gray-300 border-t-blue-500 rounded-full"></div>
-        <p className="mt-4 text-gray-600">대화를 준비 중입니다...</p>
-      </div>
-    );
-  }
-
-  const shouldShowRecommendationCards = !hasUserSentMessage;
-
-  // 높이 계산
-  const contentHeight = shouldShowRecommendationCards 
-    ? 'h-[400px]'  // 추천 카드가 있을 때는 고정 높이
-    : 'h-[calc(100vh-300px)]';  // 추천 카드가 없을 때는 화면 높이에서 여백 제외
-
   return (
-    <div className="flex flex-col items-center justify-start">
-      <div className="w-80% ml-[10%] mr-[5%] mt-[5%]">
-      {/* Title - 추천 카드가 있을 때만 표시 */}
-        {shouldShowRecommendationCards && <Title>G Navi</Title>}
-        {/* Content 영역 - 계산된 높이 전달 */}
-        <ConversationContent 
-          messages={messages} 
-          height={contentHeight}
-        />
-        {/* Input - 항상 표시 */}
-        <ConversationInput onSendMessage={handleSendMessage} />
-        {/* Recommendation Cards - 추천 카드가 있을 때만 표시 */}
-        {shouldShowRecommendationCards && <RecommendationCards />}
+    <div className="w-full flex flex-col items-center justify-start">
+      <div className="w-[816px] h-[100vh]">
+        
+        {isNewChat ? (
+          // 새 대화일 때 렌더링할 내용
+          <>
+            <Title>G Navi</Title>
+            <ConversationContent 
+              messages={messages} 
+              height="h-[500px]"
+            />
+            <ConversationInput onSendMessage={handleSendMessage} />
+            <RecommendationCards />
+          </>
+        ) : (
+          // 기존 대화일 때 렌더링할 내용  
+          <>
+            <Title>G Navi</Title>
+            <ConversationContent 
+              messages={messages} 
+              height="h-[650px]"
+            />
+            <ConversationInput onSendMessage={handleSendMessage} />
+          </>
+        )}
+        
       </div>
     </div>
   );

@@ -11,13 +11,13 @@ interface ConversationMessage {
 
 interface ConversationContentProps {
   messages: ConversationMessage[];
-  height: string; // Tailwind CSS 클래스로 높이 전달 (예: 'h-[400px]', 'h-[calc(100vh-300px)]')
+  height: string;
 }
   
 export default function ConversationContent({ messages, height }: ConversationContentProps) {
 
   return (
-    <div className={`${height} flex flex-col overflow-y-auto p-4`}>
+    <div className={`${height} flex flex-col overflow-y-auto mt-[50px]`}>
       {messages.map((msg) => (
         <React.Fragment key={msg.id}>
           <Message sender={msg.sender} text={msg.text} />

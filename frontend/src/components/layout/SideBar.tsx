@@ -6,7 +6,7 @@ import { authApi } from '../../api/auth';
 
 export default function SideBar() {
   const { user, homeInfo } = useAuthStore();
-  const [isOpen, setIsOpen] = React.useState(true);
+  const [isOpen, setIsOpen] = React.useState(false);
   const navigate = useNavigate();
 
   const toggleOpen = () => {
@@ -28,6 +28,15 @@ export default function SideBar() {
     navigate(`/conversation/${conversationId}`);
   };
 
+  const handleLogout = async () => {
+    try {
+      await authApi.logout();
+      navigate('/');
+    } catch (error) {
+      console.error('로그아웃 중 오류 발생:', error);
+    }
+  };
+
   return (
     <div className={`
       ${isOpen ? 'w-[365px]' : 'w-[70px]'}
@@ -36,7 +45,7 @@ export default function SideBar() {
       
       {/* 헤더 영역 */}
       <div className="
-        flex flex-row justify-between items-center py-[12px] px-[12px]
+        flex flex-row justify-between items-center p-[12px]
       ">
         <button 
           onClick={toggleOpen} 
@@ -59,7 +68,7 @@ export default function SideBar() {
       {isOpen && (
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* 사용자 이름 */}
-          <div className="flex flex-row items-center fixed top-[30px] right-[12px] ">
+          <div className="flex flex-row items-center fixed top-[20px] right-[12px] ">
             <div className="font-bold text-[20px] text-text-primary">
               {user?.name}
             </div>
@@ -74,7 +83,7 @@ export default function SideBar() {
           </div>
           
           {/* 대화 목록 - 스크롤 가능 */}
-          <div className="flex-1 overflow-y-auto px-[24px]">
+          <div className="h-[80vh] overflow-y-auto px-[24px]">
             {homeInfo?.recentChats?.map((recentChat) => (
               <div
                 key={recentChat.conversationId || 'new-chat'}
@@ -93,13 +102,31 @@ export default function SideBar() {
                 아직 대화가 없습니다.
               </div>
             )}
+            
           </div>
         </div>
       )}
+      
+      {/* 로그아웃 버튼 */}
+      <div className="
+        flex flex-row justify-between items-center p-[12px]
+      ">
+        <button 
+          onClick={handleLogout} 
+          className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors"
+        >
+          {isOpen ? (
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+          </svg>
+          ) : (
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+          </svg>
+          )}
+        </button>
+      </div>
+
     </div>
   );
 }
-
-<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
-</svg>
