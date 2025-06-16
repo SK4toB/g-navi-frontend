@@ -24,6 +24,10 @@ export default function SideBar() {
     }
   }, [isOpen, user]);
 
+  const handleMypage = () => {
+    navigate('/mypage');
+  };
+
   const handleChatClick = (conversationId: string) => {
     navigate(`/conversation/${conversationId}`);
   };
@@ -69,7 +73,7 @@ export default function SideBar() {
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* 사용자 이름 */}
           <div className="flex flex-row items-center fixed top-[20px] right-[12px] ">
-            <div className="font-bold text-[20px] text-text-primary">
+            <div className="font-bold text-[20px] text-text-primary cursor-pointer" onClick={handleMypage}>
               {user?.name}
             </div>
           </div>

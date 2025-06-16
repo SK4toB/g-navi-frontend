@@ -11,7 +11,7 @@ export default function RecommendationCards() {
     return (
       <div
         className="
-          w-[256px] h-[78px] bg-[#FBFBFF] rounded-[10px]
+          w-[256px] h-[86px] bg-[#FBFBFF] rounded-[10px]
           flex flex-col box-border p-[12px] cursor-pointer
         "
         style={{ boxShadow: '0 4px 8px 0 rgba(0,0,0,0.08)' }}
