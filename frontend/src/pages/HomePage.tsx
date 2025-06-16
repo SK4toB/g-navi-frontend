@@ -7,7 +7,7 @@ import useAuthStore from '../store/authStore';
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const IntroMessage = "안녕하세요, 커리어 성장 여정을 함께할 지나비입니다.";
+  const IntroMessage = "커리어 성장 여정을 함께할 지나비입니다.";
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
   React.useEffect(() => {
