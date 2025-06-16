@@ -5,6 +5,7 @@ import JoinPage from './pages/JoinPage';
 import MyPage from './pages/Mypage';
 import ConversationPage from './pages/ConversationPage';
 import AdminPage from './pages/AdminPage';
+import ExpertPage from './pages/ExpertPage';
 
 
 const router = createBrowserRouter([
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
             {
                 path: 'admin',
                 element: <AdminPage/>,
+            },
+            {
+                path: 'expert',
+                element: <ExpertPage/>,
             }
         ]
     }

@@ -37,25 +37,25 @@ export default function News() {
     return (
         <article className="News flex-[7] ml-20 flex flex-col h-full">
             <div className="flex justify-center text-lg font-bold">News</div>
-            <div className="bg-gray-100 rounded-3xl my-6 p-6 flex-1">
+            <div className="bg-white rounded-lg shadow-md my-6 p-6 flex-1">
                 {/* 필터 */}
                 <div className="flex justify-end mb-4 p-2">
                     <div className="flex gap-2">
                         <button
                             onClick={() => setStatusFilter('all')}
-                            className={`px-3 py-1 rounded text-sm ${statusFilter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                            className={`px-3 py-1 rounded text-sm ${statusFilter === 'all' ? 'bg-main-color text-white' : 'bg-gray-200'}`}
                         >
                             전체
                         </button>
                         <button
                             onClick={() => setStatusFilter('registered')}
-                            className={`px-3 py-1 rounded text-sm ${statusFilter === 'registered' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                            className={`px-3 py-1 rounded text-sm ${statusFilter === 'registered' ? 'bg-main-color text-white' : 'bg-gray-200'}`}
                         >
                             등록
                         </button>
                         <button
                             onClick={() => setStatusFilter('unregistered')}
-                            className={`px-3 py-1 rounded text-sm ${statusFilter === 'unregistered' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                            className={`px-3 py-1 rounded text-sm ${statusFilter === 'unregistered' ? 'bg-main-color text-white' : 'bg-gray-200'}`}
                         >
                             미등록
                         </button>
@@ -74,7 +74,7 @@ export default function News() {
 
                 {/* 뉴스 목록 */}
                 {filteredNews.map((item, index) => (
-                    <figure key={index} className="flex p-3 border-b border-gray-300 last:border-b-0 items-center">
+                    <figure key={index} className="flex p-3 border-b border-gray-300 last:border-b-0 items-center hover:bg-gray-50 transition-colors">
                         <span className="font-medium w-1/2 truncate pr-4">{item.title}</span>
                         <span className="text-gray-600 w-1/4 text-center">{item.writer}</span>
                         <span className="text-gray-600 w-1/6 text-center">{item.date}</span>
