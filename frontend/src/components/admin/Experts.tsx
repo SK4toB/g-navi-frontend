@@ -63,7 +63,7 @@ export default function Experts() {
     return (
         <article className="Expert flex-[3] mr-20 flex flex-col h-full">
             <div className="flex justify-center text-lg font-bold">Expert</div>
-            <figure className="bg-gray-100 rounded-3xl my-6 p-6 flex-1">
+            <figure className="bg-white rounded-lg shadow-md my-6 p-6 flex-1">
                 {/* Search Bar */}
                 <div className="mb-6">
                     <input
@@ -104,7 +104,7 @@ export default function Experts() {
                     <div className="text-sm font-medium text-gray-700 mb-2">등록된 전문가</div>
                     {currentExperts.length > 0 ? (
                         currentExperts.map((expert, index) => (
-                            <div key={index} className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm">
+                            <div key={index} className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm border border-gray-100">
                                 <span className="font-medium">{expert.name}</span>
                                 <div className="flex gap-2">
                                     <button
