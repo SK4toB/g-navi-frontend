@@ -48,7 +48,7 @@ export default function SignupForm() {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <form onSubmit={handleSignup} className="h-[380px] flex flex-col items-center">
+      <form onSubmit={handleSignup} className="h-[300px] flex flex-col items-center">
         {formFields.map(field => (
           <CommonInputField
             key={field.id}

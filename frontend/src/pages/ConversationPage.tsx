@@ -136,15 +136,24 @@ export default function ChatPage() {
 
   const shouldShowRecommendationCards = !hasUserSentMessage;
 
+  // 높이 계산
+  const contentHeight = shouldShowRecommendationCards 
+    ? 'h-[400px]'  // 추천 카드가 있을 때는 고정 높이
+    : 'h-[calc(100vh-300px)]';  // 추천 카드가 없을 때는 화면 높이에서 여백 제외
+
   return (
     <div className="flex flex-col items-center justify-start">
-      <div className={shouldShowRecommendationCards ? "w-[816px]" : "w-[1000px]"}>
-        {shouldShowRecommendationCards ? <Title>G Navi</Title> : <div className='h-[100px]'></div>}
-
-        <ConversationContent messages={messages} />
-
+      <div className="w-80% ml-[10%] mr-[5%] mt-[5%]">
+      {/* Title - 추천 카드가 있을 때만 표시 */}
+        {shouldShowRecommendationCards && <Title>G Navi</Title>}
+        {/* Content 영역 - 계산된 높이 전달 */}
+        <ConversationContent 
+          messages={messages} 
+          height={contentHeight}
+        />
+        {/* Input - 항상 표시 */}
         <ConversationInput onSendMessage={handleSendMessage} />
-
+        {/* Recommendation Cards - 추천 카드가 있을 때만 표시 */}
         {shouldShowRecommendationCards && <RecommendationCards />}
       </div>
     </div>

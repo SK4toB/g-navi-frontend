@@ -46,7 +46,7 @@ export default function LoginForm() {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <form onSubmit={handleLogin} className="h-[380px] flex flex-col items-center">
+      <form onSubmit={handleLogin} className="h-[300px] flex flex-col items-center">
         {formFields.map(field => (
           <CommonInputField
             key={field.id}

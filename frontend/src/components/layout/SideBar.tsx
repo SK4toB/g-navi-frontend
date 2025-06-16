@@ -31,7 +31,7 @@ export default function SideBar() {
   return (
     <div className={`
       ${isOpen ? 'w-[365px]' : 'w-[70px]'}
-      border-l border-[#E2E8F0] h-[1024px] flex flex-col
+      border-l border-[#E2E8F0] h-full flex flex-col
     `}>
       
       {/* 헤더 영역 */}
@@ -57,44 +57,44 @@ export default function SideBar() {
       
       {/* 대화 목록 영역 */}
       {isOpen && (
-        <>
-          <div className="flex flex-row items-center">
-            <div className="fixed top-[20px] right-[12px] font-bold text-[20px] text-text-primary">
-              {user.name}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* 사용자 이름 */}
+          <div className="flex flex-row items-center fixed top-[30px] right-[12px] ">
+            <div className="font-bold text-[20px] text-text-primary">
+              {user?.name}
             </div>
           </div>
 
-          <div className="flex flex-col">
-            <div className="
-              flex flex-row p-[20px]
-              border-t border-b border-[#E2E8F0]
-            ">
-              <div className="font-bold text-[18px] text-text-primary">최근 대화</div>
-            </div>
-            
-            {/* 대화 목록 */}
-            <div className="flex flex-col px-[24px] overflow-y-auto flex-1">
-              {homeInfo?.recentChats?.map((recentChat) => (
-                <div
-                  key={recentChat.conversationId || 'new-chat'}
-                  className="py-[16px] border-b border-[#E2E8F0] cursor-pointer hover:bg-gray-50 rounded-lg px-2 transition-colors"
-                  onClick={() => handleChatClick(recentChat.conversationId)}
-                >
-                  <div className="text-[16px] text-text-primary">
-                    {recentChat.title}
-                  </div>
-                </div>
-              ))}
-              
-              {/* 대화 목록이 없으면 기본 메시지 */}
-              {(!homeInfo?.recentChats || homeInfo.recentChats.length === 0) && (
-                <div className="mt-[20px]">
-                  아직 대화가 없습니다.
-                </div>
-              )}
-            </div>
+          {/* 최근 대화 헤더 */}
+          <div className="
+            flex flex-row p-[20px]
+            border-t border-b border-[#E2E8F0]
+          ">
+            <div className="font-bold text-[18px] text-text-primary">최근 대화</div>
           </div>
-        </>
+          
+          {/* 대화 목록 - 스크롤 가능 */}
+          <div className="flex-1 overflow-y-auto px-[24px]">
+            {homeInfo?.recentChats?.map((recentChat) => (
+              <div
+                key={recentChat.conversationId || 'new-chat'}
+                className="py-[16px] border-b border-[#E2E8F0] cursor-pointer hover:bg-gray-50 rounded-lg px-2 transition-colors"
+                onClick={() => handleChatClick(recentChat.conversationId)}
+              >
+                <div className="text-[16px] text-text-primary">
+                  {recentChat.title}
+                </div>
+              </div>
+            ))}
+            
+            {/* 대화 목록이 없으면 기본 메시지 */}
+            {(!homeInfo?.recentChats || homeInfo.recentChats.length === 0) && (
+              <div className="mt-[20px]">
+                아직 대화가 없습니다.
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );
