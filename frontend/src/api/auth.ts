@@ -69,7 +69,7 @@ export const authApi = {
   },
 
   login: async (payload: LoginData): Promise<LoginResponseData> => {
-    const data = await api.post<LoginResponseData>('/auth/login', payload);
+    const data = await api.post<LoginResponseData>('/api/auth/login', payload);
     
     if (data.result.memberId) {
       useAuthStore.getState().login(data.result.memberId, data.result.name, data.result.email);
