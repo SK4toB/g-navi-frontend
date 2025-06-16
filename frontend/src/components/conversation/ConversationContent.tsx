@@ -11,17 +11,18 @@ interface ConversationMessage {
 
 interface ConversationContentProps {
   messages: ConversationMessage[];
+  height: string;
 }
   
-export default function ConversationContent({ messages }: ConversationContentProps) {
+export default function ConversationContent({ messages, height }: ConversationContentProps) {
+
   return (
-    <div className="
-      h-[400px] flex flex-col overflow-y-auto">
-        {messages.map((msg) => (
-          <React.Fragment key={msg.id}>
-            <Message sender={msg.sender} text={msg.text} />
-          </React.Fragment>
-        ))}
-      </div>
-    );
+    <div className={`${height} flex flex-col overflow-y-auto mt-[50px]`}>
+      {messages.map((msg) => (
+        <React.Fragment key={msg.id}>
+          <Message sender={msg.sender} text={msg.text} />
+        </React.Fragment>
+      ))}
+    </div>
+  );
 }
