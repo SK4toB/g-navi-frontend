@@ -11,7 +11,7 @@ export default function SignupForm() {
     email: '',
     password: '',
   });
-  
+
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,7 +27,7 @@ export default function SignupForm() {
 
     try {
       const response = await authApi.signup(formData);
-      
+
       if (response.isSuccess) {
         alert(`회원가입이 완료되었습니다. ${response.result.message}`);
         navigate('/join');
@@ -41,10 +41,10 @@ export default function SignupForm() {
   };
 
   const formFields = [
-    { id: 'name', label: '이름', type: 'text', value: formData.name },
-    { id: 'email', label: '이메일', type: 'email', value: formData.email },
-    { id: 'password', label: '비밀번호', type: 'password', value: formData.password },
-  ];
+    { id: 'name', label: '이름', type: 'text', value: formData.name, placeholder: '홍길동' },
+    { id: 'email', label: '이메일', type: 'email', value: formData.email, placeholder: 'example@email.com' },
+    { id: 'password', label: '비밀번호', type: 'password', value: formData.password, placeholder: '영문, 숫자 포함 8자 이상' },
+   ];
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -57,6 +57,7 @@ export default function SignupForm() {
             type={field.type}
             value={field.value}
             onChange={handleChange}
+            placeholder={field.placeholder}
           />
         ))}
         <div className='flex flex-col flex-grow items-center justify-end'>

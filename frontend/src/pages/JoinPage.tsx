@@ -15,28 +15,23 @@ export default function JoinPage() {
     <div className="w-full h-full flex flex-col items-center justify-center">
       {/* 타이틀 */}
       <CommonTitle>{mode === 'login' ? '로그인' : '회원가입'}</CommonTitle>
+      
       {/* 로그인 / 회원가입 폼 */}
-      {mode === 'login' ? (
-        <div className='flex flex-col items-center'>
-          <LoginForm />
-          <p
-            className="cursor-pointer text-main-color underline"
-            onClick={() => toggleMode('signup')}
-        >
-          회원가입하기
-        </p>
-        </div>
-      ) : (
-        <div className='flex flex-col items-center'>
-          <SignupForm />
-          <p
-            className="cursor-pointer text-main-color underline"
-            onClick={() => toggleMode('login')}
-          >
-            로그인하기
+      <div className="flex flex-col items-center">
+        {mode === 'login' ? <LoginForm /> : <SignupForm />}
+        
+        <div className="mt-4 w-full max-w-sm text-center">
+          <p className="text-gray-600">
+            {mode === 'login' ? '아직 회원이 아니신가요?' : '이미 회원이신가요?'}
+            <span
+              className="cursor-pointer text-main-color underline hover:text-opacity-80 transition-colors ml-2"
+              onClick={() => toggleMode(mode === 'login' ? 'signup' : 'login')}
+            >
+              {mode === 'login' ? '회원가입하기' : '로그인하기'}
+            </span>
           </p>
         </div>
-      )}
+      </div>
     </div>
   );
 }
