@@ -95,12 +95,12 @@ export default function ProjectSection({ projects, isLoading = false, onProjectA
                         className="flex items-center space-x-4 flex-1 cursor-pointer hover:bg-gray-50 transition-colors rounded p-2 -m-2"
                         onClick={() => toggleProject(project.projectId)}
                       >
-                        <h3 className="font-semibold text-[18px] text-[#1E293B]">
-                          {project.projectName}
-                        </h3>
                         <span className="px-2 py-1 bg-blue-100 text-blue-800 text-sm rounded">
                           {project.userRole}
                         </span>
+                        <h3 className="font-semibold text-[18px] text-[#1E293B]">
+                          {project.projectName}
+                        </h3>
                       </div>
                       
                       <div className="flex items-center space-x-2">
