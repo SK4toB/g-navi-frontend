@@ -50,9 +50,7 @@ export const projectApi = {
 
   // 프로젝트 삭제 (DELETE /api/projects)
   deleteProject: async (projectId: number): Promise<ProjectResponse> => {
-    const data = await api.delete<ProjectResponse>('/api/projects', {
-      params: { projectId }
-    });
+    const data = await api.delete<ProjectResponse>(`/api/projects/${projectId}`);
     return data;
   }
 };

@@ -44,8 +44,8 @@ export default function ConversationInput({
         disabled={isLoading} // 로딩 중일 때 입력 비활성화
       />
 
-      {/* 버튼 */}  
-      <button 
+{/* 버튼 */}  
+<button 
         className={`
           absolute bottom-[24px] right-[24px] w-[96px] h-[40px] rounded-full 
           flex items-center justify-center cursor-pointer transition-all
@@ -57,23 +57,11 @@ export default function ConversationInput({
         onClick={handleSendClick}
         disabled={isLoading} // 로딩 중일 때 버튼 비활성화
       >
-        {isLoading ? (
-          <>
-          <p className="text-[#FFFFFF] text-[16px] font-pretendard font-medium ml-[8px]">Send</p>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="#FFFFFF" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
-          </svg>
-        </>
-        ) : (
-          // 평상시 Send 버튼
-          <>
-            <p className="text-[#FFFFFF] text-[16px] font-pretendard font-medium ml-[8px]">Send</p>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="#FFFFFF" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
-            </svg>
-          </>
-        )}
-      </button> 
+        <p className="text-[#FFFFFF] text-[16px] font-pretendard font-medium ml-[8px]">Send</p>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="#FFFFFF" viewBox="0 0 24 24" strokeWidth="1.0" stroke="currentColor" className="size-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+        </svg>
+      </button>
     </div>
   );
 }
