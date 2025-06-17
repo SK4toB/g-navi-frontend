@@ -89,7 +89,7 @@ export default function SideBar() {
             {user?.name}
             
             {/* 툴팁 */}
-            <div className="absolute top-full right-0 mt-2 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+            <div className="absolute top-0 right-20 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
               마이페이지
             </div>
           </div>
@@ -177,7 +177,7 @@ export default function SideBar() {
             </svg>
             
             {/* 툴팁 */}
-            <div className="absolute top-full right-0 mt-2 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+            <div className="absolute top-1 right-20 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
               새 채팅 시작
             </div>
           </button>
