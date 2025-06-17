@@ -9,16 +9,15 @@ export default function MainLayout() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full h-full flex flex-col relative">
 
       {/* 헤더 */}
-      <div className="fixed">
+      <div className="fixed z-10">
         <Header />
       </div>
       
       <div className='w-full h-full flex flex-col'>
-      <div className="w-full h-full flex">
-        {/* 중앙 컨텐츠 */}
+        {/* 중앙 컨텐츠 - 항상 전체 너비 유지 */}
         <div className="w-full h-full flex flex-col">
           <div className="flex-1">
             <Outlet />
@@ -29,12 +28,13 @@ export default function MainLayout() {
           </div>
         </div>
         
-        {/* 사이드바 영역 */}
+        {/* 사이드바 영역 - 고정 위치로 오버레이 */}
         {isLoggedIn && (
-          <SideBar />
+          <div className="fixed top-0 right-0 h-full z-20">
+            <SideBar />
+          </div>
         )}
       </div>
     </div>
-  </div>
-);
+  );
 }

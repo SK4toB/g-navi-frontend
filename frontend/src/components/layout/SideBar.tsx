@@ -27,7 +27,7 @@ export default function SideBar() {
   const handleMypage = () => {
     navigate('/mypage');
   };
-  
+
   const handleNewChat = () => {
     navigate('/conversation');
   };
@@ -50,15 +50,19 @@ export default function SideBar() {
   };
 
   return (
-    <div className={`
-      ${isOpen ? 'w-[365px]' : 'w-[70px]'}
-      border-l border-[#E2E8F0] h-full flex flex-col
-    `}>
+    <div 
+      className={`
+        ${isOpen ? 'w-[365px]' : 'w-[70px]'}
+        border-l border-[#E2E8F0] h-full flex flex-col bg-white shadow-lg
+        transition-all duration-300 ease-in-out
+      `}
+      style={{
+        transform: isOpen ? 'translateX(0)' : 'translateX(calc(100% - 70px))'
+      }}
+    >
       
-      {/* 헤더 영역 */}
-      <div className="
-        flex flex-row justify-between items-center p-[12px]
-      ">
+      {/* 헤더 영역 - 닫기 아이콘과 사용자 이름 */}
+      <div className="flex flex-row justify-between items-center p-[12px] border-b border-[#E2E8F0]">
         <button 
           onClick={toggleOpen} 
           className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors"
@@ -74,6 +78,22 @@ export default function SideBar() {
             </svg>
           )}
         </button>
+
+        {/* 사용자 이름 (열린 상태에서만 표시) */}
+        {isOpen && (
+          <div 
+            className="font-bold text-[20px] text-text-primary cursor-pointer underline hover:text-blue-600 transition-colors relative group" 
+            onClick={handleMypage}
+            title="마이페이지"
+          >
+            {user?.name}
+            
+            {/* 툴팁 */}
+            <div className="absolute top-full right-0 mt-2 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+              마이페이지
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 마이페이지 버튼 (닫혔을 때만 표시) */}
@@ -95,6 +115,7 @@ export default function SideBar() {
           </button>
         </div>
       )}
+
       {/* 새 채팅 시작 버튼 (닫혔을 때만 표시) */}
       {!isOpen && (
         <div className="flex justify-center p-[12px]">
@@ -104,8 +125,8 @@ export default function SideBar() {
             title="새 채팅 시작"
           >
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-          </svg>
+            <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+            </svg>
             
             {/* 툴팁 */}
             <div className="absolute right-12 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
@@ -134,57 +155,56 @@ export default function SideBar() {
           </button>
         </div>
       )}
-{/* 대화 목록 영역 */}
-      {isOpen && (
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* 사용자 이름 */}
-          <div className="flex flex-row items-center fixed top-[20px] right-[12px] ">
-            <div 
-              className="font-bold text-[20px] text-text-primary cursor-pointer underline hover:text-blue-600 transition-colors relative group" 
-              onClick={handleMypage}
-              title="마이페이지"
+
+      {/* 대화 목록 영역 */}
+      <div 
+        className={`
+          flex-1 flex flex-col overflow-hidden
+          transition-opacity duration-300 ease-in-out
+          ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}
+        `}
+      >
+        {/* 최근 대화 헤더 - 최근 대화 텍스트와 새 채팅 아이콘 */}
+        <div className="flex flex-row justify-between items-center p-4 border-b border-[#E2E8F0]">
+          <div className="font-bold text-[18px] text-text-primary">최근 대화</div>
+          <button
+            onClick={handleNewChat}
+            className="w-[40px] h-[40px] flex items-center justify-center bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
+            title="새 채팅 시작"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+            </svg>
+            
+            {/* 툴팁 */}
+            <div className="absolute top-full right-0 mt-2 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+              새 채팅 시작
+            </div>
+          </button>
+        </div>
+        
+        {/* 대화 목록 - 스크롤 가능 */}
+        <div className="flex-1 overflow-y-auto px-[24px]">
+          {homeInfo?.recentChats?.map((recentChat) => (
+            <div
+              key={recentChat.conversationId || 'new-chat'}
+              className="py-[16px] border-b border-[#E2E8F0] cursor-pointer hover:bg-gray-50 rounded-lg px-2 transition-colors"
+              onClick={() => handleChatClick(recentChat.conversationId)}
             >
-              {user?.name}
-              
-              {/* 툴팁 */}
-              <div className="absolute top-0 right-20  bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                마이페이지
+              <div className="text-[16px] text-text-primary">
+                {recentChat.title}
               </div>
             </div>
-          </div>
-
-          {/* 최근 대화 헤더 */}
-          <div className="
-            flex flex-row p-[20px]
-            border-t border-b border-[#E2E8F0]
-          ">
-            <div className="font-bold text-[18px] text-text-primary">최근 대화</div>
-          </div>
+          ))}
           
-          {/* 대화 목록 - 스크롤 가능 */}
-          <div className="h-[77vh] overflow-y-auto px-[24px]">
-            {homeInfo?.recentChats?.map((recentChat) => (
-              <div
-                key={recentChat.conversationId || 'new-chat'}
-                className="py-[16px] border-b border-[#E2E8F0] cursor-pointer hover:bg-gray-50 rounded-lg px-2 transition-colors"
-                onClick={() => handleChatClick(recentChat.conversationId)}
-              >
-                <div className="text-[16px] text-text-primary">
-                  {recentChat.title}
-                </div>
-              </div>
-            ))}
-            
-            {/* 대화 목록이 없으면 기본 메시지 */}
-            {(!homeInfo?.recentChats || homeInfo.recentChats.length === 0) && (
-              <div className="mt-[20px]">
-                아직 대화가 없습니다.
-              </div>
-            )}
-            
-          </div>
+          {/* 대화 목록이 없으면 기본 메시지 */}
+          {(!homeInfo?.recentChats || homeInfo.recentChats.length === 0) && (
+            <div className="mt-[20px] text-gray-500 text-center">
+              아직 대화가 없습니다.
+            </div>
+          )}
         </div>
-      )}
+      </div>
       
       {/* flex-1로 공간을 채워서 로그아웃 버튼을 하단으로 밀어냄 */}
       {!isOpen && <div className="flex-1"></div>}
