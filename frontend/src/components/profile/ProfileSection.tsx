@@ -1,13 +1,13 @@
-// frontend/src/components/myPage/UserProfileSection.tsx
+// frontend/src/components/profile/ProfileSection.tsx
 interface UserInfo {
   name: string;
 }
 
 export default function ProfileSection(userInfo: UserInfo) {
   return (
-    <div className="w-[945px] h-[75px] flex">
-      <div className="flex items-center ml-[24px]">
-        <span className="ml-[16px] font-bold text-[24px] text-[#1E293B]">{userInfo.name}</span>
+    <div className="w-[945px] min-h-[75px] flex flex-col">
+      <div className="min-h-[74px] flex items-center border-[#E2E8F0] px-[24px]">
+        <span className="font-bold text-[24px] text-[#1E293B]">{userInfo.name}</span>
       </div>
     </div>
   );
