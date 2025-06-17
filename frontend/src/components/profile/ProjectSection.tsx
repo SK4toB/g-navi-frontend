@@ -7,11 +7,13 @@ interface ProjectSectionProps {
   projects: Project[];
   isLoading?: boolean;
   onProjectAdded: (project: Project) => void;
+  onProjectDeleted: (projectId: number) => void; // 삭제 콜백 추가
 }
 
-export default function ProjectSection({ projects, isLoading = false, onProjectAdded }: ProjectSectionProps) {
+export default function ProjectSection({ projects, isLoading = false, onProjectAdded, onProjectDeleted }: ProjectSectionProps) {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [expandedProjects, setExpandedProjects] = React.useState<Set<number>>(new Set());
+  const [deletingProjectId, setDeletingProjectId] = React.useState<number | null>(null);
 
   const toggleProject = (projectId: number) => {
     setExpandedProjects(prev => {
@@ -23,6 +25,29 @@ export default function ProjectSection({ projects, isLoading = false, onProjectA
       }
       return newSet;
     });
+  };
+
+  const handleDeleteProject = async (projectId: number, projectName: string) => {
+    if (!confirm(`"${projectName}" 프로젝트를 삭제하시겠습니까?`)) {
+      return;
+    }
+
+    try {
+      setDeletingProjectId(projectId);
+      const response = await projectApi.deleteProject(projectId);
+      
+      if (response.isSuccess) {
+        alert('프로젝트가 성공적으로 삭제되었습니다.');
+        onProjectDeleted(projectId); // 부모 컴포넌트에 삭제 알림
+      } else {
+        alert(`프로젝트 삭제 실패: ${response.message}`);
+      }
+    } catch (error) {
+      console.error('프로젝트 삭제 중 오류:', error);
+      alert('프로젝트 삭제 중 오류가 발생했습니다.');
+    } finally {
+      setDeletingProjectId(null);
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -57,6 +82,7 @@ export default function ProjectSection({ projects, isLoading = false, onProjectA
             <div className="space-y-4">
               {projects.map((project) => {
                 const isExpanded = expandedProjects.has(project.projectId);
+                const isDeleting = deletingProjectId === project.projectId;
                 
                 return (
                   <div
@@ -64,11 +90,11 @@ export default function ProjectSection({ projects, isLoading = false, onProjectA
                     className="border border-gray-200 rounded-lg bg-white shadow-sm"
                   >
                     {/* 프로젝트 헤더 (항상 표시) */}
-                    <div
-                      className="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors"
-                      onClick={() => toggleProject(project.projectId)}
-                    >
-                      <div className="flex items-center space-x-4">
+                    <div className="p-4 flex items-center justify-between">
+                      <div 
+                        className="flex items-center space-x-4 flex-1 cursor-pointer hover:bg-gray-50 transition-colors rounded p-2 -m-2"
+                        onClick={() => toggleProject(project.projectId)}
+                      >
                         <h3 className="font-semibold text-[18px] text-[#1E293B]">
                           {project.projectName}
                         </h3>
@@ -81,14 +107,40 @@ export default function ProjectSection({ projects, isLoading = false, onProjectA
                         <span className="text-sm text-gray-600">
                           {formatDate(project.startDate)} ~ {formatDate(project.endDate)}
                         </span>
-                        <svg
-                          className={`w-5 h-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
+                        
+                        {/* 삭제 버튼 */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation(); // 토글 이벤트 방지
+                            handleDeleteProject(project.projectId, project.projectName);
+                          }}
+                          disabled={isDeleting}
+                          className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
+                          title="프로젝트 삭제"
                         >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
+                          {isDeleting ? (
+                            <div className="w-4 h-4 border-2 border-red-300 border-t-red-500 rounded-full animate-spin"></div>
+                          ) : (
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          )}
+                        </button>
+                        
+                        {/* 토글 화살표 */}
+                        <button
+                          onClick={() => toggleProject(project.projectId)}
+                          className="p-1 hover:bg-gray-100 rounded transition-colors"
+                        >
+                          <svg
+                            className={`w-5 h-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
                       </div>
                     </div>
                     
@@ -109,7 +161,6 @@ export default function ProjectSection({ projects, isLoading = false, onProjectA
                           
                           {project.skills && project.skills.length > 0 && (
                             <div>
-                              <span className="font-medium text-gray-700">기술 스택:</span>
                               <div className="mt-2 flex flex-wrap gap-2">
                                 {project.skills.map((skill, index) => (
                                   <span
