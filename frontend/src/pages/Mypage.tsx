@@ -68,11 +68,14 @@ export default function Mypage() {
             
             {/* 프로젝트 섹션 (모달 포함) */}
             <ProjectSection 
-                projects={projects}
-                isLoading={isLoadingProjects}
-                onProjectAdded={(newProject) => {
-                    setProjects(prev => [...prev, newProject]);
-                }}
+            projects={projects}
+            isLoading={isLoadingProjects}
+            onProjectAdded={(newProject) => {
+                setProjects(prev => [...prev, newProject]);
+            }}
+            onProjectDeleted={(deletedProjectId) => {
+                setProjects(prev => prev.filter(project => project.projectId !== deletedProjectId));
+            }}
             />
         </div>
     );

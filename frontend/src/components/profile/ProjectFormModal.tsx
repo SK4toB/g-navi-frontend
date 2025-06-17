@@ -12,7 +12,6 @@ interface ProjectFormModalProps {
   onProjectAdded: (project: Project) => void;
 }
 
-// 기존 ProjectForm의 옵션들 재사용
 const USER_ROLES = [
   'Software Development',
   'Manufacturing Engineering', 
@@ -160,12 +159,12 @@ export default function ProjectFormModal({ isOpen, onClose, onProjectAdded }: Pr
           </div>
           
           <form onSubmit={handleSubmit}>
-            {/* 폼 내용 (기존 ProjectForm과 동일) */}
+            {/* 폼 내용 */}
             <div className="border border-[#E2E8F0] rounded-lg overflow-hidden">
-              {/* 첫 번째 행: 프로젝트명, 규모 구분 */}
-              <div className="border-b border-[#E2E8F0] grid grid-cols-4 gap-0">
-                <div className="p-4 font-medium text-[#1E293B] border-r border-[#E2E8F0] bg-[#F8FAFC]">프로젝트명</div>
-                <div className="p-4 col-span-2 border-r border-[#E2E8F0]">
+              {/* 첫 번째 행: 프로젝트명(도메인) */}
+              <div className="border-b border-[#E2E8F0] grid grid-cols-8 gap-0">
+                <div className="p-4 col-span-2 font-medium text-[#1E293B] border-r border-[#E2E8F0] bg-[#F8FAFC]">프로젝트명 / 도메인</div>
+                <div className="p-4 col-span-3 border-r border-[#E2E8F0]">
                   <input
                     type="text"
                     value={formData.projectName}
@@ -175,26 +174,22 @@ export default function ProjectFormModal({ isOpen, onClose, onProjectAdded }: Pr
                     required
                   />
                 </div>
-                <div className="p-4 font-medium text-[#1E293B] bg-[#F8FAFC]">규모 구분</div>
-                <div className="p-4">
-                  <select
-                    value={formData.projectScale}
-                    onChange={(e) => handleInputChange('projectScale', e.target.value)}
+                <div className="p-4 col-span-3">
+                  <input
+                    type="text"
+                    value={formData.domain}
+                    onChange={(e) => handleInputChange('domain', e.target.value)}
+                    placeholder="도메인 (예: FE/BE, 금융 등)"
                     className="w-full px-3 py-2 border border-[#D1D5DB] rounded-md focus:outline-none focus:ring-2 focus:ring-[#122250]"
-                  >
-                    {PROJECT_SCALES.map((scale) => (
-                      <option key={scale.value} value={scale.value}>
-                        {scale.label}
-                      </option>
-                    ))}
-                  </select>
+                    required
+                  />
                 </div>
               </div>
 
-              {/* 두 번째 행: 기간, 나의 역할 */}
-              <div className="border-b border-[#E2E8F0] grid grid-cols-4 gap-0">
-                <div className="p-4 font-medium text-[#1E293B] border-r border-[#E2E8F0] bg-[#F8FAFC]">기간</div>
-                <div className="p-4 flex gap-2 items-center col-span-2 border-r border-[#E2E8F0]">
+              {/* 두 번째 행: 기간, 규모 구분 */}
+              <div className="border-b border-[#E2E8F0] grid grid-cols-8 gap-0">
+                <div className="p-4 col-span-2 font-medium text-[#1E293B] border-r border-[#E2E8F0] bg-[#F8FAFC]">기간 / 규모</div>
+                <div className="p-4 col-span-4 flex gap-2 items-center border-r border-[#E2E8F0]">
                   <input
                     type="date"
                     value={formData.startDate}
@@ -209,8 +204,26 @@ export default function ProjectFormModal({ isOpen, onClose, onProjectAdded }: Pr
                     className="flex-1 px-3 py-2 border border-[#D1D5DB] rounded-md focus:outline-none focus:ring-2 focus:ring-[#122250]"
                   />
                 </div>
-                <div className="p-4 font-medium text-[#1E293B] bg-[#F8FAFC]">나의 역할</div>
-                <div className="p-4">
+                <div className="p-4 col-span-2">
+                  <select
+                    value={formData.projectScale}
+                    onChange={(e) => handleInputChange('projectScale', e.target.value)}
+                    className="w-full px-3 py-2 border border-[#D1D5DB] rounded-md focus:outline-none focus:ring-2 focus:ring-[#122250]"
+                  >
+                    <option value="">규모 구분</option>
+                    {PROJECT_SCALES.map((scale) => (
+                      <option key={scale.value} value={scale.value}>
+                        {scale.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* 세 번째 행: 나의 역할 */}
+              <div className="border-b border-[#E2E8F0] grid grid-cols-8 gap-0">
+                <div className="p-4 col-span-2 font-medium text-[#1E293B] border-r border-[#E2E8F0] bg-[#F8FAFC]">나의 역할 / 기술 스택</div>
+                <div className="p-4 col-span-2 border-r border-[#E2E8F0]">
                   <select
                     value={formData.userRole}
                     onChange={(e) => handleInputChange('userRole', e.target.value)}
@@ -225,29 +238,8 @@ export default function ProjectFormModal({ isOpen, onClose, onProjectAdded }: Pr
                     ))}
                   </select>
                 </div>
-              </div>
-              
-              {/* 도메인 행 */}
-              <div className="border-b border-[#E2E8F0] grid grid-cols-2 gap-0">
-                <div className="p-4 font-medium text-[#1E293B] border-r border-[#E2E8F0] bg-[#F8FAFC]">도메인</div>
-                <div className="p-4">
-                  <input
-                    type="text"
-                    value={formData.domain}
-                    onChange={(e) => handleInputChange('domain', e.target.value)}
-                    placeholder="도메인을 입력하세요 (예: FE/BE, 금융, 제조업 등)"
-                    className="w-full px-3 py-2 border border-[#D1D5DB] rounded-md focus:outline-none focus:ring-2 focus:ring-[#122250]"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* 기술 스택 행 */}
-              <div className="grid grid-cols-2 gap-0">
-                <div className="p-4 font-medium text-[#1E293B] border-r border-[#E2E8F0] bg-[#F8FAFC]">기술 스택</div>
-                <div className="p-4">
-                  {/* 직접 입력 */}
-                  <div className="flex gap-2 mb-3">
+                <div className="p-4 col-span-4 ">
+                <div className="flex gap-2 mb-3">
                     <input
                       type="text"
                       value={currentSkill}
@@ -260,51 +252,64 @@ export default function ProjectFormModal({ isOpen, onClose, onProjectAdded }: Pr
                           handleSkillAdd();
                         }
                       }}
-                    />
+                      />
                     <button
                       type="button"
                       onClick={handleSkillAdd}
                       className="px-4 py-2 bg-[#122250] text-white rounded-md hover:bg-[#1e3a5f] transition-colors"
-                    >
+                      >
                       추가
                     </button>
+                      </div>
                   </div>
+              </div>
 
-                  {/* 선택 가능한 기술 스택 */}
-                  <div className="mb-3">
-                    <p className="text-sm text-gray-600 mb-2">추천 기술 스택:</p>
-                    <div className="grid grid-cols-2 gap-1 max-h-32 overflow-y-auto border border-gray-200 p-2 rounded">
-                      {AVAILABLE_SKILLS.map((skill) => (
-                        <button
-                          key={skill}
-                          type="button"
-                          onClick={() => handleSkillSelect(skill)}
-                          className="text-left px-2 py-1 text-sm hover:bg-gray-100 rounded transition-colors"
-                          disabled={formData.skills.includes(skill)}
-                        >
-                          {skill}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* 선택된 기술 스택 표시 */}
-                  <div className="flex flex-wrap gap-2">
-                    {formData.skills.map((skill, index) => (
-                      <span
-                        key={index}
-                        className="inline-flex items-center gap-1 px-3 py-1 bg-[#E2E8F0] text-[#1E293B] rounded-full text-sm"
+              {/* 네 번째 행: 기술 스택 */}
+              <div className="grid grid-cols-2 gap-4 p-4">
+                {/* 왼쪽: 추천 기술 스택 */}
+                <div>
+                  <p className="text-sm font-medium text-gray-700 mb-2">추천 기술 스택:</p>
+                  <div className="grid grid-cols-1 gap-1 max-h-40 overflow-y-auto border border-gray-200 p-2 rounded">
+                    {AVAILABLE_SKILLS.map((skill) => (
+                      <button
+                        key={skill}
+                        type="button"
+                        onClick={() => handleSkillSelect(skill)}
+                        className="text-left px-2 py-1 text-sm hover:bg-gray-100 rounded transition-colors"
+                        disabled={formData.skills.includes(skill)}
                       >
                         {skill}
-                        <button
-                          type="button"
-                          onClick={() => handleSkillRemove(skill)}
-                          className="ml-1 text-red-500 hover:text-red-700"
-                        >
-                          ×
-                        </button>
-                      </span>
+                      </button>
                     ))}
+                  </div>
+                </div>
+
+                {/* 오른쪽: 선택된 기술 스택 */}
+                <div>
+                  <p className="text-sm font-medium text-gray-700 mb-2">선택된 기술 스택:</p>
+                  <div className="min-h-[100px] border border-gray-200 p-2 rounded">
+                    <div className="flex flex-wrap gap-2">
+                      {formData.skills.map((skill, index) => (
+                        <span
+                          key={index}
+                          className="inline-flex items-center gap-1 px-3 py-1 bg-[#E2E8F0] text-[#1E293B] rounded-full text-sm"
+                        >
+                          {skill}
+                          <button
+                            type="button"
+                            onClick={() => handleSkillRemove(skill)}
+                            className="ml-1 text-red-500 hover:text-red-700"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                    {formData.skills.length === 0 && (
+                      <p className="text-gray-400 text-sm text-center py-8">
+                        선택된 기술 스택이 없습니다
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>

@@ -1,4 +1,4 @@
-// frontend/src/pages/ChatPage.tsx
+// frontend/src/pages/ConversationPage.tsx
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Title from '../components/common/CommonTitle';
@@ -15,7 +15,7 @@ interface Message {
   timestamp: number;
 }
 
-export default function ChatPage() {
+export default function ConversationPage() {
   const { conversationId } = useParams<{ conversationId: string }>();
   const navigate = useNavigate();
   const { user } = useAuthStore();
@@ -23,6 +23,7 @@ export default function ChatPage() {
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [currentConversationId, setCurrentConversationId] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoadingResponse, setIsLoadingResponse] = React.useState(false); // 응답 대기 상태
   const [messageIdCounter, setMessageIdCounter] = React.useState(0);
   const [isNewChat, setIsNewChat] = React.useState(true); // 초기값은 true
 
@@ -39,45 +40,59 @@ export default function ChatPage() {
     if (!user?.memberId) return;
 
     setIsLoading(true);
-    const response = await conversationApi.startConversation(user.memberId);
-    setIsLoading(false);
-
-    if (response.isSuccess) {
-      setCurrentConversationId(response.result.conversationId);
-      setMessages([{
-        id: 1,
-        sender: 'bot',
-        text: response.result.botMessage,
-        timestamp: new Date(response.result.timestamp).getTime(),
-      }]);
-      setMessageIdCounter(1);
-      setIsNewChat(true); // 새 대화이므로 true
-      navigate(`/conversation/${response.result.conversationId}`, { replace: true });
+    setIsLoadingResponse(true); // 새 대화 시작 시 로딩 상태
+    
+    try {
+      const response = await conversationApi.startConversation(user.memberId);
+      
+      if (response.isSuccess) {
+        setCurrentConversationId(response.result.conversationId);
+        setMessages([{
+          id: 1,
+          sender: 'bot',
+          text: response.result.botMessage,
+          timestamp: new Date(response.result.timestamp).getTime(),
+        }]);
+        setMessageIdCounter(1);
+        setIsNewChat(true); // 새 대화이므로 true
+        navigate(`/conversation/${response.result.conversationId}`, { replace: true });
+      }
+    } catch (error) {
+      console.error('새 대화 시작 실패:', error);
+    } finally {
+      setIsLoading(false);
+      setIsLoadingResponse(false);
     }
   };
 
   // 기존 대화 내역 로드
   const loadConversationHistory = async (existingConversationId: string) => {
     setIsLoading(true);
-    const response = await conversationApi.getConversationHistory(existingConversationId);
-    setIsLoading(false);
-
-    if (response.isSuccess) {
-      setCurrentConversationId(existingConversationId);
-      const convertedMessages = response.result.messages.map((msg, index) => 
-        convertToUIMessage(msg, index + 1)
-      );
-      setMessages(convertedMessages);
-      setMessageIdCounter(response.result.messageCount || convertedMessages.length);
+    
+    try {
+      const response = await conversationApi.getConversationHistory(existingConversationId);
       
-      // 기존 대화에 메시지가 1개(봇의 첫 인사만)이면 isNewChat = true
-      setIsNewChat(convertedMessages.length <= 1);
+      if (response.isSuccess) {
+        setCurrentConversationId(existingConversationId);
+        const convertedMessages = response.result.messages.map((msg, index) => 
+          convertToUIMessage(msg, index + 1)
+        );
+        setMessages(convertedMessages);
+        setMessageIdCounter(response.result.messageCount || convertedMessages.length);
+        
+        // 기존 대화에 메시지가 1개(봇의 첫 인사만)이면 isNewChat = true
+        setIsNewChat(convertedMessages.length <= 1);
+      }
+    } catch (error) {
+      console.error('대화 내역 로드 실패:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   // 메시지 전송
   const handleSendMessage = async (message: string) => {
-    if (!currentConversationId || !user?.memberId) return;
+    if (!currentConversationId || !user?.memberId || isLoadingResponse) return;
 
     // 사용자 메시지 즉시 추가
     const userMessage: Message = {
@@ -89,22 +104,37 @@ export default function ChatPage() {
     setMessages(prev => [...prev, userMessage]);
     setMessageIdCounter(prev => prev + 1);
 
-    // 봇 응답 요청
-    const response = await conversationApi.sendMessage(currentConversationId, message, user.memberId);
+    // 더 이상 새 채팅이 아님
+    setIsNewChat(false);
 
-    if (response.isSuccess) {
-      // 봇 응답 추가
-      setMessages(prev => [...prev, {
-        id: messageIdCounter + 2,
-        sender: 'bot',
-        text: response.result.botMessage,
-        timestamp: new Date(response.result.timestamp).getTime(),
-      }]);
-      setMessageIdCounter(prev => prev + 1);
-    } else {
+    // 봇 응답 대기 상태 시작
+    setIsLoadingResponse(true);
+
+    try {
+      const response = await conversationApi.sendMessage(currentConversationId, message, user.memberId);
+
+      if (response.isSuccess) {
+        // 봇 응답 추가
+        setMessages(prev => [...prev, {
+          id: messageIdCounter + 2,
+          sender: 'bot',
+          text: response.result.botMessage,
+          timestamp: new Date(response.result.timestamp).getTime(),
+        }]);
+        setMessageIdCounter(prev => prev + 1);
+      } else {
+        // 실패 시 사용자 메시지 제거
+        setMessages(prev => prev.slice(0, -1));
+        setMessageIdCounter(prev => prev - 1);
+        console.error('메시지 전송 실패:', response.message);
+      }
+    } catch (error) {
+      console.error('메시지 전송 중 오류:', error);
       // 실패 시 사용자 메시지 제거
       setMessages(prev => prev.slice(0, -1));
       setMessageIdCounter(prev => prev - 1);
+    } finally {
+      setIsLoadingResponse(false);
     }
   };
 
@@ -128,8 +158,12 @@ export default function ChatPage() {
             <ConversationContent 
               messages={messages} 
               height="h-[400px]"
+              isLoading={isLoadingResponse}
             />
-            <ConversationInput onSendMessage={handleSendMessage} />
+            <ConversationInput 
+              onSendMessage={handleSendMessage}
+              isLoading={isLoadingResponse}
+            />
             <RecommendationCards />
           </>
         ) : (
@@ -139,8 +173,12 @@ export default function ChatPage() {
             <ConversationContent 
               messages={messages} 
               height="h-[550px]"
+              isLoading={isLoadingResponse}
             />
-            <ConversationInput onSendMessage={handleSendMessage} />
+            <ConversationInput 
+              onSendMessage={handleSendMessage}
+              isLoading={isLoadingResponse}
+            />
           </>
         )}
         
