@@ -35,6 +35,11 @@ export default function ConversationPage() {
     timestamp: new Date(msg.timestamp).getTime(),
   });
 
+    // 카드 클릭 시 메시지 전송
+  const handleCardClick = (message: string) => {
+    handleSendMessage(message);
+  };
+
   // 새 대화 시작
   const startNewConversation = async () => {
     if (!user?.memberId) return;
@@ -164,10 +169,11 @@ export default function ConversationPage() {
               onSendMessage={handleSendMessage}
               isLoading={isLoadingResponse}
             />
-            <RecommendationCards />
+            <RecommendationCards
+            onCardClick={handleCardClick}
+            />
           </>
         ) : (
-          // 기존 대화일 때 렌더링할 내용  
           <>
             <Title>G Navi</Title>
             <ConversationContent 
