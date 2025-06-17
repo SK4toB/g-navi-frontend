@@ -40,8 +40,8 @@ export default function LoginForm() {
   };
 
   const formFields = [
-    { id: 'email', label: '이메일', type: 'email', value: formData.email },
-    { id: 'password', label: '비밀번호', type: 'password', value: formData.password },
+    { id: 'email', label: '이메일', type: 'email', value: formData.email, placeholder: 'example@email.com'},
+    { id: 'password', label: '비밀번호', type: 'password', value: formData.password, placeholder: '비밀번호를 입력하세요' },
   ];
 
   return (
@@ -55,6 +55,7 @@ export default function LoginForm() {
             type={field.type}
             value={field.value}
             onChange={handleChange}
+            placeholder={field.placeholder}
           />
         ))}
         <div className='flex flex-col flex-grow items-center justify-end'>

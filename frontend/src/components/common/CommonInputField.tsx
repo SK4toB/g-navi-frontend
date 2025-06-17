@@ -42,6 +42,7 @@ export default function CommonInputField({
     border                      /* 테두리 */
     border-[#CDCDCD]            /* 테두리 색상 */
     pl-[16px]                   /* 텍스트 왼쪽 정렬 */
+    placeholder:text-sm         /* 플레이스홀더 텍스트 사이즈 xs (12px) */
   `.replace(/\s+/g, ' ');
 
   const containerClasses = `
