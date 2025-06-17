@@ -30,7 +30,21 @@ export default function SignupForm() {
 
       if (response.isSuccess) {
         alert(`회원가입이 완료되었습니다. ${response.result.message}`);
-        navigate('/join');
+        
+        // 회원가입 성공 후 자동 로그인
+        try {
+          const loginResponse = await authApi.login({
+            email: formData.email,
+            password: formData.password
+          });
+          if (loginResponse.isSuccess) {
+            navigate('/');
+          } else {
+            navigate('/join');
+          }
+        } catch (loginError) {
+          navigate('/join');
+        }
       } else {
         alert(`회원가입 실패: ${response.message}`);
       }

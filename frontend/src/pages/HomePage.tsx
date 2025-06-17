@@ -35,6 +35,9 @@ export default function HomePage() {
     }
   };
 
+  // 로그인 상태에 따른 버튼 텍스트 결정
+  const buttonText = isLoggedIn ? '새로운 채팅 시작하기' : '커리어 여정 시작하기';
+
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
       <CommonTitle>G Navi</CommonTitle>
@@ -48,7 +51,7 @@ export default function HomePage() {
         onClick={handleNewChat}
         icon={arrowIcon}
       >
-        {'새로운 채팅 시작하기'}
+        {buttonText}
       </CommonButton>
       <HomeCard />
       {/* <div className="mt-[20px]"></div> */}
