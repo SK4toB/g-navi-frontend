@@ -34,7 +34,7 @@ export default function ExpertPage() {
             // 실제 API 호출 시뮬레이션
             await new Promise(resolve => setTimeout(resolve, 1000));
             
-            setSuccessMessage('기사 등록 요청이 완료되었습니다!');
+            setSuccessMessage('카드뉴스 등록 요청이 완료되었습니다!');
             setArticleUrl('');
         } catch (err) {
             setError('등록 요청 중 오류가 발생했습니다. 다시 시도해주세요.');
@@ -51,15 +51,15 @@ export default function ExpertPage() {
     };
 
     return (
-        <div className="h-full flex flex-col mt-20">
+        <div className="h-full flex flex-col mt-40">
             <div className="text-center text-2xl font-bold py-8 text-gray-800">
-                Expert Page
+                사내 구성원에게 전달하고 싶은 소식이 있나요?
             </div>
             
             <div className="max-w-2xl mx-auto w-full mt-10 px-6">
                 <div className="bg-white rounded-lg shadow-md p-6">
                     <h2 className="text-lg font-semibold mb-8 text-gray-700">
-                        기사 등록 요청
+                        카드 뉴스 등록 요청
                     </h2>
                     
                     <div className="mb-4">
