@@ -14,7 +14,10 @@ export default function JoinPage() {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
       {/* 타이틀 */}
+      <div className="my-6">
+
       <CommonTitle>{mode === 'login' ? '로그인' : '회원가입'}</CommonTitle>
+      </div>
       
       {/* 로그인 / 회원가입 폼 */}
       <div className="flex flex-col items-center">

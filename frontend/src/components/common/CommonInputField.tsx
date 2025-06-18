@@ -31,10 +31,8 @@ export default function CommonInputField({
 
   const inputClasses = `
     w-[300px]                   /* 너비 */
-    h-[50px]                    /* 높이 */
-    mt-[16px]                   /* 위쪽 마진 */
     px-6                        /* padding-left/right (좌우 패딩): 24픽셀 */
-    py-4                        /* padding-top/bottom (상하 패딩): 16픽셀 */
+    py-3                        /* padding-top/bottom (상하 패딩): 16픽셀 */
     ml-[16px]                   /* 인풋 필드의 왼쪽 마진: 라벨과의 간격 */
     text-[18px]                 /* 글꼴 크기 */
     bg-white/55                 /* 배경색(투명도) */
@@ -49,6 +47,7 @@ export default function CommonInputField({
     flex
     items-center
     w-[534px]
+    py-3
   `.replace(/\s+/g, ' ');
 
   return (
