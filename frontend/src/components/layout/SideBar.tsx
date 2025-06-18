@@ -35,6 +35,12 @@ export default function SideBar() {
       clearTimeout(hoverTimeoutRef.current);
     }
     setIsHovered(false);
+    // 사용자가 직접 연 경우가 아니라면 자동으로 닫기
+    hoverTimeoutRef.current = window.setTimeout(() => {
+      if (!isHovered) {
+        setIsOpen(false);
+      }
+    }, 100); // 100ms 지연 후 닫기
   };
 
   const toggleOpen = () => {
