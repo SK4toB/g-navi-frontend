@@ -22,7 +22,13 @@ export default function App() {
           console.log('서버에서 사용자 정보 확인 중...');
           
           // 서버에서 사용자 정보 확인 및 복원
-          await authApi.getCurrentUser();
+          const userData = await authApi.getCurrentUser();
+          
+          // ADMIN 사용자인 경우 admin 페이지로 리다이렉트할 준비
+          if (userData?.result.role === 'ADMIN') {
+            // router가 admin 페이지로 자동 리다이렉트하도록 함
+            console.log('ADMIN 사용자 감지됨');
+          }
         }
       } catch (error) {
         console.error('인증 초기화 실패:', error);
@@ -47,8 +53,6 @@ export default function App() {
   }
 
   return (
-    <React.StrictMode>
-      <RouterProvider router={router} />
-    </React.StrictMode>
+    <RouterProvider router={router} />
   );
 }

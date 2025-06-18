@@ -6,15 +6,48 @@ import { authApi } from '../../api/auth';
 
 export default function SideBar() {
   const { user, homeInfo } = useAuthStore();
-  const [isOpen, setIsOpen] = React.useState(true);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [isHovered, setIsHovered] = React.useState(false);
+  const [isChatListOpen, setIsChatListOpen] = React.useState(true); // 최근 대화 목록 상태
   const navigate = useNavigate();
 
   const isAdmin = user?.role === 'ADMIN';
   const isExpert = user?.role === 'EXPERT';
   const isUser = user?.role === 'USER';
 
+  // 호버 타이머 관리
+  const hoverTimeoutRef = React.useRef<number | null>(null);
+
+  const handleMouseEnter = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    setIsHovered(true);
+    if (!isOpen) {
+      hoverTimeoutRef.current = window.setTimeout(() => {
+        setIsOpen(true);
+      }, 300); // 300ms 지연 후 열기
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    setIsHovered(false);
+  };
+
   const toggleOpen = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
     setIsOpen(!isOpen);
+  };
+
+  // 네비게이션 핸들러 - 중복 제거를 위한 공통 함수
+  const handleNavigation = (path: string) => {
+    setIsOpen(false);
+    navigate(path);
   };
 
   // SideBar가 열릴 때마다 새로고침 - ADMIN은 제외
@@ -28,26 +61,6 @@ export default function SideBar() {
     }
   }, [isOpen, user, isAdmin]);
 
-  const handleMypage = () => {
-    navigate('/mypage');
-  };
-
-  const handleNewChat = () => {
-    navigate('/conversation');
-  };
-
-  const handleChatClick = (conversationId: string) => {
-    navigate(`/conversation/${conversationId}`);
-  };
-
-  const handleExpertPage = () => {
-    navigate('/expert');
-  };
-
-  const handleAdminPage = () => {
-    navigate('/admin');
-  };
-
   const handleLogout = async () => {
     try {
       await authApi.logout();
@@ -56,6 +69,15 @@ export default function SideBar() {
       console.error('로그아웃 중 오류 발생:', error);
     }
   };
+
+  // 컴포넌트 언마운트 시 타이머 정리
+  React.useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div 
@@ -67,12 +89,14 @@ export default function SideBar() {
       style={{
         transform: isOpen ? 'translateX(0)' : 'translateX(calc(100% - 70px))'
       }}
+      onMouseLeave={isOpen ? handleMouseLeave : undefined}
     >
       
       {/* 헤더 영역 - 닫기 아이콘과 사용자 이름 */}
       <div className="flex flex-row justify-between items-center p-[12px] border-b border-[#E2E8F0]">
         <button 
           onClick={toggleOpen} 
+          onMouseEnter={!isOpen ? handleMouseEnter : undefined}
           className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors"
         >
           {isOpen ? (
@@ -93,7 +117,7 @@ export default function SideBar() {
             className={`font-bold text-[20px] text-text-primary transition-colors relative group ${
               !isAdmin ? 'cursor-pointer underline hover:text-blue-600' : ''
             }`}
-            onClick={!isAdmin ? handleMypage : undefined}
+            onClick={!isAdmin ? () => handleNavigation('/mypage') : undefined}
             title={!isAdmin ? "마이페이지" : undefined}
           >
             {user?.name}
@@ -115,7 +139,7 @@ export default function SideBar() {
           {(isUser || isExpert) && (
             <div className="flex justify-center p-[12px]">
               <button 
-                onClick={handleMypage}
+                onClick={() => handleNavigation('/mypage')}
                 className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
                 title="마이페이지"
               >
@@ -134,7 +158,7 @@ export default function SideBar() {
           {(isUser || isExpert) && (
             <div className="flex justify-center p-[12px]">
               <button 
-                onClick={handleNewChat}
+                onClick={() => handleNavigation('/conversation')}
                 className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
                 title="새 채팅 시작"
               >
@@ -153,7 +177,7 @@ export default function SideBar() {
           {(isExpert || isAdmin) && (
             <div className="flex justify-center p-[12px]">
               <button 
-                onClick={handleExpertPage}
+                onClick={() => handleNavigation('/expert')}
                 className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
                 title="카드 뉴스 신청 페이지"
               >
@@ -171,7 +195,7 @@ export default function SideBar() {
           {isAdmin && (
             <div className="flex justify-center p-[12px]">
               <button 
-                onClick={handleAdminPage}
+                onClick={() => handleNavigation('/admin')}
                 className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
                 title="관리자 페이지"
               >
@@ -200,9 +224,25 @@ export default function SideBar() {
         >
           {/* 최근 대화 헤더 - 최근 대화 텍스트와 새 채팅 아이콘 */}
           <div className="flex flex-row justify-between items-center p-4 border-b border-[#E2E8F0]">
-            <div className="font-bold text-[18px] text-text-primary">최근 대화</div>
+            <div className="flex items-center gap-2">
+              <div className="font-bold text-[18px] text-text-primary">최근 대화</div>
+              <button
+                onClick={() => setIsChatListOpen(!isChatListOpen)}
+                className="w-[24px] h-[24px] flex items-center justify-center bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors"
+                title={isChatListOpen ? "목록 접기" : "목록 펼치기"}
+              >
+                <svg
+                  className={`w-4 h-4 text-gray-400 transition-transform ${isChatListOpen ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
             <button
-              onClick={handleNewChat}
+              onClick={() => handleNavigation('/conversation')}
               className="w-[40px] h-[40px] flex items-center justify-center bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
               title="새 채팅 시작"
             >
@@ -217,26 +257,28 @@ export default function SideBar() {
           </div>
           
           {/* 대화 목록 - 스크롤 가능 */}
-          <div className="flex-1 overflow-y-auto px-[24px]">
-            {homeInfo?.recentChats?.map((recentChat) => (
-              <div
-                key={recentChat.conversationId || 'new-chat'}
-                className="py-[16px] border-b border-[#E2E8F0] cursor-pointer hover:bg-gray-50 rounded-lg px-2 transition-colors"
-                onClick={() => handleChatClick(recentChat.conversationId)}
-              >
-                <div className="text-[16px] text-text-primary">
-                  {recentChat.title}
+          {isChatListOpen && (
+            <div className="flex-1 overflow-y-auto px-[24px] transition-all duration-300 ease-in-out">
+              {homeInfo?.recentChats?.map((recentChat) => (
+                <div
+                  key={recentChat.conversationId || 'new-chat'}
+                  className="py-[16px] border-b border-[#E2E8F0] cursor-pointer hover:bg-gray-50 rounded-lg px-2 transition-colors"
+                  onClick={() => handleNavigation(`/conversation/${recentChat.conversationId}`)}
+                >
+                  <div className="text-[16px] text-text-primary">
+                    {recentChat.title}
+                  </div>
                 </div>
-              </div>
-            ))}
-            
-            {/* 대화 목록이 없으면 기본 메시지 */}
-            {(!homeInfo?.recentChats || homeInfo.recentChats.length === 0) && (
-              <div className="mt-[20px] text-gray-500 text-center">
-                아직 대화가 없습니다.
-              </div>
-            )}
-          </div>
+              ))}
+              
+              {/* 대화 목록이 없으면 기본 메시지 */}
+              {(!homeInfo?.recentChats || homeInfo.recentChats.length === 0) && (
+                <div className="mt-[20px] text-gray-500 text-center">
+                  아직 대화가 없습니다.
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
       
