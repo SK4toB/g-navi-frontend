@@ -62,7 +62,6 @@ export default function Experts() {
 
     return (
         <article className="Expert flex-[3] mr-20 flex flex-col h-full">
-            <div className="flex justify-center text-lg font-bold">Expert</div>
             <figure className="bg-white rounded-lg shadow-md my-6 p-6 flex-1">
                 {/* Search Bar */}
                 <div className="mb-6">
