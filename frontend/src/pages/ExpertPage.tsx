@@ -1,18 +1,21 @@
 import { useState } from 'react';
+import { newsApi } from '../api/news';
 
 export default function ExpertPage() {
     const [articleUrl, setArticleUrl] = useState('');
+    const [articleTitle, setArticleTitle] = useState('');
     const [error, setError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
 
+    const expertId = 1;
+
     const validateNaverNewsUrl = (url) => {
-        const naverNewsPattern = /^https:\/\/news\.naver\.com\//;
+        const naverNewsPattern = /^https:\/\/n\.news\.naver\.com\//;
         return naverNewsPattern.test(url);
     };
 
     const handleSubmit = async () => {
-        // 입력값 초기화
         setError('');
         setSuccessMessage('');
 
@@ -27,17 +30,24 @@ export default function ExpertPage() {
             setError('네이버 뉴스 링크만 등록 가능합니다.');
             return;
         }
-
         setIsSubmitting(true);
 
         try {
-            // 실제 API 호출 시뮬레이션
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            setSuccessMessage('카드뉴스 등록 요청이 완료되었습니다!');
-            setArticleUrl('');
+            const response = await newsApi.registerNews(
+                expertId,
+                articleTitle.trim(),
+                articleUrl.trim()
+            );
+
+            if (response.isSuccess && response.result) {
+                setSuccessMessage('카드뉴스 등록 요청이 완료되었습니다! 관리자 승인 후 게시됩니다.');
+                setArticleUrl('');
+                setArticleTitle('');
+            } else {
+                setError(`등록 실패: ${response.message || '알 수 없는 오류가 발생했습니다.'}`);
+            }
         } catch (err) {
-            setError('등록 요청 중 오류가 발생했습니다. 다시 시도해주세요.');
+            setError(err instanceof Error ? err.message : '등록 요청 중 오류가 발생했습니다. 다시 시도해주세요.');
         } finally {
             setIsSubmitting(false);
         }
@@ -45,7 +55,6 @@ export default function ExpertPage() {
 
     const handleInputChange = (e) => {
         setArticleUrl(e.target.value);
-        // 입력 시 에러 메시지 초기화
         if (error) setError('');
         if (successMessage) setSuccessMessage('');
     };

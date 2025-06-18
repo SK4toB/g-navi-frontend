@@ -20,6 +20,7 @@ export default function News() {
             const response = await newsApi.getAllNewsList(adminId);
             if (response.isSuccess && response.result) {
                 setApiNewsData(response.result);
+                console.log(response.result)
             } else {
                 setError(response.message || 'API 응답 오류');
             }
@@ -48,22 +49,16 @@ export default function News() {
     // 뉴스 관리 API 호출 공통 함수
     const handleNewsAction = async (newsId: number, action: 'APPROVE' | 'REJECT' | 'UNAPPROVE', actionName: string) => {
         try {
-            setActionLoading(newsId); 
-
-            console.log(`뉴스 ${newsId} ${actionName} 처리 시작`);
-
+            setActionLoading(newsId);
             const response = await newsApi.manageNews(newsId, adminId, action);
 
             if (response.isSuccess) {
-                console.log(`뉴스 ${newsId} ${actionName} 성공:`, response.message);
                 await fetchNewsData();
             } else {
-                console.error(`뉴스 ${newsId} ${actionName} 실패:`, response.message);
                 setError(`${actionName} 실패: ${response.message}`);
             }
 
         } catch (err) {
-            console.error(`뉴스 ${newsId} ${actionName} 에러:`, err);
             setError(err instanceof Error ? err.message : `${actionName} 중 오류가 발생했습니다`);
         } finally {
             setActionLoading(null);
@@ -72,17 +67,14 @@ export default function News() {
 
     // 뉴스 상태별 액션 처리
     const handleApprove = (newsId: number) => {
-        console.log(`뉴스 ${newsId} 승인 처리`);
         handleNewsAction(newsId, 'APPROVE', '승인');
     };
 
     const handleReject = (newsId: number) => {
-        console.log(`뉴스 ${newsId} 거절 처리`);
         handleNewsAction(newsId, 'REJECT', '거절');
     };
 
     const handleUnapprove = (newsId: number) => {
-        console.log(`뉴스 ${newsId} 승인 해제 처리`);
         handleNewsAction(newsId, 'UNAPPROVE', '승인해제');
     };
 
@@ -90,7 +82,7 @@ export default function News() {
         if (item.status === '거절' || item.status === '거부' || item.status === '거부됨') {
             return false;
         }
-        
+
         if (statusFilter === 'all') return true;
         const statusLabel = getStatusLabel(item.status);
         if (statusFilter === 'registered') return statusLabel === 'approved';
@@ -141,7 +133,15 @@ export default function News() {
                 {/* 뉴스 목록 */}
                 {filteredApiNews.map((item, index) => (
                     <figure key={index} className="flex p-3 border-b border-gray-300 last:border-b-0 items-center hover:bg-gray-50 transition-colors">
-                        <span className="font-medium w-1/2 truncate pr-4">{item.title}</span>
+                        <a
+                            href={item.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-medium w-1/2 truncate pr-4 text-gray-600 hover:text-blue-800 hover:underline cursor-pointer"
+                            title={item.title}
+                        >
+                            {item.title}
+                        </a>
                         <span className="text-gray-600 w-1/4 text-sm text-center">{item.expert}</span>
                         <span className="text-gray-600 w-1/6 text-sm text-center hidden xl:block">{item.date}</span>
                         {/* 상태 표시 */}

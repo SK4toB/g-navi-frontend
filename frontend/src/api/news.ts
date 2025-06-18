@@ -19,7 +19,7 @@ export interface NewsItem {
     canReject: boolean;
 }
   
-  export interface GetAllNewsResponse {
+export interface GetAllNewsResponse {
     code: string;
     message: string;
     result: NewsItem[];
@@ -33,10 +33,25 @@ export interface ManageNewsRequest {
     action: 'APPROVE' | 'REJECT' | 'UNAPPROVE';
 }
   
-  export interface ManageNewsResponse {
+export interface ManageNewsResponse {
     code: string;
     message: string;
     result: string;
+    isSuccess: boolean;
+}
+
+// 뉴스 기사 등록 요청 인터페이스
+export interface RegisterNewsRequest {
+  expertId: number;
+  title: string;
+  url: string;
+}
+
+// 뉴스 기사 등록 응답 인터페이스
+export interface RegisterNewsResponse {
+    code: string;
+    message: string;
+    result: NewsItem;
     isSuccess: boolean;
 }
 
@@ -58,5 +73,16 @@ export const newsApi = {
     };
     const data = await api.put<ManageNewsResponse>('/api/news/admin/manage', payload);
     return data;
-    }
+    },
+
+  // 뉴스 기사 등록 (POST /api/news)
+  registerNews: async (expertId: number, title: string, url: string): Promise<RegisterNewsResponse> => {
+    const payload: RegisterNewsRequest = {
+      expertId,
+      title,
+      url
+    };
+    const data = await api.post<RegisterNewsResponse>('/api/news', payload);
+    return data;
+  },
 };
