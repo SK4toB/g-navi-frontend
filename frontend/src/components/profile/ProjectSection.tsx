@@ -10,6 +10,31 @@ interface ProjectSectionProps {
   onProjectDeleted: (projectId: number) => void; // 삭제 콜백 추가
 }
 
+// 스킬 태그 색상 배열
+const skillColors = [
+  'bg-blue-100 text-blue-800',
+  'bg-green-100 text-green-800', 
+  'bg-purple-100 text-purple-800',
+  'bg-yellow-100 text-yellow-800',
+  'bg-pink-100 text-pink-800',
+  'bg-indigo-100 text-indigo-800',
+  'bg-red-100 text-red-800',
+  'bg-teal-100 text-teal-800',
+  'bg-orange-100 text-orange-800',
+  'bg-cyan-100 text-cyan-800'
+];
+
+// 스킬별 색상 매핑을 위한 함수
+const getSkillColor = (skill: string, index: number) => {
+  // 스킬 이름의 해시값을 기반으로 색상 선택 (일관성 유지)
+  let hash = 0;
+  for (let i = 0; i < skill.length; i++) {
+    hash = skill.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const colorIndex = Math.abs(hash) % skillColors.length;
+  return skillColors[colorIndex];
+};
+
 export default function ProjectSection({ projects, isLoading = false, onProjectAdded, onProjectDeleted }: ProjectSectionProps) {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [expandedProjects, setExpandedProjects] = React.useState<Set<number>>(new Set());
@@ -150,12 +175,12 @@ export default function ProjectSection({ projects, isLoading = false, onProjectA
                         <div className="pt-4 space-y-3">
                           <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <span className="font-medium text-gray-700">도메인:</span>
-                              <span className="ml-2 text-gray-600">{project.domain}</span>
+                              <span className="font-bold text-gray-800">도메인:</span>
+                              <span className="font-bold ml-2 text-gray-600">{project.domain}</span>
                             </div>
                             <div>
-                              <span className="font-medium text-gray-700">규모:</span>
-                              <span className="ml-2 text-gray-600">{project.projectScale}</span>
+                              <span className="font-bold text-gray-800">규모:</span>
+                              <span className="font-bold ml-2 text-gray-600">{project.projectScale}</span>
                             </div>
                           </div>
                           
@@ -165,7 +190,7 @@ export default function ProjectSection({ projects, isLoading = false, onProjectA
                                 {project.skills.map((skill, index) => (
                                   <span
                                     key={index}
-                                    className="px-2 py-1 bg-gray-100 text-gray-700 text-sm rounded"
+                                    className={`px-3 py-1 text-sm rounded-full font-medium ${getSkillColor(skill, index)}`}
                                   >
                                     {skill}
                                   </span>

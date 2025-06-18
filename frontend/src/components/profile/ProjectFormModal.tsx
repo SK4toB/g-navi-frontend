@@ -141,6 +141,9 @@ export default function ProjectFormModal({ isOpen, onClose, onProjectAdded }: Pr
     }
   };
 
+  // 선택되지 않은 스킬만 필터링
+  const availableSkillsFiltered = AVAILABLE_SKILLS.filter(skill => !formData.skills.includes(skill));
+
   if (!isOpen) return null;
 
   return (
@@ -266,39 +269,47 @@ export default function ProjectFormModal({ isOpen, onClose, onProjectAdded }: Pr
 
               {/* 네 번째 행: 기술 스택 */}
               <div className="grid grid-cols-2 gap-4 p-4">
-                {/* 왼쪽: 추천 기술 스택 */}
+                {/* 왼쪽: 추천 기술 스택 (선택되지 않은 것만 표시) */}
                 <div>
-                  <p className="text-sm font-medium text-gray-700 mb-2">추천 기술 스택:</p>
+                  <p className="text-sm font-medium text-gray-700 mb-2">
+                    추천 기술 스택 ({availableSkillsFiltered.length}개):
+                  </p>
                   <div className="grid grid-cols-1 gap-1 max-h-40 overflow-y-auto border border-gray-200 p-2 rounded">
-                    {AVAILABLE_SKILLS.map((skill) => (
+                    {availableSkillsFiltered.map((skill) => (
                       <button
                         key={skill}
                         type="button"
                         onClick={() => handleSkillSelect(skill)}
-                        className="text-left px-2 py-1 text-sm hover:bg-gray-100 rounded transition-colors"
-                        disabled={formData.skills.includes(skill)}
+                        className="text-left px-2 py-1 text-sm hover:bg-blue-50 hover:text-blue-700 rounded transition-colors"
                       >
                         {skill}
                       </button>
                     ))}
+                    {availableSkillsFiltered.length === 0 && (
+                      <p className="text-gray-400 text-sm text-center py-4">
+                        모든 추천 스킬이 선택되었습니다
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 {/* 오른쪽: 선택된 기술 스택 */}
                 <div>
-                  <p className="text-sm font-medium text-gray-700 mb-2">선택된 기술 스택:</p>
+                  <p className="text-sm font-medium text-gray-700 mb-2">
+                    선택된 기술 스택 ({formData.skills.length}개):
+                  </p>
                   <div className="min-h-[100px] border border-gray-200 p-2 rounded">
                     <div className="flex flex-wrap gap-2">
                       {formData.skills.map((skill, index) => (
                         <span
                           key={index}
-                          className="inline-flex items-center gap-1 px-3 py-1 bg-[#E2E8F0] text-[#1E293B] rounded-full text-sm"
+                          className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"
                         >
                           {skill}
                           <button
                             type="button"
                             onClick={() => handleSkillRemove(skill)}
-                            className="ml-1 text-red-500 hover:text-red-700"
+                            className="ml-1 text-blue-600 hover:text-blue-800"
                           >
                             ×
                           </button>

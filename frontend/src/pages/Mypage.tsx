@@ -13,6 +13,23 @@ export default function Mypage() {
     const [isLoadingHomeInfo, setIsLoadingHomeInfo] = React.useState(false);
     const [isLoadingProjects, setIsLoadingProjects] = React.useState(false);
 
+    // 홈 정보를 새로고침하는 함수
+    const refreshHomeInfo = async () => {
+        if (!user) return;
+        
+        setIsLoadingHomeInfo(true);
+        try {
+            const homeResponse = await authApi.getHomeInfo();
+            if (homeResponse.isSuccess) {
+                useAuthStore.getState().setHomeInfo(homeResponse.result);
+            }
+        } catch (error) {
+            console.error('홈 정보 새로고침 실패:', error);
+        } finally {
+            setIsLoadingHomeInfo(false);
+        }
+    };
+
     // 비동기로 추가 데이터 가져오기
     React.useEffect(() => {
         const fetchAdditionalData = async () => {
@@ -20,17 +37,7 @@ export default function Mypage() {
 
             // 홈 정보 가져오기 (아직 없는 경우에만)
             if (!homeInfo) {
-                setIsLoadingHomeInfo(true);
-                try {
-                    const homeResponse = await authApi.getHomeInfo();
-                    if (homeResponse.isSuccess) {
-                        useAuthStore.getState().setHomeInfo(homeResponse.result);
-                    }
-                } catch (error) {
-                    console.error('홈 정보 불러오기 실패:', error);
-                } finally {
-                    setIsLoadingHomeInfo(false);
-                }
+                await refreshHomeInfo();
             }
 
             // 프로젝트 목록 가져오기
@@ -50,6 +57,24 @@ export default function Mypage() {
         fetchAdditionalData();
     }, [user, homeInfo]);
 
+    // 프로젝트 추가 후 콜백 함수 - 홈 정보도 함께 새로고침
+    const handleProjectAdded = async (newProject) => {
+        // 프로젝트 목록 업데이트
+        setProjects(prev => [...prev, newProject]);
+        
+        // 홈 정보 새로고침 (스킬 정보 업데이트를 위해)
+        await refreshHomeInfo();
+    };
+
+    // 프로젝트 삭제 후 콜백 함수 - 홈 정보도 함께 새로고침
+    const handleProjectDeleted = async (deletedProjectId) => {
+        // 프로젝트 목록 업데이트
+        setProjects(prev => prev.filter(project => project.projectId !== deletedProjectId));
+        
+        // 홈 정보 새로고침 (스킬 정보 업데이트를 위해)
+        await refreshHomeInfo();
+    };
+
     // 전역 상태의 skills를 우선 표시
     const skills = homeInfo?.skills?.map(skill => ({ name: skill })) || [];
 
@@ -63,19 +88,15 @@ export default function Mypage() {
             {/* skills 정보 렌더링 (로딩 상태 표시) */}
             <SkillSetSection 
                 skills={skills} 
-                isLoading={isLoadingHomeInfo && !homeInfo} 
+                isLoading={isLoadingHomeInfo} 
             />
             
             {/* 프로젝트 섹션 (모달 포함) */}
             <ProjectSection 
-            projects={projects}
-            isLoading={isLoadingProjects}
-            onProjectAdded={(newProject) => {
-                setProjects(prev => [...prev, newProject]);
-            }}
-            onProjectDeleted={(deletedProjectId) => {
-                setProjects(prev => prev.filter(project => project.projectId !== deletedProjectId));
-            }}
+                projects={projects}
+                isLoading={isLoadingProjects}
+                onProjectAdded={handleProjectAdded}
+                onProjectDeleted={handleProjectDeleted}
             />
         </div>
     );
