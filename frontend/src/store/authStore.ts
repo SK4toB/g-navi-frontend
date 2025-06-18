@@ -8,6 +8,8 @@ interface UserInfo {
   memberId: number;
   name: string;
   email: string;
+  role: 'USER' | 'EXPERT' | 'ADMIN';
+  isExpert: boolean;
 }
 
 type HomeInfo = HomeResponseData['result'];
@@ -17,7 +19,7 @@ interface AuthState {
   user: UserInfo | null;
   homeInfo: HomeInfo | null;
   
-  login: (memberId: number, name: string, email: string) => void;
+  login: (memberId: number, name: string, email: string, role: 'USER' | 'EXPERT' | 'ADMIN', isExpert: boolean) => void;
   logout: () => void;
   setHomeInfo: (homeInfo: HomeInfo) => void;
   initializeAuth: () => void;
@@ -30,8 +32,8 @@ const useAuthStore = create<AuthState>()(
       user: null,
       homeInfo: null,
 
-      login: (memberId, name, email) => {
-        const userInfo = { memberId, name, email };
+      login: (memberId, name, email, role, isExpert) => {
+        const userInfo = { memberId, name, email, role, isExpert };
         localStorage.setItem('memberId', memberId.toString());
         set({ 
           isLoggedIn: true, 

@@ -35,6 +35,8 @@ export interface LoginResponseData {
     memberId: number;
     name: string;
     email: string;
+    role: 'USER' | 'EXPERT' | 'ADMIN';
+    isExpert: boolean;
     message: string;
   };
   isSuccess: boolean;
@@ -72,7 +74,13 @@ export const authApi = {
     const data = await api.post<LoginResponseData>('/api/auth/login', payload);
     
     if (data.result.memberId) {
-      useAuthStore.getState().login(data.result.memberId, data.result.name, data.result.email);
+      useAuthStore.getState().login(
+        data.result.memberId, 
+        data.result.name, 
+        data.result.email, 
+        data.result.role, 
+        data.result.isExpert
+      );
     }
     
     return data;
@@ -93,7 +101,13 @@ export const authApi = {
       
       if (data.isSuccess) {
         // 로그인 상태 복원
-        useAuthStore.getState().login(data.result.memberId, data.result.name, data.result.email);
+        useAuthStore.getState().login(
+          data.result.memberId, 
+          data.result.name, 
+          data.result.email, 
+          data.result.role, 
+          data.result.isExpert
+        );
         return data;
       }
       
