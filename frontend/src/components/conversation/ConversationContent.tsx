@@ -1,5 +1,5 @@
 // frontend/src/components/conversation/ConversationContent.tsx
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import Message from './Message'
 
 interface ConversationMessage {
@@ -9,16 +9,31 @@ interface ConversationMessage {
   timestamp: number;
 }
 
-// 메시지 목록 끝에 로딩 표시를 추가하고 싶다면
 interface ConversationContentProps {
   messages: ConversationMessage[];
   height: string;
-  isLoading?: boolean; // 추가
+  isLoading?: boolean;
 }
 
 export default function ConversationContent({ messages, height, isLoading }: ConversationContentProps) {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // 스크롤을 맨 아래로 이동하는 함수
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // 메시지가 추가되거나 로딩 상태가 변경될 때 스크롤
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isLoading]);
+
   return (
-    <div className={`${height} flex flex-col overflow-y-auto mt-[50px]`}>
+    <div 
+      ref={containerRef}
+      className={`${height} flex flex-col overflow-y-auto mt-[10px] px-2`}
+    >
       {messages.map((msg) => (
         <React.Fragment key={msg.id}>
           <Message sender={msg.sender} text={msg.text} />
@@ -38,6 +53,9 @@ export default function ConversationContent({ messages, height, isLoading }: Con
           }
         />
       )}
+      
+      {/* 스크롤 타겟 엘리먼트 */}
+      <div ref={messagesEndRef} />
     </div>
   );
 }
