@@ -35,7 +35,7 @@ export default function ConversationPage() {
     timestamp: new Date(msg.timestamp).getTime(),
   });
 
-    // 카드 클릭 시 메시지 전송
+  // 카드 클릭 시 메시지 전송
   const handleCardClick = (message: string) => {
     handleSendMessage(message);
   };
@@ -46,10 +46,10 @@ export default function ConversationPage() {
 
     setIsLoading(true);
     setIsLoadingResponse(true); // 새 대화 시작 시 로딩 상태
-    
+
     try {
       const response = await conversationApi.startConversation(user.memberId);
-      
+
       if (response.isSuccess) {
         setCurrentConversationId(response.result.conversationId);
         setMessages([{
@@ -73,18 +73,18 @@ export default function ConversationPage() {
   // 기존 대화 내역 로드
   const loadConversationHistory = async (existingConversationId: string) => {
     setIsLoading(true);
-    
+
     try {
       const response = await conversationApi.getConversationHistory(existingConversationId);
-      
+
       if (response.isSuccess) {
         setCurrentConversationId(existingConversationId);
-        const convertedMessages = response.result.messages.map((msg, index) => 
+        const convertedMessages = response.result.messages.map((msg, index) =>
           convertToUIMessage(msg, index + 1)
         );
         setMessages(convertedMessages);
         setMessageIdCounter(response.result.messageCount || convertedMessages.length);
-        
+
         // 기존 대화에 메시지가 1개(봇의 첫 인사만)이면 isNewChat = true
         setIsNewChat(convertedMessages.length <= 1);
       }
@@ -155,39 +155,43 @@ export default function ConversationPage() {
   return (
     <div className="w-full flex flex-col items-center justify-start">
       <div className="w-[816px] h-[100vh]">
-        
+
         {isNewChat ? (
           // 새 대화일 때 렌더링할 내용
           <>
-            <Title>G Navi</Title>
-            <ConversationContent 
-              messages={messages} 
-              height="h-[400px]"
+            <div className='mt-12'>
+              <Title>G Navi</Title>
+            </div>
+            <ConversationContent
+              messages={messages}
+              height="h-[420px]"
               isLoading={isLoadingResponse}
             />
-            <ConversationInput 
+            <ConversationInput
               onSendMessage={handleSendMessage}
               isLoading={isLoadingResponse}
             />
             <RecommendationCards
-            onCardClick={handleCardClick}
+              onCardClick={handleCardClick}
             />
           </>
         ) : (
           <>
-            <Title>G Navi</Title>
-            <ConversationContent 
-              messages={messages} 
-              height="h-[550px]"
+            <div className='mt-12'>
+              <Title>G Navi</Title>
+            </div>
+            <ConversationContent
+              messages={messages}
+              height="h-[530px]"
               isLoading={isLoadingResponse}
             />
-            <ConversationInput 
+            <ConversationInput
               onSendMessage={handleSendMessage}
               isLoading={isLoadingResponse}
             />
           </>
         )}
-        
+
       </div>
     </div>
   );
