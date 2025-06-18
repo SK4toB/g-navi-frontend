@@ -4,7 +4,7 @@ import News from "../components/admin/News"
 export default function AdminPage() {
     return (
         <div className="h-full flex flex-col">
-            <div className="text-center text-2xl font-bold py-8">Admin Page</div>
+            <div className="text-center text-3xl font-bold mt-16">관리자 페이지</div>
             <main className="flex gap-10 px-20 flex-1">
                 <News />
                 <Experts />
