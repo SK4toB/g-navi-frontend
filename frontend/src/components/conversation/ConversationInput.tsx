@@ -41,7 +41,6 @@ export default function ConversationInput({
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         onKeyPress={handleKeyPress}
-        disabled={isLoading} // 로딩 중일 때 입력 비활성화
       />
 
 {/* 버튼 */}  
