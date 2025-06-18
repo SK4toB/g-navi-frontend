@@ -1,22 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
-
-interface NewsItem {
-    title: string;
-    writer: string;
-    isRegistered: boolean;
-    url: string;
-    date: string;
-}
-
-const news: NewsItem[] = [
-    { title: '메타의 AI 앱 프라이버시 악몽, 사적인 대화 노출', writer: '김효준', isRegistered: true, url: 'url', date: '2025-06-16' },
-    { title: '기업의 AI 노력이 실패하는 11가지 흔한 이유', writer: '양석우', isRegistered: true, url: 'url', date: '2025-06-16' },
-    { title: 'OpenAI, 새로운 GPT-5 공개', writer: '이소희', isRegistered: true, url: 'url', date: '2025-06-15' },
-    { title: '테슬라 자율주행 기술 최신 업데이트', writer: '이재원', isRegistered: false, url: 'url', date: '2025-06-15' },
-    { title: '애플 시리, AI 기반 신규 기능 추가', writer: '오현진', isRegistered: true, url: 'url', date: '2025-06-14' },
-    { title: '구글 제미니 AI, 예약된 동작 추가', writer: '이영진', isRegistered: true, url: 'url', date: '2025-06-13' },
-    { title: 'Microsoft Copilot 새로운 기능 업데이트', writer: '김민혁', isRegistered: true, url: 'url', date: '2025-06-12' },
-];
+import { newsApi } from '../../api/news';
+import type { NewsItem } from '../../api/news';
 
 // 더미 이미지 생성
 const generateDummyImage = (index: number): string => {
@@ -35,6 +19,9 @@ const generateDummyImage = (index: number): string => {
 export default function HomeCard() {
     const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
     const [scrollPosition, setScrollPosition] = useState(0); // 픽셀 단위로 변경
+    const [newsData, setNewsData] = useState<NewsItem[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     // 화면 크기에 따른 보이는 카드 수와 카드 너비 계산
     const getCardInfo = (width: number) => {
@@ -50,6 +37,32 @@ export default function HomeCard() {
     const cardInfo = getCardInfo(windowWidth);
     const containerWidth = cardInfo.visibleCards * cardInfo.cardWidth + (cardInfo.visibleCards - 1) * cardInfo.gap;
 
+    // 승인된 뉴스 가져오기
+    const fetchApprovedNews = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await newsApi.getAllNewsList(1);
+            if (response.isSuccess && response.result) {
+                // 승인된 뉴스만 필터링
+                const approvedNews = response.result.filter(news =>
+                    news.status === '승인' || news.status === '승인됨'
+                );
+                setNewsData(approvedNews);
+            } else {
+                setError(response.message || 'API 응답 오류');
+            }
+        } catch (err) {
+            setError(err instanceof Error ? err.message : '뉴스를 불러오는 중 오류가 발생했습니다');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchApprovedNews();
+    }, []);
+
     useEffect(() => {
         const handleResize = () => {
             setWindowWidth(window.innerWidth);
@@ -59,19 +72,12 @@ export default function HomeCard() {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const registeredNews = useMemo(() => news.filter((n) => n.isRegistered), []);
-
-    // 전체 콘텐츠 너비 계산
+    const registeredNews = useMemo(() => newsData, [newsData]);                // 승인된 뉴스 데이터
     const totalContentWidth = registeredNews.length * cardInfo.cardWidth + (registeredNews.length - 1) * cardInfo.gap;
-
-    // 스크롤 가능한 최대 거리 (픽셀)
-    const maxScrollDistance = Math.max(0, totalContentWidth - containerWidth);
-
-    // 슬라이더 최대값을 100으로 설정 (0-100 범위)
-    const sliderMax = 100;
+    const maxScrollDistance = Math.max(0, totalContentWidth - containerWidth); // 스크롤 가능한 최대 거리 (픽셀)
+    const sliderMax = 100;  // 슬라이더 최대값
 
     const handleSliderChange = (value: number) => {
-        // 슬라이더 값(0-100)을 픽셀 위치로 변환
         const newPosition = (value / sliderMax) * maxScrollDistance;
         setScrollPosition(newPosition);
     };
@@ -87,8 +93,6 @@ export default function HomeCard() {
         const newPosition = Math.max(scrollPosition - step, 0);
         setScrollPosition(newPosition);
     };
-
-    // 현재 슬라이더 값 계산 (픽셀 위치를 0-100 범위로 변환)
     const currentSliderValue = maxScrollDistance > 0 ? (scrollPosition / maxScrollDistance) * sliderMax : 0;
 
     return (
@@ -144,11 +148,24 @@ export default function HomeCard() {
 
                                 {/* 내용 */}
                                 <div className="p-4 h-32 flex flex-col justify-between">
-                                    <h3 className="text-lg font-semibold text-gray-800 line-clamp-3 hover:text-blue-600 transition-colors">
-                                        {item.title}
+                                    <h3 className="text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors">
+                                        <a
+                                            className="block overflow-hidden text-ellipsis"
+                                            href={item.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            title={item.title}
+                                            style={{
+                                                display: '-webkit-box',
+                                                WebkitLineClamp: 2,
+                                                WebkitBoxOrient: 'vertical'
+                                            }}
+                                        >
+                                            {item.title}
+                                        </a>
                                     </h3>
                                     <div className="mt-2 flex items-center justify-between text-sm text-gray-500">
-                                        <span>{item.writer}</span>
+                                        <span>{item.expert}</span>
                                         <span>{item.date}</span>
                                     </div>
                                 </div>
