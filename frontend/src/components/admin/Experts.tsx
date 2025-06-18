@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { adminApi } from '../../api/admin';
 import type { Member } from '../../api/admin';
+import useAuthStore from '../../store/authStore';
 
 export default function Experts() {
     const [searchTerm, setSearchTerm] = useState('');
@@ -9,10 +10,17 @@ export default function Experts() {
     const [error, setError] = useState<string | null>(null);
     const [actionLoading, setActionLoading] = useState<number | null>(null);
 
-    const adminId = 1; // 현재 관리자 ID
+    // Store에서 사용자 정보 가져오기
+    const { user } = useAuthStore();
+    const adminId = user?.memberId; // store의 memberId 사용
 
     // 모든 회원 데이터 조회
     const fetchMembers = async () => {
+        if (!adminId) {
+            setError('관리자 권한이 필요합니다.');
+            return;
+        }
+
         try {
             setLoading(true);
             setError(null);
@@ -34,7 +42,7 @@ export default function Experts() {
 
     useEffect(() => {
         fetchMembers();
-    }, []);
+    }, [adminId]); // adminId 의존성 추가
 
     // 현재 전문가 목록
     const currentExperts = allMembers.filter(member =>
@@ -51,6 +59,11 @@ export default function Experts() {
 
     // 전문가 등록 함수 (USER -> EXPERT)
     const handleRegisterExpert = async (memberId: number, memberName: string) => {
+        if (!adminId) {
+            setError('관리자 권한이 필요합니다.');
+            return;
+        }
+
         try {
             setActionLoading(memberId);
 
@@ -76,6 +89,11 @@ export default function Experts() {
 
     // 전문가 삭제 함수 (EXPERT -> USER)
     const handleRemoveExpert = async (memberId: number, memberName: string) => {
+        if (!adminId) {
+            setError('관리자 권한이 필요합니다.');
+            return;
+        }
+
         if (!window.confirm(`${memberName}님을 전문가에서 해제하시겠습니까?`)) {
             return;
         }
@@ -101,6 +119,19 @@ export default function Experts() {
             setActionLoading(null);
         }
     };
+
+    // adminId가 없으면 에러 표시
+    if (!adminId) {
+        return (
+            <article className="Expert flex-[3] mr-20 flex flex-col h-full">
+                <figure className="bg-white rounded-lg shadow-md my-6 p-6 flex-1">
+                    <div className="text-center text-red-500 py-8">
+                        관리자 권한이 필요합니다.
+                    </div>
+                </figure>
+            </article>
+        );
+    }
 
     return (
         <article className="Expert flex-[3] mr-20 flex flex-col h-full">

@@ -1,19 +1,26 @@
 import { useState, useEffect } from 'react';
 import { newsApi } from '../../api/news';
 import type { NewsItem } from '../../api/news';
+import useAuthStore from '../../store/authStore';
 
 export default function News() {
     const [statusFilter, setStatusFilter] = useState('all');
     const [apiNewsData, setApiNewsData] = useState<NewsItem[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
     const [actionLoading, setActionLoading] = useState<number | null>(null);
 
-    const adminId = 1;
+    // Store에서 사용자 정보 가져오기
+    const { user } = useAuthStore();
+    const adminId = user?.memberId; // store의 memberId 사용
 
     // API 데이터 fetch
     const fetchNewsData = async () => {
+        if (!adminId) {
+            setError('관리자 권한이 필요합니다.');
+            return;
+        }
+
         try {
             setLoading(true);
             setError(null);
@@ -24,7 +31,6 @@ export default function News() {
             } else {
                 setError(response.message || 'API 응답 오류');
             }
-
         } catch (err) {
             setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다');
         } finally {
@@ -34,7 +40,7 @@ export default function News() {
 
     useEffect(() => {
         fetchNewsData();
-    }, []);
+    }, [adminId]); // adminId 의존성 추가
 
     const getStatusLabel = (status: string) => {
         switch (status) {
@@ -48,6 +54,11 @@ export default function News() {
 
     // 뉴스 관리 API 호출 공통 함수
     const handleNewsAction = async (newsId: number, action: 'APPROVE' | 'REJECT' | 'UNAPPROVE', actionName: string) => {
+        if (!adminId) {
+            setError('관리자 권한이 필요합니다.');
+            return;
+        }
+
         try {
             setActionLoading(newsId);
             const response = await newsApi.manageNews(newsId, adminId, action);
@@ -57,7 +68,6 @@ export default function News() {
             } else {
                 setError(`${actionName} 실패: ${response.message}`);
             }
-
         } catch (err) {
             setError(err instanceof Error ? err.message : `${actionName} 중 오류가 발생했습니다`);
         } finally {
@@ -89,6 +99,19 @@ export default function News() {
         if (statusFilter === 'unregistered') return statusLabel === 'pending' || statusLabel === 'rejected';
         return true;
     });
+
+    // adminId가 없으면 에러 표시
+    if (!adminId) {
+        return (
+            <article className="News flex-[7] ml-20 flex flex-col h-full">
+                <div className="bg-white rounded-lg shadow-md my-6 p-6 flex-1">
+                    <div className="text-center text-red-500 py-8">
+                        관리자 권한이 필요합니다.
+                    </div>
+                </div>
+            </article>
+        );
+    }
 
     return (
         <article className="News flex-[7] ml-20 flex flex-col h-full">
@@ -145,7 +168,7 @@ export default function News() {
                         <span className="text-gray-600 w-1/4 text-sm text-center">{item.expert}</span>
                         <span className="text-gray-600 w-1/6 text-sm text-center hidden xl:block">{item.date}</span>
                         {/* 상태 표시 */}
-                        <div className="w-24 flex gap-1 justify-center hidden xl:flex">
+                        <div className="w-24 gap-1 justify-center hidden xl:flex">
                             <span className={`text-xs px-2 py-1 rounded-full ${item.status === '승인' ? 'bg-green-100 text-green-700' :
                                 item.status === '승인 대기' ? 'bg-yellow-100 text-yellow-700' :
                                     item.status === '거절' ? 'bg-red-100 text-red-700' :
@@ -183,8 +206,7 @@ export default function News() {
                                 {/* 승인 상태: 승인해제 버튼 */}
                                 {item.status === '승인됨' && (
                                     <>
-                                        {console.log(`newsId ${item.newsId} / status: ${item.status} / canUnapprove: ${item.canUnapprove}`)}
-                                        {(item.canUnapprove) && (
+                                        {item.canUnapprove && (
                                             <button
                                                 onClick={() => handleUnapprove(item.newsId)}
                                                 className="text-xs text-orange-600 hover:text-orange-800 px-1"
