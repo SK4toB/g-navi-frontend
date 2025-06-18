@@ -3,12 +3,17 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import { authApi } from '../../api/auth';
+import { newsApi, type NewsItem } from '../../api/news';
 
 export default function SideBar() {
   const { user, homeInfo } = useAuthStore();
   const [isOpen, setIsOpen] = React.useState(false);
   const [isHovered, setIsHovered] = React.useState(false);
   const [isChatListOpen, setIsChatListOpen] = React.useState(true); // 최근 대화 목록 상태
+  const [isNewsListOpen, setIsNewsListOpen] = React.useState(true); // 뉴스 관리 목록 상태
+  const [pendingNews, setPendingNews] = React.useState<NewsItem[]>([]);
+  const [loadingNews, setLoadingNews] = React.useState(false);
+  const [actionLoading, setActionLoading] = React.useState<number | null>(null);
   const navigate = useNavigate();
 
   const isAdmin = user?.role === 'ADMIN';
@@ -56,16 +61,68 @@ export default function SideBar() {
     navigate(path);
   };
 
-  // SideBar가 열릴 때마다 새로고침 - ADMIN은 제외
+  // 승인 대기 뉴스 가져오기 (ADMIN만)
+  const fetchPendingNews = async () => {
+    if (!isAdmin || !user?.memberId) return;
+
+    setLoadingNews(true);
+    try {
+      const response = await newsApi.getAllNewsList(user.memberId);
+      if (response.isSuccess && response.result) {
+        // 승인 대기 상태인 뉴스만 필터링
+        const pending = response.result.filter(news => 
+          news.status === '승인 대기' && news.canApprove
+        );
+        setPendingNews(pending);
+      }
+    } catch (error) {
+      console.error('뉴스 목록 조회 실패:', error);
+    } finally {
+      setLoadingNews(false);
+    }
+  };
+
+  // SideBar가 열릴 때마다 새로고침
   React.useEffect(() => {
-    if (isOpen && user && !isAdmin) {
-      authApi.getHomeInfo().then((response) => {
-        if (response.isSuccess) {
-          useAuthStore.getState().setHomeInfo(response.result);
-        }
-      })
+    if (isOpen && user) {
+      if (!isAdmin) {
+        // 일반 사용자/전문가는 홈 정보 새로고침
+        authApi.getHomeInfo().then((response) => {
+          if (response.isSuccess) {
+            useAuthStore.getState().setHomeInfo(response.result);
+          }
+        });
+      } else {
+        // 관리자는 승인 대기 뉴스 조회
+        fetchPendingNews();
+      }
     }
   }, [isOpen, user, isAdmin]);
+
+  // 뉴스 승인/승인해제/거절 처리
+  const handleNewsAction = async (newsId: number, action: 'APPROVE' | 'UNAPPROVE' | 'REJECT', newsTitle: string) => {
+    if (!isAdmin || !user?.memberId) return;
+
+    try {
+      setActionLoading(newsId);
+      const response = await newsApi.manageNews(newsId, user.memberId, action);
+
+      if (response.isSuccess) {
+        // 성공 시 목록에서 제거
+        setPendingNews(prev => prev.filter(news => news.newsId !== newsId));
+        
+        const actionText = action === 'APPROVE' ? '승인' : action === 'REJECT' ? '거절' : '승인해제';
+        console.log(`"${newsTitle}" ${actionText} 완료`);
+      } else {
+        alert(`뉴스 ${action === 'APPROVE' ? '승인' : action === 'REJECT' ? '거절' : '승인해제'} 실패: ${response.message}`);
+      }
+    } catch (error) {
+      console.error('뉴스 관리 중 오류:', error);
+      alert(`뉴스 ${action === 'APPROVE' ? '승인' : action === 'REJECT' ? '거절' : '승인해제'} 중 오류가 발생했습니다.`);
+    } finally {
+      setActionLoading(null);
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -219,8 +276,8 @@ export default function SideBar() {
         </div>
       )}
 
-      {/* 대화 목록 영역 - ADMIN은 표시하지 않음 */}
-      {!isAdmin && (
+      {/* 대화 목록 영역 - USER, EXPERT만 */}
+      {(isUser || isExpert) && (
         <div 
           className={`
             flex-1 flex flex-col overflow-hidden
@@ -287,9 +344,102 @@ export default function SideBar() {
           )}
         </div>
       )}
+
+      {/* 뉴스 관리 영역 - ADMIN만 */}
+      {isAdmin && (
+        <div 
+          className={`
+            flex-1 flex flex-col overflow-hidden
+            transition-opacity duration-300 ease-in-out
+            ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}
+          `}
+        >
+          {/* 뉴스 관리 헤더 */}
+          <div className="flex flex-row justify-between items-center p-4 border-b border-[#E2E8F0]">
+            <div className="flex items-center gap-2">
+              <div className="font-bold text-[18px] text-text-primary">뉴스 관리</div>
+              <button
+                onClick={() => setIsNewsListOpen(!isNewsListOpen)}
+                className="w-[24px] h-[24px] flex items-center justify-center bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors"
+                title={isNewsListOpen ? "목록 접기" : "목록 펼치기"}
+              >
+                <svg
+                  className={`w-4 h-4 text-gray-400 transition-transform ${isNewsListOpen ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+            
+            {/* 승인 대기 개수 표시 */}
+            <div className="flex items-center gap-2">
+              {loadingNews ? (
+                <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+              ) : (
+                <span className={`text-sm px-2 py-1 rounded-full ${
+                  pendingNews.length > 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-600'
+                }`}>
+                  {pendingNews.length}
+                </span>
+              )}
+            </div>
+          </div>
+          
+          {/* 승인 대기 뉴스 목록 */}
+          {isNewsListOpen && (
+            <div className="flex-1 overflow-y-auto px-[24px] transition-all duration-300 ease-in-out">
+              {pendingNews.length > 0 ? (
+                pendingNews.map((news) => (
+                  <div
+                    key={news.newsId}
+                    className="py-[16px] border-b border-[#E2E8F0] transition-colors"
+                  >
+                    <div className="mb-2">
+                      <div className="text-[14px] text-text-primary font-medium truncate" title={news.title}>
+                        {news.title}
+                      </div>
+                      <div className="text-[12px] text-gray-500 mt-1">
+                        작성자: {news.expert}
+                      </div>
+                      <div className="text-[12px] text-gray-500">
+                        날짜: {news.date}
+                      </div>
+                    </div>
+                    
+                    {/* 승인/거절 버튼 */}
+                    <div className="flex gap-2 mt-2">
+                      <button
+                        onClick={() => handleNewsAction(news.newsId, 'APPROVE', news.title)}
+                        disabled={actionLoading === news.newsId}
+                        className="flex-1 px-2 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors disabled:opacity-50"
+                      >
+                        {actionLoading === news.newsId ? '처리중...' : '승인'}
+                      </button>
+                      <button
+                        onClick={() => handleNewsAction(news.newsId, 'REJECT', news.title)}
+                        disabled={actionLoading === news.newsId}
+                        className="flex-1 px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors disabled:opacity-50"
+                      >
+                        거절
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="mt-[20px] text-gray-500 text-center text-sm">
+                  {loadingNews ? '뉴스를 불러오는 중...' : '승인 대기 중인 뉴스가 없습니다.'}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
       
-      {/* ADMIN인 경우 flex-1로 공간을 채워서 로그아웃 버튼을 하단으로 밀어냄 */}
-      {(isAdmin || !isOpen) && <div className="flex-1"></div>}
+      {/* ADMIN이 아닌 경우나 닫혔을 때 flex-1로 공간을 채워서 로그아웃 버튼을 하단으로 밀어냄 */}
+      {(!isAdmin || !isOpen) && <div className="flex-1"></div>}
       
       {/* 로그아웃 버튼 */}
       <div className="flex flex-row items-center p-[12px]">
