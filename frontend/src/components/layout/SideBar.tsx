@@ -9,20 +9,24 @@ export default function SideBar() {
   const [isOpen, setIsOpen] = React.useState(true);
   const navigate = useNavigate();
 
+  const isAdmin = user?.role === 'ADMIN';
+  const isExpert = user?.role === 'EXPERT';
+  const isUser = user?.role === 'USER';
+
   const toggleOpen = () => {
     setIsOpen(!isOpen);
   };
 
-  // SideBar가 열릴 때마다 새로고침
+  // SideBar가 열릴 때마다 새로고침 - ADMIN은 제외
   React.useEffect(() => {
-    if (isOpen && user) {
+    if (isOpen && user && !isAdmin) {
       authApi.getHomeInfo().then((response) => {
         if (response.isSuccess) {
           useAuthStore.getState().setHomeInfo(response.result);
         }
       })
     }
-  }, [isOpen, user]);
+  }, [isOpen, user, isAdmin]);
 
   const handleMypage = () => {
     navigate('/mypage');
@@ -38,6 +42,10 @@ export default function SideBar() {
 
   const handleExpertPage = () => {
     navigate('/expert');
+  };
+
+  const handleAdminPage = () => {
+    navigate('/admin');
   };
 
   const handleLogout = async () => {
@@ -79,140 +87,165 @@ export default function SideBar() {
           )}
         </button>
 
-        {/* 사용자 이름 (열린 상태에서만 표시) */}
+        {/* 사용자 이름 (열린 상태에서만 표시) - ADMIN은 마이페이지 링크 없음 */}
         {isOpen && (
           <div 
-            className="font-bold text-[20px] text-text-primary cursor-pointer underline hover:text-blue-600 transition-colors relative group" 
-            onClick={handleMypage}
-            title="마이페이지"
+            className={`font-bold text-[20px] text-text-primary transition-colors relative group ${
+              !isAdmin ? 'cursor-pointer underline hover:text-blue-600' : ''
+            }`}
+            onClick={!isAdmin ? handleMypage : undefined}
+            title={!isAdmin ? "마이페이지" : undefined}
           >
             {user?.name}
             
-            {/* 툴팁 */}
-            <div className="absolute top-0 right-20 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-              마이페이지
-            </div>
+            {/* 툴팁 - ADMIN이 아닌 경우만 */}
+            {!isAdmin && (
+              <div className="absolute top-0 right-20 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                마이페이지
+              </div>
+            )}
           </div>
         )}
       </div>
 
-      {/* 마이페이지 버튼 (닫혔을 때만 표시) */}
+      {/* 닫혔을 때 아이콘들 */}
       {!isOpen && (
-        <div className="flex justify-center p-[12px]">
-          <button 
-            onClick={handleMypage}
-            className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
-            title="마이페이지"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-            </svg>
-            
-            {/* 툴팁 */}
-            <div className="absolute right-12 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-              마이페이지
+        <div className="flex flex-col">
+          {/* 마이페이지 버튼 - USER, EXPERT만 */}
+          {(isUser || isExpert) && (
+            <div className="flex justify-center p-[12px]">
+              <button 
+                onClick={handleMypage}
+                className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
+                title="마이페이지"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                </svg>
+                
+                <div className="absolute right-12 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                  마이페이지
+                </div>
+              </button>
             </div>
-          </button>
-        </div>
-      )}
+          )}
 
-      {/* 새 채팅 시작 버튼 (닫혔을 때만 표시) */}
-      {!isOpen && (
-        <div className="flex justify-center p-[12px]">
-          <button 
-            onClick={handleNewChat}
-            className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
-            title="새 채팅 시작"
-          >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
-            <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-            </svg>
-            
-            {/* 툴팁 */}
-            <div className="absolute right-12 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-              새 채팅 시작
+          {/* 새 채팅 시작 버튼 - USER, EXPERT만 */}
+          {(isUser || isExpert) && (
+            <div className="flex justify-center p-[12px]">
+              <button 
+                onClick={handleNewChat}
+                className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
+                title="새 채팅 시작"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                </svg>
+                
+                <div className="absolute right-12 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                  새 채팅 시작
+                </div>
+              </button>
             </div>
-          </button>
-        </div>
-      )}
+          )}
 
-      {/* 전문가 페이지 버튼 (닫혔을 때만 표시) */}
-      {!isOpen && (
-        <div className="flex justify-center p-[12px]">
-          <button 
-            onClick={handleExpertPage}
-            className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
-            title="전문가 페이지"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443a55.381 55.381 0 0 1 5.25 2.882V15" />
-            </svg>
-            
-            {/* 툴팁 */}
-            <div className="absolute right-12 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-              전문가 페이지
+          {/* 전문가 페이지 버튼 - EXPERT, ADMIN만 */}
+          {(isExpert || isAdmin) && (
+            <div className="flex justify-center p-[12px]">
+              <button 
+                onClick={handleExpertPage}
+                className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
+                title="전문가 페이지"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443a55.381 55.381 0 0 1 5.25 2.882V15" />
+                </svg>
+                
+                <div className="absolute right-12 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                  전문가 페이지
+                </div>
+              </button>
             </div>
-          </button>
-        </div>
-      )}
+          )}
 
-      {/* 대화 목록 영역 */}
-      <div 
-        className={`
-          flex-1 flex flex-col overflow-hidden
-          transition-opacity duration-300 ease-in-out
-          ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}
-        `}
-      >
-        {/* 최근 대화 헤더 - 최근 대화 텍스트와 새 채팅 아이콘 */}
-        <div className="flex flex-row justify-between items-center p-4 border-b border-[#E2E8F0]">
-          <div className="font-bold text-[18px] text-text-primary">최근 대화</div>
-          <button
-            onClick={handleNewChat}
-            className="w-[40px] h-[40px] flex items-center justify-center bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
-            title="새 채팅 시작"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-            </svg>
-            
-            {/* 툴팁 */}
-            <div className="absolute top-1 right-20 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-              새 채팅 시작
-            </div>
-          </button>
-        </div>
-        
-        {/* 대화 목록 - 스크롤 가능 */}
-        <div className="flex-1 overflow-y-auto px-[24px]">
-          {homeInfo?.recentChats?.map((recentChat) => (
-            <div
-              key={recentChat.conversationId || 'new-chat'}
-              className="py-[16px] border-b border-[#E2E8F0] cursor-pointer hover:bg-gray-50 rounded-lg px-2 transition-colors"
-              onClick={() => handleChatClick(recentChat.conversationId)}
-            >
-              <div className="text-[16px] text-text-primary">
-                {recentChat.title}
-              </div>
-            </div>
-          ))}
-          
-          {/* 대화 목록이 없으면 기본 메시지 */}
-          {(!homeInfo?.recentChats || homeInfo.recentChats.length === 0) && (
-            <div className="mt-[20px] text-gray-500 text-center">
-              아직 대화가 없습니다.
+          {/* 관리자 페이지 버튼 - ADMIN만 */}
+          {isAdmin && (
+            <div className="flex justify-center p-[12px]">
+              <button 
+                onClick={handleAdminPage}
+                className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
+                title="관리자 페이지"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a6.759 6.759 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                </svg>
+                
+                <div className="absolute right-12 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                  관리자 페이지
+                </div>
+              </button>
             </div>
           )}
         </div>
-      </div>
+      )}
+
+      {/* 대화 목록 영역 - ADMIN은 표시하지 않음 */}
+      {!isAdmin && (
+        <div 
+          className={`
+            flex-1 flex flex-col overflow-hidden
+            transition-opacity duration-300 ease-in-out
+            ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}
+          `}
+        >
+          {/* 최근 대화 헤더 - 최근 대화 텍스트와 새 채팅 아이콘 */}
+          <div className="flex flex-row justify-between items-center p-4 border-b border-[#E2E8F0]">
+            <div className="font-bold text-[18px] text-text-primary">최근 대화</div>
+            <button
+              onClick={handleNewChat}
+              className="w-[40px] h-[40px] flex items-center justify-center bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
+              title="새 채팅 시작"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+              </svg>
+              
+              <div className="absolute top-1 right-20 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                새 채팅 시작
+              </div>
+            </button>
+          </div>
+          
+          {/* 대화 목록 - 스크롤 가능 */}
+          <div className="flex-1 overflow-y-auto px-[24px]">
+            {homeInfo?.recentChats?.map((recentChat) => (
+              <div
+                key={recentChat.conversationId || 'new-chat'}
+                className="py-[16px] border-b border-[#E2E8F0] cursor-pointer hover:bg-gray-50 rounded-lg px-2 transition-colors"
+                onClick={() => handleChatClick(recentChat.conversationId)}
+              >
+                <div className="text-[16px] text-text-primary">
+                  {recentChat.title}
+                </div>
+              </div>
+            ))}
+            
+            {/* 대화 목록이 없으면 기본 메시지 */}
+            {(!homeInfo?.recentChats || homeInfo.recentChats.length === 0) && (
+              <div className="mt-[20px] text-gray-500 text-center">
+                아직 대화가 없습니다.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       
-      {/* flex-1로 공간을 채워서 로그아웃 버튼을 하단으로 밀어냄 */}
-      {!isOpen && <div className="flex-1"></div>}
+      {/* ADMIN인 경우 flex-1로 공간을 채워서 로그아웃 버튼을 하단으로 밀어냄 */}
+      {(isAdmin || !isOpen) && <div className="flex-1"></div>}
       
       {/* 로그아웃 버튼 */}
-      <div className="
-        flex flex-row items-center p-[12px]
-      ">
+      <div className="flex flex-row items-center p-[12px]">
         <button 
           onClick={handleLogout} 
           className={`

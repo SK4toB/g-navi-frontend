@@ -29,7 +29,13 @@ export default function LoginForm() {
       
       if (response.isSuccess) {
         alert(`안녕하세요, ${response.result.name}님! 로그인되었습니다.`);
-        navigate('/');
+        
+        // 역할에 따른 리다이렉트
+        if (response.result.role === 'ADMIN') {
+          navigate('/admin');
+        } else {
+          navigate('/');
+        }
       } else {
         alert(`로그인 실패: ${response.message}`);
       }

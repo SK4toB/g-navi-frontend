@@ -8,35 +8,45 @@ import HomeCard from '../components/home/HomeCard';
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const IntroMessage = "커리어 성장 여정을 함께할 지나비입니다.";
-  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const { isLoggedIn, user } = useAuthStore();
+  
+  // ADMIN 사용자 확인
+  const isAdmin = user?.role === 'ADMIN';
 
   const arrowIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
   <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
   </svg>`;
 
-  React.useEffect(() => {
-
-  }, []);
+  // ADMIN 자동 리다이렉트 로직 제거 - ADMIN도 홈페이지에 머물 수 있음
 
   const handleNewChat = () => {
-    if (isLoggedIn) {
+    if (isLoggedIn && !isAdmin) {
       navigate('/conversation');
-    } else {
+    } else if (!isLoggedIn) {
       navigate('/join');
+    } else {
+      // ADMIN인 경우 관리자 페이지로 이동
+      navigate('/admin');
     }
   };
 
   const handleMyPage = () => {
-    if (isLoggedIn) {
+    if (isLoggedIn && !isAdmin) {
       navigate('/myPage');
-    } else {
+    } else if (!isLoggedIn) {
       navigate('/join');
     }
+    // ADMIN은 myPage 접근 불가하므로 아무 동작 없음
   };
 
-  // 로그인 상태에 따른 버튼 텍스트 결정
-  const buttonText = isLoggedIn ? '새로운 채팅 시작하기' : '커리어 여정 시작하기';
+  // ADMIN과 일반 사용자 모두 홈페이지 표시
+  const IntroMessage = "커리어 성장 여정을 함께할 지나비입니다.";
+    
+  const buttonText = isAdmin 
+    ? '관리자 페이지로 이동' 
+    : isLoggedIn 
+      ? '새로운 채팅 시작하기' 
+      : '커리어 여정 시작하기';
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
