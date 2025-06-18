@@ -248,17 +248,6 @@ export default function Experts() {
                         </div>
                     )}
                 </div>
-
-                {/* 새로고침 버튼 */}
-                <div className="mt-6 text-center">
-                    <button
-                        onClick={fetchMembers}
-                        className="text-sm text-blue-600 hover:text-blue-800 disabled:text-gray-400"
-                        disabled={loading}
-                    >
-                        {loading ? '불러오는 중...' : '목록 새로고침'}
-                    </button>
-                </div>
             </figure>
         </article>
     );
