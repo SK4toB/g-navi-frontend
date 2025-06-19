@@ -9,7 +9,6 @@ import { conversationApi } from '../../api/conversation';
 export default function SideBar() {
   const { user, homeInfo } = useAuthStore();
   const [isOpen, setIsOpen] = React.useState(false);
-  const [isHovered, setIsHovered] = React.useState(false);
   const [isChatListOpen, setIsChatListOpen] = React.useState(true); // 최근 대화 목록 상태
   const [isNewsListOpen, setIsNewsListOpen] = React.useState(true); // 뉴스 관리 목록 상태
   const [pendingNews, setPendingNews] = React.useState<NewsItem[]>([]);
@@ -22,38 +21,7 @@ export default function SideBar() {
   const isExpert = user?.role === 'EXPERT';
   const isUser = user?.role === 'USER';
 
-  // 호버 타이머 관리
-  const hoverTimeoutRef = React.useRef<number | null>(null);
-
-  const handleMouseEnter = () => {
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
-    }
-    setIsHovered(true);
-    if (!isOpen) {
-      hoverTimeoutRef.current = window.setTimeout(() => {
-        setIsOpen(true);
-      }, 300); // 300ms 지연 후 열기
-    }
-  };
-
-  const handleMouseLeave = () => {
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
-    }
-    setIsHovered(false);
-    // 사용자가 직접 연 경우가 아니라면 자동으로 닫기
-    hoverTimeoutRef.current = window.setTimeout(() => {
-      if (!isHovered) {
-        setIsOpen(false);
-      }
-    }, 100); // 100ms 지연 후 닫기
-  };
-
   const toggleOpen = () => {
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
-    }
     setIsOpen(!isOpen);
   };
 
@@ -199,14 +167,6 @@ export default function SideBar() {
     }
   };
 
-  // 컴포넌트 언마운트 시 타이머 정리
-  React.useEffect(() => {
-    return () => {
-      if (hoverTimeoutRef.current) {
-        clearTimeout(hoverTimeoutRef.current);
-      }
-    };
-  }, []);
 
   // 대화 목록 정렬 (lastUpdated 기준 내림차순)
   const sortedRecentChats = React.useMemo(() => {
@@ -227,14 +187,12 @@ export default function SideBar() {
       style={{
         transform: isOpen ? 'translateX(0)' : 'translateX(calc(100% - 70px))'
       }}
-      onMouseLeave={isOpen ? handleMouseLeave : undefined}
     >
       
       {/* 헤더 영역 - 닫기 아이콘과 사용자 이름 */}
       <div className="flex flex-row justify-between items-center p-[12px] border-b border-[#E2E8F0]">
         <button 
           onClick={toggleOpen} 
-          onMouseEnter={!isOpen ? handleMouseEnter : undefined}
           className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors"
         >
           {isOpen ? (
