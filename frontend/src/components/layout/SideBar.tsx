@@ -34,7 +34,7 @@ export default function SideBar() {
   // 대화 삭제 함수
   const handleDeleteChat = async (conversationId: string, chatTitle: string, e: React.MouseEvent) => {
     e.stopPropagation(); // 네비게이션 이벤트 방지
-    
+
     if (!window.confirm(`"${chatTitle}" 대화를 삭제하시겠습니까?`)) {
       return;
     }
@@ -42,7 +42,7 @@ export default function SideBar() {
     try {
       setDeletingChatId(conversationId);
       const response = await conversationApi.deleteConversation(conversationId);
-      
+
       if (response.isSuccess) {
         // 홈 정보 새로고침으로 대화 목록 업데이트
         await refreshHomeInfo();
@@ -61,7 +61,7 @@ export default function SideBar() {
   // 홈 정보 새로고침 함수
   const refreshHomeInfo = async () => {
     if (!user) return;
-    
+
     try {
       const response = await authApi.getHomeInfo();
       if (response.isSuccess) {
@@ -72,33 +72,33 @@ export default function SideBar() {
     }
   };
 
-// messageCount가 1인 대화 자동 삭제 함수
-const autoDeleteEmptyChats = async () => {
-  if (!homeInfo?.recentChats) return;
+  // messageCount가 1인 대화 자동 삭제 함수
+  const autoDeleteEmptyChats = async () => {
+    if (!homeInfo?.recentChats) return;
 
-  const currentPath = window.location.pathname;
-  const currentConversationId = currentPath.includes('/conversation/') ? 
-    currentPath.split('/conversation/')[1] : null;
+    const currentPath = window.location.pathname;
+    const currentConversationId = currentPath.includes('/conversation/') ?
+      currentPath.split('/conversation/')[1] : null;
 
-  const emptyChats = homeInfo.recentChats.filter(chat => 
-    chat.messageCount === 1 && 
-    chat.conversationId !== currentConversationId // 현재 보고 있는 대화는 제외
-  );
-  
-  for (const chat of emptyChats) {
-    try {
-      await conversationApi.deleteConversation(chat.conversationId);
-      console.log(`빈 대화 "${chat.title}" 자동 삭제`);
-    } catch (error) {
-      console.error(`빈 대화 삭제 실패: ${chat.conversationId}`, error);
+    const emptyChats = homeInfo.recentChats.filter(chat =>
+      chat.messageCount === 1 &&
+      chat.conversationId !== currentConversationId // 현재 보고 있는 대화는 제외
+    );
+
+    for (const chat of emptyChats) {
+      try {
+        await conversationApi.deleteConversation(chat.conversationId);
+        console.log(`빈 대화 "${chat.title}" 자동 삭제`);
+      } catch (error) {
+        console.error(`빈 대화 삭제 실패: ${chat.conversationId}`, error);
+      }
     }
-  }
 
     // 삭제 후 홈 정보 새로고침
-  if (emptyChats.length > 0) {
-    await refreshHomeInfo();
-  }
-};
+    if (emptyChats.length > 0) {
+      await refreshHomeInfo();
+    }
+  };
 
   // 승인 대기 뉴스 가져오기 (ADMIN만)
   const fetchPendingNews = async () => {
@@ -109,7 +109,7 @@ const autoDeleteEmptyChats = async () => {
       const response = await newsApi.getAllNewsList(user.memberId);
       if (response.isSuccess && response.result) {
         // 승인 대기 상태인 뉴스만 필터링
-        const pending = response.result.filter(news => 
+        const pending = response.result.filter(news =>
           news.status === '승인 대기' && news.canApprove
         );
         setPendingNews(pending);
@@ -151,7 +151,7 @@ const autoDeleteEmptyChats = async () => {
       if (response.isSuccess) {
         // 성공 시 목록에서 제거
         setPendingNews(prev => prev.filter(news => news.newsId !== newsId));
-        
+
         const actionText = action === 'APPROVE' ? '승인' : action === 'REJECT' ? '거절' : '승인해제';
         console.log(`"${newsTitle}" ${actionText} 완료`);
       } else {
@@ -178,14 +178,14 @@ const autoDeleteEmptyChats = async () => {
   // 대화 목록 정렬 (lastUpdated 기준 내림차순)
   const sortedRecentChats = React.useMemo(() => {
     if (!homeInfo?.recentChats) return [];
-    
+
     return [...homeInfo.recentChats]
       .filter(chat => chat.messageCount > 1) // messageCount가 1인 것은 제외 (자동 삭제됨)
       .sort((a, b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime());
   }, [homeInfo?.recentChats]);
 
   return (
-    <div 
+    <div
       className={`
         ${isOpen ? 'w-[365px]' : 'w-[70px]'}
         border-l border-[#E2E8F0] h-full flex flex-col bg-white shadow-lg
@@ -195,11 +195,11 @@ const autoDeleteEmptyChats = async () => {
         transform: isOpen ? 'translateX(0)' : 'translateX(calc(100% - 70px))'
       }}
     >
-      
+
       {/* 헤더 영역 - 닫기 아이콘과 사용자 이름 */}
       <div className="flex flex-row justify-between items-center p-[12px] border-b border-[#E2E8F0]">
-        <button 
-          onClick={toggleOpen} 
+        <button
+          onClick={toggleOpen}
           className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors"
         >
           {isOpen ? (
@@ -216,15 +216,14 @@ const autoDeleteEmptyChats = async () => {
 
         {/* 사용자 이름 (열린 상태에서만 표시) - ADMIN은 마이페이지 링크 없음 */}
         {isOpen && (
-          <div 
-            className={`font-bold text-[20px] text-text-primary transition-colors relative group ${
-              !isAdmin ? 'cursor-pointer underline hover:text-blue-600' : ''
-            }`}
+          <div
+            className={`font-bold text-[20px] text-text-primary transition-colors relative group ${!isAdmin ? 'cursor-pointer underline hover:text-blue-600' : ''
+              }`}
             onClick={!isAdmin ? () => handleNavigation('/mypage') : undefined}
             title={!isAdmin ? "마이페이지" : undefined}
           >
             {user?.name}
-            
+
             {/* 툴팁 - ADMIN이 아닌 경우만 */}
             {!isAdmin && (
               <div className="absolute top-0 right-20 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
@@ -238,10 +237,26 @@ const autoDeleteEmptyChats = async () => {
       {/* 닫혔을 때 아이콘들 */}
       {!isOpen && (
         <div className="flex flex-col">
+          {/* 홈 버튼 - 모든 사용자 */}
+          <div className="flex justify-center p-[12px]">
+            <button
+              onClick={() => handleNavigation('/')}
+              className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
+              title="홈"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+              </svg>
+
+              <div className="absolute right-12 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                홈
+              </div>
+            </button>
+          </div>
           {/* 마이페이지 버튼 - USER, EXPERT만 */}
           {(isUser || isExpert) && (
             <div className="flex justify-center p-[12px]">
-              <button 
+              <button
                 onClick={() => handleNavigation('/mypage')}
                 className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
                 title="마이페이지"
@@ -249,7 +264,7 @@ const autoDeleteEmptyChats = async () => {
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                 </svg>
-                
+
                 <div className="absolute right-12 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
                   마이페이지
                 </div>
@@ -260,7 +275,7 @@ const autoDeleteEmptyChats = async () => {
           {/* 새 채팅 시작 버튼 - USER, EXPERT만 */}
           {(isUser || isExpert) && (
             <div className="flex justify-center p-[12px]">
-              <button 
+              <button
                 onClick={() => handleNavigation('/conversation')}
                 className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
                 title="새 채팅 시작"
@@ -268,7 +283,7 @@ const autoDeleteEmptyChats = async () => {
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                 </svg>
-                
+
                 <div className="absolute right-12 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
                   새 채팅 시작
                 </div>
@@ -279,7 +294,7 @@ const autoDeleteEmptyChats = async () => {
           {/* 전문가 뉴스 페이지 버튼 - EXPERT, ADMIN만 */}
           {(isExpert || isAdmin) && (
             <div className="flex justify-center p-[12px]">
-              <button 
+              <button
                 onClick={() => handleNavigation('/expert')}
                 className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
                 title="카드 뉴스 신청 페이지"
@@ -297,7 +312,7 @@ const autoDeleteEmptyChats = async () => {
           {/* 관리자 페이지 버튼 - ADMIN만 */}
           {isAdmin && (
             <div className="flex justify-center p-[12px]">
-              <button 
+              <button
                 onClick={() => handleNavigation('/admin')}
                 className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
                 title="관리자 페이지"
@@ -306,7 +321,7 @@ const autoDeleteEmptyChats = async () => {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a6.759 6.759 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                 </svg>
-                
+
                 <div className="absolute right-12 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
                   관리자 페이지
                 </div>
@@ -318,7 +333,7 @@ const autoDeleteEmptyChats = async () => {
 
       {/* 대화 목록 영역 - USER, EXPERT만 */}
       {(isUser || isExpert) && (
-        <div 
+        <div
           className={`
             flex-1 flex flex-col overflow-hidden
             transition-opacity duration-300 ease-in-out
@@ -352,13 +367,13 @@ const autoDeleteEmptyChats = async () => {
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
               </svg>
-              
+
               <div className="absolute top-1 right-20 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
                 새 채팅 시작
               </div>
             </button>
           </div>
-          
+
           {/* 대화 목록 - 스크롤 가능 */}
           {isChatListOpen && (
             <div className="flex-1 overflow-y-auto px-[24px] transition-all duration-300 ease-in-out">
@@ -371,7 +386,7 @@ const autoDeleteEmptyChats = async () => {
                   <div className="text-[16px] text-text-primary flex-1 truncate pr-2">
                     {recentChat.title}
                   </div>
-                  
+
                   {/* 삭제 버튼 */}
                   <button
                     onClick={(e) => handleDeleteChat(recentChat.conversationId, recentChat.title, e)}
@@ -389,7 +404,7 @@ const autoDeleteEmptyChats = async () => {
                   </button>
                 </div>
               ))}
-              
+
               {/* 대화 목록이 없으면 기본 메시지 */}
               {(!homeInfo?.recentChats || homeInfo.recentChats.length === 0) && (
                 <div className="mt-[20px] text-gray-500 text-center">
@@ -403,7 +418,7 @@ const autoDeleteEmptyChats = async () => {
 
       {/* 뉴스 관리 영역 - ADMIN만 */}
       {isAdmin && (
-        <div 
+        <div
           className={`
             flex-1 flex flex-col overflow-hidden
             transition-opacity duration-300 ease-in-out
@@ -429,21 +444,20 @@ const autoDeleteEmptyChats = async () => {
                 </svg>
               </button>
             </div>
-            
+
             {/* 승인 대기 개수 표시 */}
             <div className="flex items-center gap-2">
               {loadingNews ? (
                 <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
               ) : (
-                <span className={`text-sm px-2 py-1 rounded-full ${
-                  pendingNews.length > 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-600'
-                }`}>
+                <span className={`text-sm px-2 py-1 rounded-full ${pendingNews.length > 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-600'
+                  }`}>
                   {pendingNews.length}
                 </span>
               )}
             </div>
           </div>
-          
+
           {/* 승인 대기 뉴스 목록 */}
           {isNewsListOpen && (
             <div className="flex-1 overflow-y-auto px-[24px] transition-all duration-300 ease-in-out">
@@ -464,7 +478,7 @@ const autoDeleteEmptyChats = async () => {
                         날짜: {news.date}
                       </div>
                     </div>
-                    
+
                     {/* 승인/거절 버튼 */}
                     <div className="flex gap-2 mt-2">
                       <button
@@ -493,14 +507,14 @@ const autoDeleteEmptyChats = async () => {
           )}
         </div>
       )}
-      
+
       {/* ADMIN이 아닌 경우나 닫혔을 때 flex-1로 공간을 채워서 로그아웃 버튼을 하단으로 밀어냄 */}
       {(!isAdmin || !isOpen) && <div className="flex-1"></div>}
-      
+
       {/* 로그아웃 버튼 */}
       <div className="flex flex-row items-center p-[12px]">
-        <button 
-          onClick={handleLogout} 
+        <button
+          onClick={handleLogout}
           className={`
             ${isOpen ? 'w-full flex items-center justify-start gap-3 px-3 py-2' : 'w-[40px] h-[40px] flex items-center justify-center relative group'} 
             bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors
@@ -510,12 +524,12 @@ const autoDeleteEmptyChats = async () => {
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
           </svg>
-          
+
           {/* 열렸을 때만 텍스트 표시 */}
           {isOpen && (
             <span className="text-[16px] font-medium text-gray-700">로그아웃</span>
           )}
-          
+
           {/* 닫혔을 때만 툴팁 표시 */}
           {!isOpen && (
             <div className="absolute right-12 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">

@@ -1,6 +1,6 @@
 // frontend/src/layouts/MainLayout.tsx
 import { Outlet } from 'react-router-dom';
-import Header from '../components/layout/Header';
+// import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import SideBar from '../components/layout/SideBar';
 import SKButterflyBackground from '../components/layout/SKButterflyBackground';
@@ -35,9 +35,9 @@ export default function MainLayout() {
       <SKButterflyBackground />
 
       {/* 헤더 */}
-      <div className="fixed z-10">
+      {/* <div className="fixed z-10">
         <Header />
-      </div>
+      </div> */}
       
       <div className='w-full h-full flex flex-col'>
         {/* 중앙 컨텐츠 - 항상 전체 너비 유지 */}
