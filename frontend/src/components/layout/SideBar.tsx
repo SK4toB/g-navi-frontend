@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import { authApi } from '../../api/auth';
 import { newsApi, type NewsItem } from '../../api/news';
+import { conversationApi } from '../../api/conversation';
 
 export default function SideBar() {
   const { user, homeInfo } = useAuthStore();
@@ -14,6 +15,7 @@ export default function SideBar() {
   const [pendingNews, setPendingNews] = React.useState<NewsItem[]>([]);
   const [loadingNews, setLoadingNews] = React.useState(false);
   const [actionLoading, setActionLoading] = React.useState<number | null>(null);
+  const [deletingChatId, setDeletingChatId] = React.useState<string | null>(null);
   const navigate = useNavigate();
 
   const isAdmin = user?.role === 'ADMIN';
@@ -61,6 +63,68 @@ export default function SideBar() {
     navigate(path);
   };
 
+  // 대화 삭제 함수
+  const handleDeleteChat = async (conversationId: string, chatTitle: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // 네비게이션 이벤트 방지
+    
+    if (!window.confirm(`"${chatTitle}" 대화를 삭제하시겠습니까?`)) {
+      return;
+    }
+
+    try {
+      setDeletingChatId(conversationId);
+      const response = await conversationApi.deleteConversation(conversationId);
+      
+      if (response.isSuccess) {
+        // 홈 정보 새로고침으로 대화 목록 업데이트
+        await refreshHomeInfo();
+        console.log(`대화 "${chatTitle}" 삭제 완료`);
+      } else {
+        alert(`대화 삭제 실패: ${response.message}`);
+      }
+    } catch (error) {
+      console.error('대화 삭제 중 오류:', error);
+      alert('대화 삭제 중 오류가 발생했습니다.');
+    } finally {
+      setDeletingChatId(null);
+    }
+  };
+
+  // 홈 정보 새로고침 함수
+  const refreshHomeInfo = async () => {
+    if (!user) return;
+    
+    try {
+      const response = await authApi.getHomeInfo();
+      if (response.isSuccess) {
+        useAuthStore.getState().setHomeInfo(response.result);
+      }
+    } catch (error) {
+      console.error('홈 정보 새로고침 실패:', error);
+    }
+  };
+
+  // messageCount가 1인 대화 자동 삭제 함수
+  const autoDeleteEmptyChats = async () => {
+    if (!homeInfo?.recentChats) return;
+
+    const emptyChats = homeInfo.recentChats.filter(chat => chat.messageCount === 1);
+    
+    for (const chat of emptyChats) {
+      try {
+        await conversationApi.deleteConversation(chat.conversationId);
+        console.log(`빈 대화 "${chat.title}" 자동 삭제`);
+      } catch (error) {
+        console.error(`빈 대화 삭제 실패: ${chat.conversationId}`, error);
+      }
+    }
+
+    // 삭제 후 홈 정보 새로고침
+    if (emptyChats.length > 0) {
+      await refreshHomeInfo();
+    }
+  };
+
   // 승인 대기 뉴스 가져오기 (ADMIN만)
   const fetchPendingNews = async () => {
     if (!isAdmin || !user?.memberId) return;
@@ -86,10 +150,12 @@ export default function SideBar() {
   React.useEffect(() => {
     if (isOpen && user) {
       if (!isAdmin) {
-        // 일반 사용자/전문가는 홈 정보 새로고침
+        // 일반 사용자/전문가는 홈 정보 새로고침 및 빈 대화 자동 삭제
         authApi.getHomeInfo().then((response) => {
           if (response.isSuccess) {
             useAuthStore.getState().setHomeInfo(response.result);
+            // 홈 정보 업데이트 후 빈 대화 자동 삭제
+            autoDeleteEmptyChats();
           }
         });
       } else {
@@ -141,6 +207,15 @@ export default function SideBar() {
       }
     };
   }, []);
+
+  // 대화 목록 정렬 (lastUpdated 기준 내림차순)
+  const sortedRecentChats = React.useMemo(() => {
+    if (!homeInfo?.recentChats) return [];
+    
+    return [...homeInfo.recentChats]
+      .filter(chat => chat.messageCount > 1) // messageCount가 1인 것은 제외 (자동 삭제됨)
+      .sort((a, b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime());
+  }, [homeInfo?.recentChats]);
 
   return (
     <div 
@@ -322,15 +397,31 @@ export default function SideBar() {
           {/* 대화 목록 - 스크롤 가능 */}
           {isChatListOpen && (
             <div className="flex-1 overflow-y-auto px-[24px] transition-all duration-300 ease-in-out">
-              {homeInfo?.recentChats?.map((recentChat) => (
+              {sortedRecentChats.map((recentChat) => (
                 <div
                   key={recentChat.conversationId || 'new-chat'}
-                  className="py-[16px] border-b border-[#E2E8F0] cursor-pointer hover:bg-gray-50 rounded-lg px-2 transition-colors"
+                  className="py-[16px] border-b border-[#E2E8F0] cursor-pointer hover:bg-gray-50 rounded-lg px-2 transition-colors flex items-center justify-between group"
                   onClick={() => handleNavigation(`/conversation/${recentChat.conversationId}`)}
                 >
-                  <div className="text-[16px] text-text-primary">
+                  <div className="text-[16px] text-text-primary flex-1 truncate pr-2">
                     {recentChat.title}
                   </div>
+                  
+                  {/* 삭제 버튼 */}
+                  <button
+                    onClick={(e) => handleDeleteChat(recentChat.conversationId, recentChat.title, e)}
+                    disabled={deletingChatId === recentChat.conversationId}
+                    className="opacity-0 group-hover:opacity-100 p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition-all duration-200 disabled:opacity-50"
+                    title="대화 삭제"
+                  >
+                    {deletingChatId === recentChat.conversationId ? (
+                      <div className="w-4 h-4 border-2 border-red-300 border-t-red-500 rounded-full animate-spin"></div>
+                    ) : (
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    )}
+                  </button>
                 </div>
               ))}
               

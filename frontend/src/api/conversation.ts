@@ -65,6 +65,14 @@ export interface ConversationHistoryResponse {
   isSuccess: boolean;
 }
 
+// 대화 삭제 응답 타입
+export interface DeleteConversationResponse {
+  code: string;
+  message: string;
+  result: string;
+  isSuccess: boolean;
+}
+
 export const conversationApi = {
   // 새 대화 시작 (POST /api/conversations)
   startConversation: async (memberId: number): Promise<StartConversationResponse> => {
@@ -94,6 +102,14 @@ export const conversationApi = {
     };
     
     const data = await api.post<SendMessageResponse>(`/api/conversations/${conversationId}/messages`, payload);
+    return data;
+  },
+
+  // 대화 삭제 (DELETE /api/conversations/{conversationId})
+  deleteConversation: async (conversationId: string): Promise<DeleteConversationResponse> => {
+    const data = await api.delete<DeleteConversationResponse>(`/api/conversations/${conversationId}`, {
+      params: { conversationId } // Parameters에 conversationId 추가
+    });
     return data;
   },
 };
