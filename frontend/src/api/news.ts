@@ -14,6 +14,7 @@ export interface NewsItem {
     status: string;
     url: string;
     date: string;
+    thumbnailUrl :string;
     canApprove: boolean;
     canUnapprove: boolean;
     canReject: boolean;
