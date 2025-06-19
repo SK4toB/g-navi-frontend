@@ -160,25 +160,29 @@ export default function ConversationPage() {
           // 새 대화일 때 렌더링할 내용
           <>
             <div className='mt-12'>
-              <Title>G Navi</Title>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-3">
+                G Navi
+              </h1>
             </div>
-              <ConversationContent
-                messages={messages}
-                height="h-[452px]"
-                isLoading={isLoadingResponse}
-              />
-              <ConversationInput
-                onSendMessage={handleSendMessage}
-                isLoading={isLoadingResponse}
-              />
-              <RecommendationCards
-                onCardClick={handleCardClick}
-              />
+            <ConversationContent
+              messages={messages}
+              height="h-[452px]"
+              isLoading={isLoadingResponse}
+            />
+            <ConversationInput
+              onSendMessage={handleSendMessage}
+              isLoading={isLoadingResponse}
+            />
+            <RecommendationCards
+              onCardClick={handleCardClick}
+            />
           </>
         ) : (
           <>
             <div className='mt-12'>
-              <Title>G Navi</Title>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-3">
+                G Navi
+              </h1>
             </div>
             <ConversationContent
               messages={messages}
