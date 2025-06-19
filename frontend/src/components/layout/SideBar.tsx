@@ -72,26 +72,33 @@ export default function SideBar() {
     }
   };
 
-  // messageCount가 1인 대화 자동 삭제 함수
-  const autoDeleteEmptyChats = async () => {
-    if (!homeInfo?.recentChats) return;
+// messageCount가 1인 대화 자동 삭제 함수
+const autoDeleteEmptyChats = async () => {
+  if (!homeInfo?.recentChats) return;
 
-    const emptyChats = homeInfo.recentChats.filter(chat => chat.messageCount === 1);
-    
-    for (const chat of emptyChats) {
-      try {
-        await conversationApi.deleteConversation(chat.conversationId);
-        console.log(`빈 대화 "${chat.title}" 자동 삭제`);
-      } catch (error) {
-        console.error(`빈 대화 삭제 실패: ${chat.conversationId}`, error);
-      }
+  const currentPath = window.location.pathname;
+  const currentConversationId = currentPath.includes('/conversation/') ? 
+    currentPath.split('/conversation/')[1] : null;
+
+  const emptyChats = homeInfo.recentChats.filter(chat => 
+    chat.messageCount === 1 && 
+    chat.conversationId !== currentConversationId // 현재 보고 있는 대화는 제외
+  );
+  
+  for (const chat of emptyChats) {
+    try {
+      await conversationApi.deleteConversation(chat.conversationId);
+      console.log(`빈 대화 "${chat.title}" 자동 삭제`);
+    } catch (error) {
+      console.error(`빈 대화 삭제 실패: ${chat.conversationId}`, error);
     }
+  }
 
     // 삭제 후 홈 정보 새로고침
-    if (emptyChats.length > 0) {
-      await refreshHomeInfo();
-    }
-  };
+  if (emptyChats.length > 0) {
+    await refreshHomeInfo();
+  }
+};
 
   // 승인 대기 뉴스 가져오기 (ADMIN만)
   const fetchPendingNews = async () => {
