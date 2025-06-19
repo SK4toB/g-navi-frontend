@@ -27,6 +27,17 @@ export default function ConversationPage() {
   const [messageIdCounter, setMessageIdCounter] = React.useState(0);
   const [isNewChat, setIsNewChat] = React.useState(true); // 초기값은 true
 
+  // conversationId가 변경될 때 상태 초기화
+  React.useEffect(() => {
+    // 상태들을 즉시 초기화
+    setMessages([]);
+    setCurrentConversationId(null);
+    setIsLoading(false);
+    setIsLoadingResponse(false); // 중요: 로딩 응답 상태 초기화
+    setMessageIdCounter(0);
+    setIsNewChat(true);
+  }, [conversationId]); // conversationId 변경 시마다 실행
+
   // 서버 메시지를 UI 메시지로 변환
   const convertToUIMessage = (msg: ConversationMessage, id: number): Message => ({
     id,
@@ -143,14 +154,14 @@ export default function ConversationPage() {
     }
   };
 
-  // 초기화
+  // 대화 초기화 - conversationId가 변경된 후 실행
   React.useEffect(() => {
     if (conversationId) {
       loadConversationHistory(conversationId);
     } else if (user?.memberId) {
       startNewConversation();
     }
-  }, [conversationId, user?.memberId]);
+  }, [conversationId, user?.memberId]); // conversationId 의존성을 명확히 분리
 
   return (
     <div className="w-full flex flex-col items-center justify-start mb-2">
