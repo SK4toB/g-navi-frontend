@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import SideBar from '../components/layout/SideBar';
+import SKButterflyBackground from '../components/layout/SKButterflyBackground';
 import useAuthStore from '../store/authStore';
 
 export default function MainLayout() {
@@ -29,6 +30,9 @@ export default function MainLayout() {
         {/* 글래스 오버레이 */}
         <div className="absolute inset-0 bg-white/20 backdrop-blur-sm"></div>
       </div>
+
+      {/* SK 나비 배경 (glassmorphism 위, 컨텐츠 아래) */}
+      <SKButterflyBackground />
 
       {/* 헤더 */}
       <div className="fixed z-10">
