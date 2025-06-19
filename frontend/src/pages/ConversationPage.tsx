@@ -153,8 +153,8 @@ export default function ConversationPage() {
   }, [conversationId, user?.memberId]);
 
   return (
-    <div className="w-full flex flex-col items-center justify-start">
-      <div className="w-[816px] h-[100vh]">
+    <div className="w-full flex flex-col items-center justify-start mb-2">
+      <div className="w-[816px]">
 
         {isNewChat ? (
           // 새 대화일 때 렌더링할 내용
@@ -162,18 +162,18 @@ export default function ConversationPage() {
             <div className='mt-12'>
               <Title>G Navi</Title>
             </div>
-            <ConversationContent
-              messages={messages}
-              height="h-[420px]"
-              isLoading={isLoadingResponse}
-            />
-            <ConversationInput
-              onSendMessage={handleSendMessage}
-              isLoading={isLoadingResponse}
-            />
-            <RecommendationCards
-              onCardClick={handleCardClick}
-            />
+              <ConversationContent
+                messages={messages}
+                height="h-[452px]"
+                isLoading={isLoadingResponse}
+              />
+              <ConversationInput
+                onSendMessage={handleSendMessage}
+                isLoading={isLoadingResponse}
+              />
+              <RecommendationCards
+                onCardClick={handleCardClick}
+              />
           </>
         ) : (
           <>
@@ -182,7 +182,7 @@ export default function ConversationPage() {
             </div>
             <ConversationContent
               messages={messages}
-              height="h-[530px]"
+              height="h-[560px]"
               isLoading={isLoadingResponse}
             />
             <ConversationInput
