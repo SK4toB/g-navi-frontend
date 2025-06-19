@@ -30,30 +30,30 @@ export default function ConversationContent({ messages, height, isLoading }: Con
   }, [messages, isLoading]);
 
   return (
-    <div 
+    <div
       ref={containerRef}
-      className={`${height} flex flex-col overflow-y-auto mt-[10px] px-2`}
+      className={`${height} flex flex-col overflow-y-auto mt-[10px] scrollbar-hide`}
     >
       {messages.map((msg) => (
         <React.Fragment key={msg.id}>
           <Message sender={msg.sender} text={msg.text} />
         </React.Fragment>
       ))}
-      
+
       {/* 로딩 중일 때 봇 메시지 표시 */}
       {isLoading && (
-        <Message 
-          sender="bot" 
+        <Message
+          sender="bot"
           text={
             <div className="flex space-x-1">
               <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
             </div>
           }
         />
       )}
-      
+
       {/* 스크롤 타겟 엘리먼트 */}
       <div ref={messagesEndRef} />
     </div>
