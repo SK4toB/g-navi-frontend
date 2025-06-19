@@ -9,7 +9,26 @@ export default function MainLayout() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
   return (
-    <div className="w-full h-full flex flex-col relative">
+    <div className="w-full h-full flex flex-col relative overflow-hidden">
+      
+      {/* Glassmorphism 배경 */}
+      <div className="fixed inset-0 -z-10">
+        {/* 그라데이션 배경 */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50"></div>
+        
+        {/* 몰랑몰랑한 블러 원들 */}
+        <div className="absolute top-10 left-10 w-72 h-72 bg-gradient-to-r from-blue-200/40 to-purple-200/40 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-96 h-96 bg-gradient-to-r from-pink-200/30 to-orange-200/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute bottom-20 left-1/3 w-80 h-80 bg-gradient-to-r from-green-200/35 to-blue-200/35 rounded-full blur-3xl animate-pulse delay-2000"></div>
+        <div className="absolute bottom-40 right-1/4 w-64 h-64 bg-gradient-to-r from-purple-200/40 to-pink-200/40 rounded-full blur-3xl animate-pulse delay-500"></div>
+        
+        {/* 추가 작은 원들 */}
+        <div className="absolute top-1/2 left-1/4 w-48 h-48 bg-gradient-to-r from-yellow-200/25 to-orange-200/25 rounded-full blur-2xl animate-pulse delay-1500"></div>
+        <div className="absolute top-1/3 right-1/3 w-56 h-56 bg-gradient-to-r from-indigo-200/30 to-blue-200/30 rounded-full blur-2xl animate-pulse delay-3000"></div>
+        
+        {/* 글래스 오버레이 */}
+        <div className="absolute inset-0 bg-white/20 backdrop-blur-sm"></div>
+      </div>
 
       {/* 헤더 */}
       <div className="fixed z-10">
