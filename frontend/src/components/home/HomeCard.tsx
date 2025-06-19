@@ -7,9 +7,9 @@ const generateDummyImage = (index: number): string => {
     const colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'];
     const color = colors[index % colors.length];
     const svg = `
-    <svg width="300" height="180" xmlns="http://www.w3.org/2000/svg">
+    <svg width="240" height="144" xmlns="http://www.w3.org/2000/svg">
       <rect width="100%" height="100%" fill="${color}"/>
-      <text x="50%" y="50%" font-family="Arial" font-size="14" fill="white" text-anchor="middle" dominant-baseline="middle">
+      <text x="50%" y="50%" font-family="Arial" font-size="12" fill="white" text-anchor="middle" dominant-baseline="middle">
         News Image ${index + 1}
       </text>
     </svg>`;
@@ -23,14 +23,14 @@ export default function HomeCard() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // 화면 크기에 따른 보이는 카드 수와 카드 너비 계산
+    // 화면 크기에 따른 보이는 카드 수와 카드 너비 계산 (0.8배 축소)
     const getCardInfo = (width: number) => {
         if (width >= 1024) {
-            return { visibleCards: 3, cardWidth: 320, gap: 24 }; // lg: 3개
+            return { visibleCards: 3, cardWidth: 256, gap: 19 }; // lg: 3개 (320 * 0.8 = 256, 24 * 0.8 = 19.2)
         } else if (width >= 768) {
-            return { visibleCards: 2, cardWidth: 280, gap: 20 }; // md: 2개
+            return { visibleCards: 2, cardWidth: 224, gap: 16 }; // md: 2개 (280 * 0.8 = 224, 20 * 0.8 = 16)
         } else {
-            return { visibleCards: 1, cardWidth: 280, gap: 16 }; // sm: 1개
+            return { visibleCards: 1, cardWidth: 224, gap: 13 }; // sm: 1개 (280 * 0.8 = 224, 16 * 0.8 = 12.8)
         }
     };
 
@@ -97,16 +97,16 @@ export default function HomeCard() {
 
     return (
         <div className="w-full max-w-6xl mx-auto px-4 my-4">
-            <div className='py-10 font-bold text-xl' style={{ width: containerWidth, margin: '0 auto' }}>NEWS</div>
+            <div className='py-8 font-bold text-lg' style={{ width: containerWidth, margin: '0 auto' }}>NEWS</div>
             {/* 캐러셀 컨테이너 */}
             <div className="relative" style={{ width: containerWidth, margin: '0 auto' }}>
                 {/* 이전 버튼 */}
                 <button
                     onClick={prev}
-                    className="absolute -left-12 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 text-gray-600 border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="absolute -left-10 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 text-gray-600 border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={scrollPosition <= 0}
                 >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                 </button>
@@ -114,10 +114,10 @@ export default function HomeCard() {
                 {/* 다음 버튼 */}
                 <button
                     onClick={next}
-                    className="absolute -right-12 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 text-gray-600 border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="absolute -right-10 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 text-gray-600 border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={scrollPosition >= maxScrollDistance}
                 >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                 </button>
@@ -137,18 +137,18 @@ export default function HomeCard() {
                                 className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer flex-shrink-0 mb-3"
                                 style={{ width: cardInfo.cardWidth }}
                             >
-                                {/* 이미지 */}
-                                <div className="h-40 bg-gray-200">
+                                {/* 이미지 (32px 축소: 40 * 0.8 = 32) */}
+                                <div className="h-32 bg-gray-200">
                                     <img
-                                        src={generateDummyImage(idx)}
+                                        src={item.thumbnailUrl}
                                         alt={item.title}
                                         className="w-full h-full object-cover"
                                     />
                                 </div>
 
-                                {/* 내용 */}
-                                <div className="p-4 h-32 flex flex-col justify-between">
-                                    <h3 className="text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors">
+                                {/* 내용 (25.6px 축소: 32 * 0.8 = 25.6) */}
+                                <div className="p-3 h-26 flex flex-col justify-between">
+                                    <h3 className="text-base font-semibold text-gray-800 hover:text-blue-600 transition-colors">
                                         <a
                                             className="block overflow-hidden text-ellipsis"
                                             href={item.url}
@@ -164,7 +164,7 @@ export default function HomeCard() {
                                             {item.title}
                                         </a>
                                     </h3>
-                                    <div className="mt-2 flex items-center justify-between text-sm text-gray-500">
+                                    <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
                                         <span>{item.expert}</span>
                                         <span>{item.date}</span>
                                     </div>
@@ -176,8 +176,8 @@ export default function HomeCard() {
             </div>
 
             {/* 슬라이더 컨트롤 */}
-            <div className="flex items-center justify-center mt-8 space-x-4">
-                <div className="flex-1 max-w-md">
+            <div className="flex items-center justify-center mt-6 space-x-4">
+                <div className="flex-1 max-w-sm">
                     <input
                         type="range"
                         min="0"
@@ -186,11 +186,11 @@ export default function HomeCard() {
                         value={currentSliderValue}
                         onChange={(e) => handleSliderChange(Number(e.target.value))}
                         className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer
-                        [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-8 [&::-webkit-slider-thumb]:h-4 
+                        [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-3 
                         [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-main-color
                         [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:border-2 
                         [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md
-                        [&::-moz-range-thumb]:w-8 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full 
+                        [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:h-3 [&::-moz-range-thumb]:rounded-full 
                         [&::-moz-range-thumb]:bg-main-color [&::-moz-range-thumb]:cursor-pointer 
                         [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-md"
                     />
