@@ -43,14 +43,14 @@ export default function ConversationInput({
         onKeyPress={handleKeyPress}
       />
 
-{/* 버튼 */}  
-<button 
+      {/* 버튼 */}
+      <button
         className={`
           absolute bottom-[24px] right-[24px] w-[96px] h-[40px] rounded-full 
-          flex items-center justify-center cursor-pointer transition-all
-          ${isLoading 
-            ? 'bg-gray-400 cursor-not-allowed' 
-            : 'bg-[#122250] hover:opacity-80'
+          flex items-center justify-center cursor-pointer transition-all gap-2
+          ${isLoading
+            ? 'bg-gray-400 cursor-not-allowed'
+            : 'bg-brand-indigo hover:opacity-80'
           }
         `}
         onClick={handleSendClick}

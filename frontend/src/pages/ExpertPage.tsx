@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { newsApi } from '../api/news';
+import CommonButton from '../components/common/CommonButton';
 
 export default function ExpertPage() {
     const [articleUrl, setArticleUrl] = useState('');
@@ -64,13 +65,13 @@ export default function ExpertPage() {
             <div className="text-center text-2xl font-bold py-8 text-gray-800">
                 사내 구성원에게 전달하고 싶은 소식이 있나요?
             </div>
-            
+
             <div className="max-w-2xl mx-auto w-full mt-10 px-6">
                 <div className="bg-white rounded-lg shadow-md p-6">
                     <h2 className="text-lg font-semibold mb-8 text-gray-700">
                         카드 뉴스 등록 요청
                     </h2>
-                    
+
                     <div className="mb-4">
                         <label htmlFor="articleUrl" className="block text-sm font-medium text-gray-600 mb-2">
                             네이버 뉴스 기사 링크
@@ -84,7 +85,7 @@ export default function ExpertPage() {
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                             disabled={isSubmitting}
                         />
-                        
+
                         {/* 안내 메시지 */}
                         <div className="mt-2 text-sm text-gray-500">
                             💡 네이버 뉴스 기사 링크만 등록 가능합니다
@@ -114,28 +115,18 @@ export default function ExpertPage() {
                             </div>
                         </div>
                     )}
-
-                    <button
-                        onClick={handleSubmit}
-                        disabled={isSubmitting}
-                        className={`mt-5 w-full py-3 px-4 rounded-lg font-medium transition-all ${
-                            isSubmitting
-                                ? 'bg-gray-400 cursor-not-allowed'
-                                : 'bg-main-color hover:bg-blue-900 active:bg-blue-800'
-                        } text-white`}
-                    >
-                        {isSubmitting ? (
-                            <div className="flex items-center justify-center">
-                                <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                등록 요청 중...
-                            </div>
-                        ) : (
-                            '등록 요청하기'
-                        )}
-                    </button>
+                    <div className='flex justify-center mt-5'>
+                        <CommonButton
+                            type="submit"
+                            onClick={handleSubmit}
+                            disabled={isSubmitting}
+                            loading={isSubmitting}
+                            loadingText="등록 요청 중..."
+                            width={500}
+                        >
+                            등록 요청하기
+                        </CommonButton>
+                    </div>
                 </div>
 
                 {/* 사용 예시 */}
