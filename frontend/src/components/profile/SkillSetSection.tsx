@@ -62,8 +62,7 @@ export default function SkillSetSection({ skills, isLoading = false }: SkillSetS
           </button>
         )}
       </div>
-
-      <div className="flex flex-wrap p-[24px] gap-[24px] max-h-[180px] overflow-y-auto">
+      <div className="flex flex-wrap justify-center p-[24px] gap-[32px] max-h-[180px] overflow-y-auto">
         {skills.length > 0 ? (
           visibleSkills.map((skill, index) => (
             <SkillTag key={index} name={skill.name} />
