@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import solidflyImage from '../../assets/solidfly.png';
 
 const SKButterflyBackground = () => {
   const [butterflies, setButterflies] = useState([]);
@@ -182,7 +183,7 @@ const SKButterflyBackground = () => {
           }}
         >
           <img
-            src="/src/assets/solidfly.png"
+            src={solidflyImage}
             alt="SK Butterfly"
             className="w-full h-full object-contain"
             style={{ pointerEvents: 'none' }}
