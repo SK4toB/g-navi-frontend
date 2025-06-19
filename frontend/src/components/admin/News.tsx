@@ -27,7 +27,6 @@ export default function News() {
             const response = await newsApi.getAllNewsList(adminId);
             if (response.isSuccess && response.result) {
                 setApiNewsData(response.result);
-                console.log(response.result)
             } else {
                 setError(response.message || 'API 응답 오류');
             }
@@ -121,19 +120,19 @@ export default function News() {
                     <div className="flex gap-2">
                         <button
                             onClick={() => setStatusFilter('all')}
-                            className={`px-3 py-1 rounded text-sm ${statusFilter === 'all' ? 'bg-main-color text-white' : 'bg-gray-200'}`}
+                            className={`px-3 py-1 rounded text-sm ${statusFilter === 'all' ? 'bg-brand-indigo text-white' : 'bg-gray-200'}`}
                         >
                             전체
                         </button>
                         <button
                             onClick={() => setStatusFilter('registered')}
-                            className={`px-3 py-1 rounded text-sm ${statusFilter === 'registered' ? 'bg-main-color text-white' : 'bg-gray-200'}`}
+                            className={`px-3 py-1 rounded text-sm ${statusFilter === 'registered' ? 'bg-brand-indigo text-white' : 'bg-gray-200'}`}
                         >
                             등록
                         </button>
                         <button
                             onClick={() => setStatusFilter('unregistered')}
-                            className={`px-3 py-1 rounded text-sm ${statusFilter === 'unregistered' ? 'bg-main-color text-white' : 'bg-gray-200'}`}
+                            className={`px-3 py-1 rounded text-sm ${statusFilter === 'unregistered' ? 'bg-brand-indigo text-white' : 'bg-gray-200'}`}
                         >
                             미등록
                         </button>
