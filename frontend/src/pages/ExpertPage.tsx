@@ -1,15 +1,17 @@
+// frontend/src/pages/ExpertPage.tsx
 import { useState } from 'react';
 import { newsApi } from '../api/news';
 import CommonButton from '../components/common/CommonButton';
+import useAuthStore from '../store/authStore'; // 추가
 
 export default function ExpertPage() {
+    const { user } = useAuthStore(); // 추가
     const [articleUrl, setArticleUrl] = useState('');
     const [articleTitle, setArticleTitle] = useState('');
     const [error, setError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
 
-    const expertId = 1;
 
     const validateNaverNewsUrl = (url) => {
         const naverNewsPattern = /^https:\/\/n\.news\.naver\.com\//;
@@ -19,6 +21,12 @@ export default function ExpertPage() {
     const handleSubmit = async () => {
         setError('');
         setSuccessMessage('');
+
+        // 사용자 정보 확인
+        if (!user?.memberId) {
+            setError('로그인이 필요합니다.');
+            return;
+        }
 
         // 빈 값 체크
         if (!articleUrl.trim()) {
@@ -31,11 +39,12 @@ export default function ExpertPage() {
             setError('네이버 뉴스 링크만 등록 가능합니다.');
             return;
         }
+        
         setIsSubmitting(true);
 
         try {
             const response = await newsApi.registerNews(
-                expertId,
+                user.memberId, // expertId 대신 user.memberId 사용
                 articleTitle.trim(),
                 articleUrl.trim()
             );
@@ -59,6 +68,20 @@ export default function ExpertPage() {
         if (error) setError('');
         if (successMessage) setSuccessMessage('');
     };
+
+    // 로그인하지 않은 경우 처리
+    if (!user) {
+        return (
+            <div className="h-full flex flex-col items-center justify-center">
+                <div className="text-center text-2xl font-bold py-8 text-gray-800">
+                    로그인이 필요합니다
+                </div>
+                <p className="text-gray-600">
+                    카드뉴스 등록을 위해서는 로그인이 필요합니다.
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div className="h-full flex flex-col mt-40">
