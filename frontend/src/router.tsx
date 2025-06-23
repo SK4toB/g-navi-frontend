@@ -7,6 +7,7 @@ import ConversationPage from './pages/ConversationPage';
 import AdminPage from './pages/AdminPage';
 import ExpertPage from './pages/ExpertPage';
 import useAuthStore from './store/authStore';
+import DashBoardPage from './pages/DashBoardPage';
 
 // ADMIN 전용 라우트 보호 컴포넌트
 function AdminRoute({ children }: { children: React.ReactNode }) {
@@ -96,7 +97,15 @@ const router = createBrowserRouter([
                         <ExpertPage />
                     </ExpertRoute>
                 ),
-            }
+            },
+            {
+              path: 'dashboard',
+              element: (
+                  <AdminRoute>
+                      <DashBoardPage />
+                  </AdminRoute>
+              ),
+          },
         ]
     }
 ]);
