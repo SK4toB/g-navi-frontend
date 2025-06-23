@@ -181,7 +181,7 @@ export default function ConversationPage() {
                   className="relative z-10 w-[40px] h-[40px] object-contain"
                 />
               </div>
-            </div>
+            </div>+
             <ConversationContent
               messages={messages}
               height="h-[452px]"

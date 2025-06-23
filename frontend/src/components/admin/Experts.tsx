@@ -206,7 +206,7 @@ export default function Experts() {
                         </div>
                     ) : currentExperts.length > 0 ? (
                         currentExperts.map((expert) => (
-                            <div key={expert.memberId} className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm border border-gray-100">
+                            <div key={expert.memberId} className="flex min-w-[320px] items-center justify-between p-3 bg-white rounded-lg shadow-sm border border-gray-100">
                                 <div>
                                     <div className='flex items-center gap-2'>
                                         <span className={`text-xs px-1 py-1 rounded ${expert.role === 'ADMIN' ? 'bg-purple-100 text-purple-700' :
