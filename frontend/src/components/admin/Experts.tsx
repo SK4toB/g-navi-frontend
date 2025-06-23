@@ -134,7 +134,7 @@ export default function Experts() {
     }
 
     return (
-        <article className="Expert flex-[3] mr-20 flex flex-col h-full">
+        <article className="Expert flex-[3] flex flex-col h-full">
             <figure className="bg-white bg-opacity-80 rounded-lg shadow-md p-6 h-full flex flex-col">
                 {/* Search Bar */}
                 <div className="mb-6">
