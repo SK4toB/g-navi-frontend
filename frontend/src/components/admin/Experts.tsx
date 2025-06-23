@@ -123,7 +123,7 @@ export default function Experts() {
     // adminId가 없으면 에러 표시
     if (!adminId) {
         return (
-            <article className="Expert flex-[3] mr-20 flex flex-col h-full">
+            <article className="Expert flex-[3] flex flex-col h-full">
                 <figure className="bg-white rounded-lg shadow-md my-6 p-6 flex-1">
                     <div className="text-center text-red-500 py-8">
                         관리자 권한이 필요합니다.
@@ -135,7 +135,7 @@ export default function Experts() {
 
     return (
         <article className="Expert flex-[3] mr-20 flex flex-col h-full">
-            <figure className="bg-white bg-opacity-80 rounded-lg shadow-md my-6 p-6 flex-1">
+            <figure className="bg-white bg-opacity-80 rounded-lg shadow-md p-6 h-full flex flex-col">
                 {/* Search Bar */}
                 <div className="mb-6">
                     <input
@@ -194,59 +194,62 @@ export default function Experts() {
                 )}
 
                 {/* 현재 전문가 목록 */}
-                <div className="space-y-3">
-                    <div className="text-sm font-medium text-gray-700 mb-2 flex justify-between">
-                        <span>등록된 전문가</span>
-                        <span className="text-xs text-gray-500">총 {currentExperts.length}명</span>
-                    </div>
+                <div className="flex-1 overflow-y-auto">
 
-                    {loading ? (
-                        <div className="text-center text-gray-500 py-8">
-                            전문가 목록을 불러오는 중...
+                    <div className="space-y-3">
+                        <div className="text-sm font-medium text-gray-700 mb-2 flex justify-between">
+                            <span>등록된 전문가</span>
+                            <span className="text-xs text-gray-500">총 {currentExperts.length}명</span>
                         </div>
-                    ) : currentExperts.length > 0 ? (
-                        currentExperts.map((expert) => (
-                            <div key={expert.memberId} className="flex min-w-[320px] items-center justify-between p-3 bg-white rounded-lg shadow-sm border border-gray-100">
-                                <div>
-                                    <div className='flex items-center gap-2'>
-                                        <span className={`text-xs px-1 py-1 rounded ${expert.role === 'ADMIN' ? 'bg-purple-100 text-purple-700' :
-                                            expert.role === 'EXPERT' ? 'bg-blue-100 text-blue-700' :
-                                                'bg-gray-100 text-gray-700'
-                                            }`}>
-                                            {expert.role === 'ADMIN' ? '관리자' :
-                                                expert.role === 'EXPERT' ? '전문가' : '일반회원'}
-                                        </span>
-                                        <span className="font-medium">{expert.name}</span>
-                                    </div>
-                                    <div className="text-xs text-gray-500 mt-1">
-                                        가입일: {expert.joinDate}
-                                    </div>
-                                    <div className="text-xs mt-1">
 
-                                    </div>
-                                </div>
-                                <div className="flex gap-2">
-                                    {/* 관리자는 삭제 불가 */}
-                                    {expert.role !== 'ADMIN' && (
-                                        <button
-                                            onClick={() => handleRemoveExpert(expert.memberId, expert.name)}
-                                            className="text-sm text-red-600 hover:text-red-800 disabled:text-gray-400"
-                                            disabled={actionLoading !== null}
-                                        >
-                                            {actionLoading === expert.memberId ? '처리중...' : '해제'}
-                                        </button>
-                                    )}
-                                    {expert.role === 'ADMIN' && (
-                                        <span className="text-xs text-gray-400">변경불가</span>
-                                    )}
-                                </div>
+                        {loading ? (
+                            <div className="text-center text-gray-500 py-8">
+                                전문가 목록을 불러오는 중...
                             </div>
-                        ))
-                    ) : (
-                        <div className="text-center text-gray-500 py-8">
-                            등록된 전문가가 없습니다
-                        </div>
-                    )}
+                        ) : currentExperts.length > 0 ? (
+                            currentExperts.map((expert) => (
+                                <div key={expert.memberId} className="flex min-w-[320px] items-center justify-between p-3 bg-white rounded-lg shadow-sm border border-gray-100">
+                                    <div>
+                                        <div className='flex items-center gap-2'>
+                                            <span className={`text-xs px-1 py-1 rounded ${expert.role === 'ADMIN' ? 'bg-purple-100 text-purple-700' :
+                                                expert.role === 'EXPERT' ? 'bg-blue-100 text-blue-700' :
+                                                    'bg-gray-100 text-gray-700'
+                                                }`}>
+                                                {expert.role === 'ADMIN' ? '관리자' :
+                                                    expert.role === 'EXPERT' ? '전문가' : '일반회원'}
+                                            </span>
+                                            <span className="font-medium">{expert.name}</span>
+                                        </div>
+                                        <div className="text-xs text-gray-500 mt-1">
+                                            가입일: {expert.joinDate}
+                                        </div>
+                                        <div className="text-xs mt-1">
+
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        {/* 관리자는 삭제 불가 */}
+                                        {expert.role !== 'ADMIN' && (
+                                            <button
+                                                onClick={() => handleRemoveExpert(expert.memberId, expert.name)}
+                                                className="text-sm text-red-600 hover:text-red-800 disabled:text-gray-400"
+                                                disabled={actionLoading !== null}
+                                            >
+                                                {actionLoading === expert.memberId ? '처리중...' : '해제'}
+                                            </button>
+                                        )}
+                                        {expert.role === 'ADMIN' && (
+                                            <span className="text-xs text-gray-400">변경불가</span>
+                                        )}
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center text-gray-500 py-8">
+                                등록된 전문가가 없습니다
+                            </div>
+                        )}
+                    </div>
                 </div>
             </figure>
         </article>

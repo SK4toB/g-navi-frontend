@@ -113,8 +113,8 @@ export default function News() {
     }
 
     return (
-        <article className="News flex-[7] ml-20 flex flex-col h-full">
-            <div className="bg-white bg-opacity-80 rounded-lg shadow-md my-6 p-6 flex-1">
+        <article className="News flex-[7] flex flex-col h-full">
+            <div className="bg-white bg-opacity-80 rounded-lg shadow-md p-6 h-full flex flex-col">
                 {/* 필터 */}
                 <div className="flex justify-end mb-4 p-2">
                     <div className="flex gap-2">
@@ -153,80 +153,83 @@ export default function News() {
                 </figure>
 
                 {/* 뉴스 목록 */}
-                {filteredApiNews.map((item, index) => (
-                    <figure key={index} className="flex p-3 border-b border-gray-300 last:border-b-0 items-center hover:bg-gray-50 transition-colors">
-                        <a
-                            href={item.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="font-medium w-1/2 truncate pr-4 text-gray-600 hover:text-blue-800 hover:underline cursor-pointer"
-                            title={item.title}
-                        >
-                            {item.title}
-                        </a>
-                        <span className="text-gray-600 w-1/4 text-sm text-center">{item.expert}</span>
-                        <span className="text-gray-600 w-1/6 text-sm text-center hidden xl:block">{item.date}</span>
-                        {/* 상태 표시 */}
-                        <div className="w-24 gap-1 justify-center hidden xl:flex">
-                            <span className={`text-xs px-2 py-1 rounded-full ${item.status === '승인' ? 'bg-green-100 text-green-700' :
-                                item.status === '승인 대기' ? 'bg-yellow-100 text-yellow-700' :
-                                    item.status === '거절' ? 'bg-red-100 text-red-700' :
-                                        'bg-gray-100 text-gray-700'
-                                }`}>
-                                {item.status}
-                            </span>
-                        </div>
-                        {/* 관리 버튼 */}
-                        <div className="w-24 flex gap-1 justify-center">
-                            <div className="flex gap-1">
-                                {/* 승인 대기 상태: 승인/거절 버튼 */}
-                                {item.status === '승인 대기' && (
-                                    <>
-                                        {item.canApprove && (
-                                            <button
-                                                onClick={() => handleApprove(item.newsId)}
-                                                className="text-xs text-blue-600 hover:text-blue-800 px-1 disabled:text-gray-400"
-                                                disabled={actionLoading !== null}
-                                            >
-                                                승인
-                                            </button>
-                                        )}
-                                        {item.canReject && (
-                                            <button
-                                                onClick={() => handleReject(item.newsId)}
-                                                className="text-xs text-red-600 hover:text-red-800 px-1"
-                                            >
-                                                거절
-                                            </button>
-                                        )}
-                                    </>
-                                )}
+                <div className="flex-1 overflow-y-auto">
 
-                                {/* 승인 상태: 승인해제 버튼 */}
-                                {item.status === '승인됨' && (
-                                    <>
-                                        {item.canUnapprove && (
-                                            <button
-                                                onClick={() => handleUnapprove(item.newsId)}
-                                                className="text-xs text-orange-600 hover:text-orange-800 px-1"
-                                                disabled={actionLoading !== null}
-                                            >
-                                                승인해제
-                                            </button>
-                                        )}
-                                    </>
-                                )}
+                    {filteredApiNews.map((item, index) => (
+                        <figure key={index} className="flex p-3 border-b border-gray-300 last:border-b-0 items-center hover:bg-gray-50 transition-colors">
+                            <a
+                                href={item.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="font-medium w-1/2 truncate pr-4 text-gray-600 hover:text-blue-800 hover:underline cursor-pointer"
+                                title={item.title}
+                            >
+                                {item.title}
+                            </a>
+                            <span className="text-gray-600 w-1/4 text-sm text-center">{item.expert}</span>
+                            <span className="text-gray-600 w-1/6 text-sm text-center hidden xl:block">{item.date}</span>
+                            {/* 상태 표시 */}
+                            <div className="w-24 gap-1 justify-center hidden xl:flex">
+                                <span className={`text-xs px-2 py-1 rounded-full ${item.status === '승인' ? 'bg-green-100 text-green-700' :
+                                    item.status === '승인 대기' ? 'bg-yellow-100 text-yellow-700' :
+                                        item.status === '거절' ? 'bg-red-100 text-red-700' :
+                                            'bg-gray-100 text-gray-700'
+                                    }`}>
+                                    {item.status}
+                                </span>
                             </div>
-                        </div>
-                    </figure>
-                ))}
+                            {/* 관리 버튼 */}
+                            <div className="w-24 flex gap-1 justify-center">
+                                <div className="flex gap-1">
+                                    {/* 승인 대기 상태: 승인/거절 버튼 */}
+                                    {item.status === '승인 대기' && (
+                                        <>
+                                            {item.canApprove && (
+                                                <button
+                                                    onClick={() => handleApprove(item.newsId)}
+                                                    className="text-xs text-blue-600 hover:text-blue-800 px-1 disabled:text-gray-400"
+                                                    disabled={actionLoading !== null}
+                                                >
+                                                    승인
+                                                </button>
+                                            )}
+                                            {item.canReject && (
+                                                <button
+                                                    onClick={() => handleReject(item.newsId)}
+                                                    className="text-xs text-red-600 hover:text-red-800 px-1"
+                                                >
+                                                    거절
+                                                </button>
+                                            )}
+                                        </>
+                                    )}
 
-                {/* 필터 결과가 없을 때 */}
-                {filteredApiNews.length === 0 && (
-                    <div className="text-center text-gray-500 py-8">
-                        해당 상태의 뉴스가 없습니다.
-                    </div>
-                )}
+                                    {/* 승인 상태: 승인해제 버튼 */}
+                                    {item.status === '승인됨' && (
+                                        <>
+                                            {item.canUnapprove && (
+                                                <button
+                                                    onClick={() => handleUnapprove(item.newsId)}
+                                                    className="text-xs text-orange-600 hover:text-orange-800 px-1"
+                                                    disabled={actionLoading !== null}
+                                                >
+                                                    승인해제
+                                                </button>
+                                            )}
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        </figure>
+                    ))}
+
+                    {/* 필터 결과가 없을 때 */}
+                    {filteredApiNews.length === 0 && (
+                        <div className="text-center text-gray-500 py-8">
+                            해당 상태의 뉴스가 없습니다.
+                        </div>
+                    )}
+                </div>
             </div>
         </article>
     )

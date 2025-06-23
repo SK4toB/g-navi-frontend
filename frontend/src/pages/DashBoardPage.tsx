@@ -78,7 +78,7 @@ export default function DashBoardPage() {
             <div className="max-w-7xl mx-auto">
                 {/* 헤더 */}
                 <div className="mb-8">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-2">관리자 대시보드</h1>
+                    <h1 className="text-4xl font-bold text-gray-900 mb-2">관리자 페이지</h1>
                     <p className="text-gray-600">시스템 사용 현황을 한눈에 확인하세요</p>
                 </div>
 
