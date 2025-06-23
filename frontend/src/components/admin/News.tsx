@@ -114,7 +114,7 @@ export default function News() {
 
     return (
         <article className="News flex-[7] ml-20 flex flex-col h-full">
-            <div className="bg-white rounded-lg shadow-md my-6 p-6 flex-1">
+            <div className="bg-white bg-opacity-80 rounded-lg shadow-md my-6 p-6 flex-1">
                 {/* 필터 */}
                 <div className="flex justify-end mb-4 p-2">
                     <div className="flex gap-2">
