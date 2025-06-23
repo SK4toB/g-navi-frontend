@@ -181,7 +181,7 @@ export default function ConversationPage() {
                   className="relative z-10 w-[40px] h-[40px] object-contain"
                 />
               </div>
-            </div>+
+            </div>
             <ConversationContent
               messages={messages}
               height="h-[452px]"
@@ -197,10 +197,16 @@ export default function ConversationPage() {
           </>
         ) : (
           <>
-            <div className='mt-12'>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-3">
-                G Navi
-              </h1>
+            <div className='mt-8'>
+              <div className="relative w-[60px] h-[60px] flex items-center justify-center group mb-4 pl-1">
+                <div className="absolute inset-0 bg-[#FEEDE8] rounded-full"></div>
+                {/* 로고 이미지 */}
+                <img
+                  src={logo}
+                  alt="G-Navi Logo"
+                  className="relative z-10 w-[40px] h-[40px] object-contain"
+                />
+              </div>
             </div>
             <ConversationContent
               messages={messages}
