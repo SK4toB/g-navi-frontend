@@ -1,3 +1,4 @@
+// frontend/src/pages/Mypage.tsx
 import React from 'react';
 import CommonTitle from '../components/common/CommonTitle';
 import ProfileSection from '../components/profile/ProfileSection';
@@ -16,7 +17,7 @@ export default function Mypage() {
     // 홈 정보를 새로고침하는 함수
     const refreshHomeInfo = async () => {
         if (!user) return;
-        
+
         setIsLoadingHomeInfo(true);
         try {
             const homeResponse = await authApi.getHomeInfo();
@@ -28,6 +29,10 @@ export default function Mypage() {
         } finally {
             setIsLoadingHomeInfo(false);
         }
+    };
+
+    const handleLevelUpdate = async (newLevel: string) => {
+        useAuthStore.getState().updateHomeInfo({ level: newLevel });
     };
 
     // 비동기로 추가 데이터 가져오기
@@ -61,7 +66,7 @@ export default function Mypage() {
     const handleProjectAdded = async (newProject) => {
         // 프로젝트 목록 업데이트
         setProjects(prev => [...prev, newProject]);
-        
+
         // 홈 정보 새로고침 (스킬 정보 업데이트를 위해)
         await refreshHomeInfo();
     };
@@ -70,7 +75,7 @@ export default function Mypage() {
     const handleProjectDeleted = async (deletedProjectId) => {
         // 프로젝트 목록 업데이트
         setProjects(prev => prev.filter(project => project.projectId !== deletedProjectId));
-        
+
         // 홈 정보 새로고침 (스킬 정보 업데이트를 위해)
         await refreshHomeInfo();
     };
@@ -80,24 +85,39 @@ export default function Mypage() {
 
     return (
         <div className="flex flex-col items-center">
-            <CommonTitle>내 정보</CommonTitle>
-            
-            {/* user 정보 즉시 렌더링 */}
-            {user && <ProfileSection name={user.name} />}
-            
-            {/* skills 정보 렌더링 (로딩 상태 표시) */}
-            <SkillSetSection 
-                skills={skills} 
-                isLoading={isLoadingHomeInfo} 
-            />
-            
-            {/* 프로젝트 섹션 (모달 포함) */}
-            <ProjectSection 
-                projects={projects}
-                isLoading={isLoadingProjects}
-                onProjectAdded={handleProjectAdded}
-                onProjectDeleted={handleProjectDeleted}
-            />
+            {/* 제목 - 첫 번째 애니메이션 */}
+            <div className="animate-slide-up" style={{ animationDelay: '0s' }}>
+                <CommonTitle>내 정보</CommonTitle>
+            </div>
+
+            {/* ProfileSection - 두 번째 애니메이션 */}
+            <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
+                {user && (
+                    <ProfileSection
+                        name={user.name}
+                        level={homeInfo?.level}
+                        onLevelUpdate={handleLevelUpdate}
+                    />
+                )}
+            </div>
+
+            {/* SkillSetSection - 세 번째 애니메이션 */}
+            <div className="animate-slide-up" style={{ animationDelay: '0.4s' }}>
+                <SkillSetSection
+                    skills={skills}
+                    isLoading={isLoadingHomeInfo}
+                />
+            </div>
+
+            {/* ProjectSection - 네 번째 애니메이션 */}
+            <div className="animate-slide-up" style={{ animationDelay: '0.6s' }}>
+                <ProjectSection
+                    projects={projects}
+                    isLoading={isLoadingProjects}
+                    onProjectAdded={handleProjectAdded}
+                    onProjectDeleted={handleProjectDeleted}
+                />
+            </div>
         </div>
     );
 }

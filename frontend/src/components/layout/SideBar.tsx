@@ -216,13 +216,22 @@ export default function SideBar() {
 
         {/* 사용자 이름 (열린 상태에서만 표시) - ADMIN은 마이페이지 링크 없음 */}
         {isOpen && (
-          <div
-            className={`font-bold text-[20px] text-text-primary transition-colors relative group ${!isAdmin ? 'cursor-pointer underline hover:text-blue-600' : ''
-              }`}
-            onClick={!isAdmin ? () => handleNavigation('/mypage') : undefined}
-            title={!isAdmin ? "마이페이지" : undefined}
-          >
-            {user?.name}
+          <div className="flex items-center gap-2 relative group">
+            {/* 레벨 표시 - 이름 왼쪽에 */}
+            {homeInfo?.level && (
+              <span className="px-2 py-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs rounded-full font-medium">
+                {homeInfo.level}
+              </span>
+            )}
+
+            {/* 사용자 이름 */}
+            <div
+              className={`font-bold text-[20px] text-text-primary transition-colors ${!isAdmin ? 'cursor-pointer underline hover:text-blue-600' : ''}`}
+              onClick={!isAdmin ? () => handleNavigation('/mypage') : undefined}
+              title={!isAdmin ? "마이페이지" : undefined}
+            >
+              {user?.name}
+            </div>
 
             {/* 툴팁 - ADMIN이 아닌 경우만 */}
             {!isAdmin && (

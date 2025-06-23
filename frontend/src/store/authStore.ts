@@ -22,6 +22,7 @@ interface AuthState {
   login: (memberId: number, name: string, email: string, role: 'USER' | 'EXPERT' | 'ADMIN', isExpert: boolean) => void;
   logout: () => void;
   setHomeInfo: (homeInfo: HomeInfo) => void;
+  updateHomeInfo: (updates: Partial<HomeInfo>) => void;
   initializeAuth: () => void;
 }
 
@@ -51,6 +52,19 @@ const useAuthStore = create<AuthState>()(
       },
 
       setHomeInfo: (homeInfo) => set({ homeInfo }),
+
+      // updateHomeInfo 메서드 구현 추가
+      updateHomeInfo: (updates) => {
+        const currentHomeInfo = get().homeInfo;
+        if (currentHomeInfo) {
+          set({ 
+            homeInfo: { 
+              ...currentHomeInfo, 
+              ...updates 
+            } 
+          });
+        }
+      },
 
       initializeAuth: () => {
         const storedMemberId = localStorage.getItem('memberId');

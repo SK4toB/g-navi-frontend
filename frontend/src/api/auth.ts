@@ -57,10 +57,25 @@ export interface HomeResponseData {
   message: string;
   result: {
     userName: string;
+    level: string;
     skills: string[];
     projectNames: string[];
     recentChats: RecentChatItem[];
   };
+  isSuccess: boolean;
+}
+
+// 레벨 수정 요청 타입 추가
+export interface UpdateMemberLevelRequest {
+  memberId: number;
+  newLevel: 'CL1' | 'CL2' | 'CL3' | 'CL4' | 'CL5';
+}
+
+// 레벨 수정 응답 타입 추가
+export interface UpdateMemberLevelResponse {
+  code: string;
+  message: string;
+  result: string;
   isSuccess: boolean;
 }
 
@@ -72,17 +87,17 @@ export const authApi = {
 
   login: async (payload: LoginData): Promise<LoginResponseData> => {
     const data = await api.post<LoginResponseData>('/api/auth/login', payload);
-    
+
     if (data.result.memberId) {
       useAuthStore.getState().login(
-        data.result.memberId, 
-        data.result.name, 
-        data.result.email, 
-        data.result.role, 
+        data.result.memberId,
+        data.result.name,
+        data.result.email,
+        data.result.role,
         data.result.isExpert
       );
     }
-    
+
     return data;
   },
 
@@ -98,19 +113,19 @@ export const authApi = {
 
       // 서버에서 현재 사용자 정보 확인
       const data = await api.get<LoginResponseData>(`/api/auth/user/${memberId}`);
-      
+
       if (data.isSuccess) {
         // 로그인 상태 복원
         useAuthStore.getState().login(
-          data.result.memberId, 
-          data.result.name, 
-          data.result.email, 
-          data.result.role, 
+          data.result.memberId,
+          data.result.name,
+          data.result.email,
+          data.result.role,
           data.result.isExpert
         );
         return data;
       }
-      
+
       return null;
     } catch (error) {
       console.error('사용자 정보 확인 실패:', error);
@@ -122,15 +137,21 @@ export const authApi = {
   // 홈 정보 조회 API
   getHomeInfo: async (): Promise<HomeResponseData> => {
     const user = useAuthStore.getState().user;
-    
+
     if (!user) {
       throw new Error('로그인이 필요합니다.');
     }
-    
+
     const data = await api.get<HomeResponseData>(`/api/auth/${user.memberId}/home`, {
       params: { memberId: user.memberId }
     });
     console.log(data);
+    return data;
+  },
+
+  // 회원 레벨 수정 API 추가
+  updateMemberLevel: async (payload: UpdateMemberLevelRequest): Promise<UpdateMemberLevelResponse> => {
+    const data = await api.put<UpdateMemberLevelResponse>('/api/auth/members/level', payload);
     return data;
   },
 };
