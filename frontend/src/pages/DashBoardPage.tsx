@@ -4,6 +4,7 @@ import useAuthStore from '../store/authStore';
 import StatsCards from '../components/admin/dashboard/StatsCards';
 import LevelCharts from '../components/admin/dashboard/LevelCharts';
 import ChatCharts from '../components/admin/dashboard/ChatCharts';
+import Loading from '../components/common/Loading'; // 추가
 
 export default function DashBoardPage() {
     const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
@@ -25,9 +26,9 @@ export default function DashBoardPage() {
 
             try {
                 const response = await adminApi.getDashboardData(adminId);
-                console.log('Dashboard data:', response.result); // 데이터 구조 확인
-                console.log('userStatistics:', response.result?.userStatistics); // 유저 통계 확인
-                console.log('categoryStatistics:', response.result?.categoryStatistics); // 카테고리 통계 확인
+                console.log('Dashboard data:', response.result);
+                console.log('userStatistics:', response.result?.userStatistics);
+                console.log('categoryStatistics:', response.result?.categoryStatistics);
                 setDashboardData(response.result);
             } catch (err) {
                 setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.');
@@ -40,14 +41,7 @@ export default function DashBoardPage() {
     }, [adminId]);
 
     if (loading) {
-        return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-500 mx-auto"></div>
-                    <p className="mt-4 text-gray-600">데이터를 불러오는 중...</p>
-                </div>
-            </div>
-        );
+        return <Loading message="대시보드 데이터를 불러오는 중..." />;
     }
 
     if (error) {

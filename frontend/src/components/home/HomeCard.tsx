@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { newsApi } from '../../api/news';
 import type { NewsItem } from '../../api/news';
+import HomeCardSkeleton from './HomeCardSkeleton'; // 추가
 
 // 더미 이미지 생성
 const generateDummyImage = (index: number): string => {
@@ -18,7 +19,7 @@ const generateDummyImage = (index: number): string => {
 
 export default function HomeCard() {
     const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
-    const [scrollPosition, setScrollPosition] = useState(0); // 픽셀 단위로 변경
+    const [scrollPosition, setScrollPosition] = useState(0);
     const [newsData, setNewsData] = useState<NewsItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -26,11 +27,11 @@ export default function HomeCard() {
     // 화면 크기에 따른 보이는 카드 수와 카드 너비 계산 (0.8배 축소)
     const getCardInfo = (width: number) => {
         if (width >= 1024) {
-            return { visibleCards: 3, cardWidth: 256, gap: 19 }; // lg: 3개 (320 * 0.8 = 256, 24 * 0.8 = 19.2)
+            return { visibleCards: 3, cardWidth: 256, gap: 19 };
         } else if (width >= 768) {
-            return { visibleCards: 2, cardWidth: 224, gap: 16 }; // md: 2개 (280 * 0.8 = 224, 20 * 0.8 = 16)
+            return { visibleCards: 2, cardWidth: 224, gap: 16 };
         } else {
-            return { visibleCards: 1, cardWidth: 224, gap: 13 }; // sm: 1개 (280 * 0.8 = 224, 16 * 0.8 = 12.8)
+            return { visibleCards: 1, cardWidth: 224, gap: 13 };
         }
     };
 
@@ -66,16 +67,16 @@ export default function HomeCard() {
     useEffect(() => {
         const handleResize = () => {
             setWindowWidth(window.innerWidth);
-            setScrollPosition(0); // 리사이즈 시 처음으로 리셋
+            setScrollPosition(0);
         };
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const registeredNews = useMemo(() => newsData, [newsData]);                // 승인된 뉴스 데이터
+    const registeredNews = useMemo(() => newsData, [newsData]);
     const totalContentWidth = registeredNews.length * cardInfo.cardWidth + (registeredNews.length - 1) * cardInfo.gap;
-    const maxScrollDistance = Math.max(0, totalContentWidth - containerWidth); // 스크롤 가능한 최대 거리 (픽셀)
-    const sliderMax = 100;  // 슬라이더 최대값
+    const maxScrollDistance = Math.max(0, totalContentWidth - containerWidth);
+    const sliderMax = 100;
 
     const handleSliderChange = (value: number) => {
         const newPosition = (value / sliderMax) * maxScrollDistance;
@@ -93,7 +94,25 @@ export default function HomeCard() {
         const newPosition = Math.max(scrollPosition - step, 0);
         setScrollPosition(newPosition);
     };
+    
     const currentSliderValue = maxScrollDistance > 0 ? (scrollPosition / maxScrollDistance) * sliderMax : 0;
+
+    // 로딩 중일 때 스켈레톤 표시
+    if (loading) {
+        return <HomeCardSkeleton />;
+    }
+
+    // 에러 발생 시 간단한 메시지만 표시 (홈페이지니까 크게 문제되지 않도록)
+    if (error) {
+        return (
+            <div className="w-full max-w-6xl mx-auto px-4 my-4">
+                <div className='py-8 font-bold text-lg' style={{ width: containerWidth, margin: '0 auto' }}>NEWS</div>
+                <div className="text-center text-gray-500 py-8">
+                    뉴스를 불러올 수 없습니다.
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="w-full max-w-6xl mx-auto px-4 my-4">
@@ -137,7 +156,7 @@ export default function HomeCard() {
                                 className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer flex-shrink-0 mb-3"
                                 style={{ width: cardInfo.cardWidth }}
                             >
-                                {/* 이미지 (32px 축소: 40 * 0.8 = 32) */}
+                                {/* 이미지 */}
                                 <div className="h-32 bg-gray-200">
                                     <img
                                         src={item.thumbnailUrl}
@@ -146,7 +165,7 @@ export default function HomeCard() {
                                     />
                                 </div>
 
-                                {/* 내용 (25.6px 축소: 32 * 0.8 = 25.6) */}
+                                {/* 내용 */}
                                 <div className="p-3 h-26 flex flex-col justify-between">
                                     <h3 className="text-base font-semibold text-gray-800 hover:text-blue-600 transition-colors">
                                         <a

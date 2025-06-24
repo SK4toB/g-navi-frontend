@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { newsApi } from '../../api/news';
 import type { NewsItem } from '../../api/news';
 import useAuthStore from '../../store/authStore';
+import Loading from '../common/Loading'; // 추가
 
 export default function News() {
     const [statusFilter, setStatusFilter] = useState('all');
@@ -112,6 +113,21 @@ export default function News() {
         );
     }
 
+    // 로딩 중일 때
+    if (loading) {
+        return (
+            <article className="News flex-[7] flex flex-col h-full">
+                <div className="bg-white bg-opacity-80 rounded-lg shadow-md p-6 h-full flex flex-col">
+                    <Loading 
+                        message="뉴스 목록을 불러오는 중..." 
+                        fullScreen={false}
+                        size="md"
+                    />
+                </div>
+            </article>
+        );
+    }
+
     return (
         <article className="News flex-[7] flex flex-col h-full">
             <div className="bg-white bg-opacity-80 rounded-lg shadow-md p-6 h-full flex flex-col">
@@ -139,6 +155,18 @@ export default function News() {
                     </div>
                 </div>
 
+                {/* 에러 메시지 */}
+                {error && (
+                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <div className="flex items-center">
+                            <svg className="w-4 h-4 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                            <span className="text-red-700 text-sm">{error}</span>
+                        </div>
+                    </div>
+                )}
+
                 {/* 헤더 */}
                 <figure className="flex p-3 border-b-2 border-gray-400 mb-2">
                     <span className="font-bold pr-4 lg:w-1/2 w-3/5">기사제목</span>
@@ -154,7 +182,6 @@ export default function News() {
 
                 {/* 뉴스 목록 */}
                 <div className="flex-1 overflow-y-auto">
-
                     {filteredApiNews.map((item, index) => (
                         <figure key={index} className="flex p-3 border-b border-gray-300 last:border-b-0 items-center hover:bg-gray-50 transition-colors">
                             <a
@@ -190,15 +217,16 @@ export default function News() {
                                                     className="text-xs text-blue-600 hover:text-blue-800 px-1 disabled:text-gray-400"
                                                     disabled={actionLoading !== null}
                                                 >
-                                                    승인
+                                                    {actionLoading === item.newsId ? '처리중...' : '승인'}
                                                 </button>
                                             )}
                                             {item.canReject && (
                                                 <button
                                                     onClick={() => handleReject(item.newsId)}
-                                                    className="text-xs text-red-600 hover:text-red-800 px-1"
+                                                    className="text-xs text-red-600 hover:text-red-800 px-1 disabled:text-gray-400"
+                                                    disabled={actionLoading !== null}
                                                 >
-                                                    거절
+                                                    {actionLoading === item.newsId ? '처리중...' : '거절'}
                                                 </button>
                                             )}
                                         </>
@@ -210,10 +238,10 @@ export default function News() {
                                             {item.canUnapprove && (
                                                 <button
                                                     onClick={() => handleUnapprove(item.newsId)}
-                                                    className="text-xs text-orange-600 hover:text-orange-800 px-1"
+                                                    className="text-xs text-orange-600 hover:text-orange-800 px-1 disabled:text-gray-400"
                                                     disabled={actionLoading !== null}
                                                 >
-                                                    승인해제
+                                                    {actionLoading === item.newsId ? '처리중...' : '승인해제'}
                                                 </button>
                                             )}
                                         </>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { adminApi } from '../../api/admin';
 import type { Member } from '../../api/admin';
 import useAuthStore from '../../store/authStore';
+import Loading from '../common/Loading'; // 추가
 
 export default function Experts() {
     const [searchTerm, setSearchTerm] = useState('');
@@ -133,6 +134,21 @@ export default function Experts() {
         );
     }
 
+    // 로딩 중일 때
+    if (loading) {
+        return (
+            <article className="Expert flex-[3] flex flex-col h-full">
+                <figure className="bg-white bg-opacity-80 rounded-lg shadow-md p-6 h-full flex flex-col">
+                    <Loading 
+                        message="전문가 목록을 불러오는 중..." 
+                        fullScreen={false}
+                        size="md"
+                    />
+                </figure>
+            </article>
+        );
+    }
+
     return (
         <article className="Expert flex-[3] flex flex-col h-full">
             <figure className="bg-white bg-opacity-80 rounded-lg shadow-md p-6 h-full flex flex-col">
@@ -195,18 +211,13 @@ export default function Experts() {
 
                 {/* 현재 전문가 목록 */}
                 <div className="flex-1 overflow-y-auto">
-
                     <div className="space-y-3">
                         <div className="text-sm font-medium text-gray-700 mb-2 flex justify-between">
                             <span>등록된 전문가</span>
                             <span className="text-xs text-gray-500">총 {currentExperts.length}명</span>
                         </div>
 
-                        {loading ? (
-                            <div className="text-center text-gray-500 py-8">
-                                전문가 목록을 불러오는 중...
-                            </div>
-                        ) : currentExperts.length > 0 ? (
+                        {currentExperts.length > 0 ? (
                             currentExperts.map((expert) => (
                                 <div key={expert.memberId} className="flex min-w-[320px] items-center justify-between p-3 bg-white rounded-lg shadow-sm border border-gray-100">
                                     <div>
@@ -222,9 +233,6 @@ export default function Experts() {
                                         </div>
                                         <div className="text-xs text-gray-500 mt-1">
                                             가입일: {expert.joinDate}
-                                        </div>
-                                        <div className="text-xs mt-1">
-
                                         </div>
                                     </div>
                                     <div className="flex gap-2">
