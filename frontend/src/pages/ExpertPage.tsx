@@ -90,7 +90,7 @@ export default function ExpertPage() {
             </div>
 
             <div className="max-w-2xl mx-auto w-full mt-10 px-6">
-                <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="bg-white bg-opacity-80 rounded-lg shadow-md p-6">
                     <h2 className="text-lg font-semibold mb-8 text-gray-700">
                         카드 뉴스 등록 요청
                     </h2>
@@ -153,7 +153,7 @@ export default function ExpertPage() {
                 </div>
 
                 {/* 사용 예시 */}
-                <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                <div className="mt-6 p-4 bg-gray-50 bg-opacity-80 rounded-lg">
                     <h3 className="text-sm font-medium text-gray-700 mb-2">올바른 링크 예시:</h3>
                     <div className="text-sm text-gray-600 font-mono bg-white p-2 rounded border">
                         https://n.news.naver.com/article/...
