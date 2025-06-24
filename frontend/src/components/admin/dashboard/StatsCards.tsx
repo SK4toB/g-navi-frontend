@@ -1,12 +1,30 @@
-import { type DashboardData } from "../../../api/admin";
+import { type DashboardData, type LevelSkillStatistics } from "../../../api/admin";
 
 interface StatsCardsProps {
     data: DashboardData;
+    skillsData?: LevelSkillStatistics | null;
 }
 
-export default function StatsCards({ data }: StatsCardsProps) {
-    // 활성 레벨 계산 (사용자가 있는 레벨의 개수)
-    const activeLevels = Object.values(data.userStatistics.usersByLevel).filter(count => count > 0).length;
+export default function StatsCards({ data, skillsData }: StatsCardsProps) {
+    // 총 스킬 수 계산
+    const totalSkills = skillsData ? Object.values(skillsData).reduce((total, level) => total + level.totalSkillCount, 0) : 0;
+    
+    // 가장 많이 사용되는 스킬 찾기
+    const topSkill = skillsData ? (() => {
+        let maxCount = 0;
+        let topSkillName = '';
+        
+        Object.values(skillsData).forEach(level => {
+            level.skills.forEach(skill => {
+                if (skill.userCount > maxCount) {
+                    maxCount = skill.userCount;
+                    topSkillName = skill.skillName;
+                }
+            });
+        });
+        
+        return { name: topSkillName, count: maxCount };
+    })() : { name: '', count: 0 };
 
     // 아이콘 컴포넌트들
     const UserIcon = () => (
@@ -27,9 +45,9 @@ export default function StatsCards({ data }: StatsCardsProps) {
         </svg>
     );
 
-    const LevelIcon = () => (
+    const SkillIcon = () => (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
         </svg>
     );
 
@@ -74,15 +92,20 @@ export default function StatsCards({ data }: StatsCardsProps) {
                 </div>
             </div>
 
-            {/* 활성 레벨 */}
+            {/* 총 스킬 수 */}
             <div className="bg-white bg-opacity-80 rounded-lg shadow-sm px-4 py-6 border-l-4 border-amber-500">
                 <div className="flex items-center">
                     <div className="flex-1">
-                        <h3 className="text-lg font-medium text-gray-900">활성 레벨</h3>
-                        <p className="text-3xl font-bold text-amber-600">{activeLevels}</p>
+                        <h3 className="text-lg font-medium text-gray-900">총 스킬 수</h3>
+                        <p className="text-3xl font-bold text-amber-600">{totalSkills}</p>
+                        {topSkill.name && (
+                            <p className="text-xs text-gray-500 mt-1">
+                                인기: {topSkill.name} ({topSkill.count}명)
+                            </p>
+                        )}
                     </div>
                     <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center text-amber-600">
-                        <LevelIcon />
+                        <SkillIcon />
                     </div>
                 </div>
             </div>
