@@ -147,15 +147,15 @@ export default function ProjectFormModal({ isOpen, onClose, onProjectAdded }: Pr
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+    <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-start justify-center z-[9999] pt-12 overflow-y-auto">
+      <div className="bg-white rounded-lg max-w-4xl w-full mx-4 my-8 shadow-xl">
         <div className="p-6">
           {/* 모달 헤더 */}
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-[#1E293B]">프로젝트 추가</h2>
+            <h2 className="text-2xl font-bold text-gray-800">프로젝트 추가</h2>
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 text-2xl"
+              className="text-gray-400 hover:text-gray-600 text-2xl font-bold transition-colors"
             >
               ×
             </button>
@@ -163,55 +163,55 @@ export default function ProjectFormModal({ isOpen, onClose, onProjectAdded }: Pr
           
           <form onSubmit={handleSubmit}>
             {/* 폼 내용 */}
-            <div className="border border-[#E2E8F0] rounded-lg overflow-hidden">
+            <div className="border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
               {/* 첫 번째 행: 프로젝트명(도메인) */}
-              <div className="border-b border-[#E2E8F0] grid grid-cols-8 gap-0">
-                <div className="p-4 col-span-2 font-medium text-[#1E293B] border-r border-[#E2E8F0] bg-[#F8FAFC]">프로젝트명 / 도메인</div>
-                <div className="p-4 col-span-3 border-r border-[#E2E8F0]">
+              <div className="border-b border-gray-200 grid grid-cols-8 gap-0">
+                <div className="p-4 col-span-2 font-medium text-gray-700 border-r border-gray-200 bg-gray-100">프로젝트명 / 도메인</div>
+                <div className="p-4 col-span-3 border-r border-gray-200 bg-white">
                   <input
                     type="text"
                     value={formData.projectName}
                     onChange={(e) => handleInputChange('projectName', e.target.value)}
                     placeholder="프로젝트명을 입력하세요"
-                    className="w-full px-3 py-2 border border-[#D1D5DB] rounded-md focus:outline-none focus:ring-2 focus:ring-[#122250]"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
                 </div>
-                <div className="p-4 col-span-3">
+                <div className="p-4 col-span-3 bg-white">
                   <input
                     type="text"
                     value={formData.domain}
                     onChange={(e) => handleInputChange('domain', e.target.value)}
                     placeholder="도메인 (예: FE/BE, 금융 등)"
-                    className="w-full px-3 py-2 border border-[#D1D5DB] rounded-md focus:outline-none focus:ring-2 focus:ring-[#122250]"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
                 </div>
               </div>
 
               {/* 두 번째 행: 기간, 규모 구분 */}
-              <div className="border-b border-[#E2E8F0] grid grid-cols-8 gap-0">
-                <div className="p-4 col-span-2 font-medium text-[#1E293B] border-r border-[#E2E8F0] bg-[#F8FAFC]">기간 / 규모</div>
-                <div className="p-4 col-span-4 flex gap-2 items-center border-r border-[#E2E8F0]">
+              <div className="border-b border-gray-200 grid grid-cols-8 gap-0">
+                <div className="p-4 col-span-2 font-medium text-gray-700 border-r border-gray-200 bg-gray-100">기간 / 규모</div>
+                <div className="p-4 col-span-4 flex gap-2 items-center border-r border-gray-200 bg-white">
                   <input
                     type="date"
                     value={formData.startDate}
                     onChange={(e) => handleInputChange('startDate', e.target.value)}
-                    className="flex-1 px-3 py-2 border border-[#D1D5DB] rounded-md focus:outline-none focus:ring-2 focus:ring-[#122250]"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
-                  <span>~</span>
+                  <span className="text-gray-500">~</span>
                   <input
                     type="date"
                     value={formData.endDate}
                     onChange={(e) => handleInputChange('endDate', e.target.value)}
-                    className="flex-1 px-3 py-2 border border-[#D1D5DB] rounded-md focus:outline-none focus:ring-2 focus:ring-[#122250]"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-                <div className="p-4 col-span-2">
+                <div className="p-4 col-span-2 bg-white">
                   <select
                     value={formData.projectScale}
                     onChange={(e) => handleInputChange('projectScale', e.target.value)}
-                    className="w-full px-3 py-2 border border-[#D1D5DB] rounded-md focus:outline-none focus:ring-2 focus:ring-[#122250]"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="">규모 구분</option>
                     {PROJECT_SCALES.map((scale) => (
@@ -224,13 +224,13 @@ export default function ProjectFormModal({ isOpen, onClose, onProjectAdded }: Pr
               </div>
 
               {/* 세 번째 행: 나의 역할 */}
-              <div className="border-b border-[#E2E8F0] grid grid-cols-8 gap-0">
-                <div className="p-4 col-span-2 font-medium text-[#1E293B] border-r border-[#E2E8F0] bg-[#F8FAFC]">나의 역할 / 기술 스택</div>
-                <div className="p-4 col-span-2 border-r border-[#E2E8F0]">
+              <div className="border-b border-gray-200 grid grid-cols-8 gap-0">
+                <div className="p-4 col-span-2 font-medium text-gray-700 border-r border-gray-200 bg-gray-100">나의 역할 / 기술 스택</div>
+                <div className="p-4 col-span-2 border-r border-gray-200 bg-white">
                   <select
                     value={formData.userRole}
                     onChange={(e) => handleInputChange('userRole', e.target.value)}
-                    className="w-full px-3 py-2 border border-[#D1D5DB] rounded-md focus:outline-none focus:ring-2 focus:ring-[#122250]"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
                   >
                     <option value="">역할을 선택하세요</option>
@@ -241,46 +241,46 @@ export default function ProjectFormModal({ isOpen, onClose, onProjectAdded }: Pr
                     ))}
                   </select>
                 </div>
-                <div className="p-4 col-span-4 ">
-                <div className="flex gap-2 mb-3">
+                <div className="p-4 col-span-4 bg-white">
+                  <div className="flex gap-2 mb-3">
                     <input
                       type="text"
                       value={currentSkill}
                       onChange={(e) => setCurrentSkill(e.target.value)}
                       placeholder="기술 스택을 직접 입력하세요"
-                      className="flex-1 px-3 py-2 border border-[#D1D5DB] rounded-md focus:outline-none focus:ring-2 focus:ring-[#122250]"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       onKeyPress={(e) => {
                         if (e.key === 'Enter') {
                           e.preventDefault();
                           handleSkillAdd();
                         }
                       }}
-                      />
+                    />
                     <button
                       type="button"
                       onClick={handleSkillAdd}
-                      className="px-4 py-2 bg-[#122250] text-white rounded-md hover:bg-[#1e3a5f] transition-colors"
-                      >
+                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                    >
                       추가
                     </button>
-                      </div>
                   </div>
+                </div>
               </div>
 
               {/* 네 번째 행: 기술 스택 */}
-              <div className="grid grid-cols-2 gap-4 p-4">
+              <div className="grid grid-cols-2 gap-4 p-4 bg-white">
                 {/* 왼쪽: 추천 기술 스택 (선택되지 않은 것만 표시) */}
                 <div>
                   <p className="text-sm font-medium text-gray-700 mb-2">
                     추천 기술 스택 ({availableSkillsFiltered.length}개):
                   </p>
-                  <div className="grid grid-cols-1 gap-1 max-h-40 overflow-y-auto border border-gray-200 p-2 rounded">
+                  <div className="grid grid-cols-1 gap-1 max-h-40 overflow-y-auto border border-gray-300 p-2 rounded bg-gray-50">
                     {availableSkillsFiltered.map((skill) => (
                       <button
                         key={skill}
                         type="button"
                         onClick={() => handleSkillSelect(skill)}
-                        className="text-left px-2 py-1 text-sm hover:bg-blue-50 hover:text-blue-700 rounded transition-colors"
+                        className="text-left px-2 py-1 text-sm hover:bg-blue-100 hover:text-blue-700 rounded transition-colors"
                       >
                         {skill}
                       </button>
@@ -298,7 +298,7 @@ export default function ProjectFormModal({ isOpen, onClose, onProjectAdded }: Pr
                   <p className="text-sm font-medium text-gray-700 mb-2">
                     선택된 기술 스택 ({formData.skills.length}개):
                   </p>
-                  <div className="min-h-[100px] border border-gray-200 p-2 rounded">
+                  <div className="min-h-[100px] border border-gray-300 p-2 rounded bg-gray-50">
                     <div className="flex flex-wrap gap-2">
                       {formData.skills.map((skill, index) => (
                         <span
@@ -309,7 +309,7 @@ export default function ProjectFormModal({ isOpen, onClose, onProjectAdded }: Pr
                           <button
                             type="button"
                             onClick={() => handleSkillRemove(skill)}
-                            className="ml-1 text-blue-600 hover:text-blue-800"
+                            className="ml-1 text-blue-600 hover:text-blue-800 font-bold"
                           >
                             ×
                           </button>
@@ -331,14 +331,14 @@ export default function ProjectFormModal({ isOpen, onClose, onProjectAdded }: Pr
               <button
                 type="button"
                 onClick={onClose}
-                className="px-6 py-2 border border-[#D1D5DB] text-[#374151] rounded-md hover:bg-[#F9FAFB] transition-colors"
+                className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
               >
                 취소
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-6 py-2 bg-[#122250] text-white rounded-md hover:bg-[#1e3a5f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? '추가 중...' : '프로젝트 추가'}
               </button>
