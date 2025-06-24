@@ -1,6 +1,6 @@
 // frontend/src/components/layout/SideBar.tsx
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom'; // useLocation 추가
 import useAuthStore from '../../store/authStore';
 import { authApi } from '../../api/auth';
 import { newsApi, type NewsItem } from '../../api/news';
@@ -16,10 +16,27 @@ export default function SideBar() {
   const [actionLoading, setActionLoading] = React.useState<number | null>(null);
   const [deletingChatId, setDeletingChatId] = React.useState<string | null>(null);
   const navigate = useNavigate();
+  const location = useLocation(); // 현재 경로 확인을 위해 추가
 
   const isAdmin = user?.role === 'ADMIN';
   const isExpert = user?.role === 'EXPERT';
   const isUser = user?.role === 'USER';
+
+  // 현재 경로에 따른 활성 상태 확인 함수
+  const isActivePage = (path: string) => {
+    if (path === '/') {
+      return location.pathname === '/';
+    }
+    if (path === '/conversation') {
+      return location.pathname.startsWith('/conversation');
+    }
+    return location.pathname === path;
+  };
+
+  // 활성 페이지일 때 적용할 배경 스타일
+  const getActiveStyle = (path: string) => {
+    return isActivePage(path) ? 'bg-[#FEEDE8]' : 'bg-transparent hover:bg-gray-100';
+  };
 
   const toggleOpen = () => {
     setIsOpen(!isOpen);
@@ -174,7 +191,6 @@ export default function SideBar() {
     }
   };
 
-
   // 대화 목록 정렬 (lastUpdated 기준 내림차순)
   const sortedRecentChats = React.useMemo(() => {
     if (!homeInfo?.recentChats) return [];
@@ -250,7 +266,7 @@ export default function SideBar() {
           <div className="flex justify-center p-[12px]">
             <button
               onClick={() => handleNavigation('/')}
-              className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
+              className={`w-[40px] h-[40px] flex items-center justify-center p-0 border-none cursor-pointer rounded-full transition-colors relative group ${getActiveStyle('/')}`}
               title="홈"
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
@@ -267,7 +283,7 @@ export default function SideBar() {
             <div className="flex justify-center p-[12px]">
               <button
                 onClick={() => handleNavigation('/mypage')}
-                className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
+                className={`w-[40px] h-[40px] flex items-center justify-center p-0 border-none cursor-pointer rounded-full transition-colors relative group ${getActiveStyle('/mypage')}`}
                 title="마이페이지"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
@@ -286,7 +302,7 @@ export default function SideBar() {
             <div className="flex justify-center p-[12px]">
               <button
                 onClick={() => handleNavigation('/conversation')}
-                className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
+                className={`w-[40px] h-[40px] flex items-center justify-center p-0 border-none cursor-pointer rounded-full transition-colors relative group ${getActiveStyle('/conversation')}`}
                 title="새 채팅 시작"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
@@ -305,7 +321,7 @@ export default function SideBar() {
             <div className="flex justify-center p-[12px]">
               <button
                 onClick={() => handleNavigation('/expert')}
-                className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
+                className={`w-[40px] h-[40px] flex items-center justify-center p-0 border-none cursor-pointer rounded-full transition-colors relative group ${getActiveStyle('/expert')}`}
                 title="카드 뉴스 신청 페이지"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
@@ -323,7 +339,7 @@ export default function SideBar() {
             <div className="flex justify-center p-[12px]">
               <button
                 onClick={() => handleNavigation('/dashboard')}
-                className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
+                className={`w-[40px] h-[40px] flex items-center justify-center p-0 border-none cursor-pointer rounded-full transition-colors relative group ${getActiveStyle('/dashboard')}`}
                 title="대시보드"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
@@ -342,7 +358,7 @@ export default function SideBar() {
             <div className="flex justify-center p-[12px]">
               <button
                 onClick={() => handleNavigation('/admin')}
-                className="w-[40px] h-[40px] flex items-center justify-center p-0 bg-transparent border-none cursor-pointer hover:bg-gray-100 rounded-full transition-colors relative group"
+                className={`w-[40px] h-[40px] flex items-center justify-center p-0 border-none cursor-pointer rounded-full transition-colors relative group ${getActiveStyle('/admin')}`}
                 title="관리자 페이지"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
