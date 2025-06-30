@@ -87,6 +87,36 @@ export interface GetDashboardResponse {
   result: DashboardData;
 }
 
+// 레벨별 스킬 통계 인터페이스 추가
+export interface SkillStatistic {
+  skillName: string;
+  userCount: number;
+  projectCount: number;
+  percentage: number;
+}
+
+export interface LevelSkillData {
+  level: string;
+  totalSkillCount: number;
+  memberCount: number;
+  skills: SkillStatistic[];
+}
+
+export interface LevelSkillStatistics {
+  CL1: LevelSkillData;
+  CL2: LevelSkillData;
+  CL3: LevelSkillData;
+  CL4: LevelSkillData;
+  CL5: LevelSkillData;
+}
+
+export interface GetLevelSkillsResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: LevelSkillStatistics;
+}
+
 export const adminApi = {
   // 모든 회원 조회 (GET /api/admin/members?adminId={adminId})
   getAllMembers: async (adminId: number): Promise<GetAllMembersResponse> => {
@@ -115,6 +145,17 @@ export const adminApi = {
   getDashboardData: async (adminId: number): Promise<GetDashboardResponse> => {
     const data = await api.get<GetDashboardResponse>(
       '/api/admin/dashboard',
+      {
+        params: { adminId }
+      }
+    );
+    return data;
+  },
+
+  // 레벨별 스킬 통계 조회 (GET /api/admin/levels/skills?adminId={adminId})
+  getLevelSkills: async (adminId: number): Promise<GetLevelSkillsResponse> => {
+    const data = await api.get<GetLevelSkillsResponse>(
+      '/api/admin/levels/skills',
       {
         params: { adminId }
       }

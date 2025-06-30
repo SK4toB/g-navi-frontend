@@ -1,12 +1,40 @@
-import { type DashboardData } from "../../../api/admin";
+import { type DashboardData, type LevelSkillStatistics } from "../../../api/admin";
 
 interface StatsCardsProps {
     data: DashboardData;
+    skillData?: LevelSkillStatistics | null; // 스킬 데이터 추가
 }
 
-export default function StatsCards({ data }: StatsCardsProps) {
-    // 활성 레벨 계산 (사용자가 있는 레벨의 개수)
-    const activeLevels = Object.values(data.userStatistics.usersByLevel).filter(count => count > 0).length;
+export default function StatsCards({ data, skillData }: StatsCardsProps) {
+    // 가장 인기 있는 스킬 계산
+    const getMostPopularSkill = () => {
+        if (!skillData) return { name: '데이터 없음', userCount: 0 };
+        
+        const allSkills: Array<{ skillName: string; userCount: number }> = [];
+        
+        // 모든 레벨의 스킬을 하나의 배열로 합치기
+        Object.values(skillData).forEach(levelData => {
+            levelData.skills.forEach(skill => {
+                const existingSkill = allSkills.find(s => s.skillName === skill.skillName);
+                if (existingSkill) {
+                    existingSkill.userCount += skill.userCount;
+                } else {
+                    allSkills.push({
+                        skillName: skill.skillName,
+                        userCount: skill.userCount
+                    });
+                }
+            });
+        });
+        
+        // 사용자 수 기준으로 정렬하여 가장 인기 있는 스킬 반환
+        const sortedSkills = allSkills.sort((a, b) => b.userCount - a.userCount);
+        return sortedSkills.length > 0 
+            ? { name: sortedSkills[0].skillName, userCount: sortedSkills[0].userCount }
+            : { name: '스킬 없음', userCount: 0 };
+    };
+
+    const mostPopularSkill = getMostPopularSkill();
 
     // 아이콘 컴포넌트들
     const UserIcon = () => (
@@ -27,9 +55,9 @@ export default function StatsCards({ data }: StatsCardsProps) {
         </svg>
     );
 
-    const LevelIcon = () => (
+    const SkillIcon = () => (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
         </svg>
     );
 
@@ -74,15 +102,20 @@ export default function StatsCards({ data }: StatsCardsProps) {
                 </div>
             </div>
 
-            {/* 활성 레벨 */}
-            <div className="bg-white bg-opacity-80 rounded-lg shadow-sm px-4 py-6 border-l-4 border-amber-500">
+            {/* 가장 인기 있는 스킬 */}
+            <div className="bg-white bg-opacity-80 rounded-lg shadow-sm px-4 py-6 border-l-4 border-emerald-500">
                 <div className="flex items-center">
                     <div className="flex-1">
-                        <h3 className="text-lg font-medium text-gray-900">활성 레벨</h3>
-                        <p className="text-3xl font-bold text-amber-600">{activeLevels}</p>
+                        <h3 className="text-lg font-medium text-gray-900">인기 스킬</h3>
+                        <div className="mt-1">
+                            <p className="text-2xl font-bold text-emerald-600">{mostPopularSkill.userCount}명</p>
+                            <p className="text-sm text-gray-600 truncate" title={mostPopularSkill.name}>
+                                {mostPopularSkill.name}
+                            </p>
+                        </div>
                     </div>
-                    <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center text-amber-600">
-                        <LevelIcon />
+                    <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600">
+                        <SkillIcon />
                     </div>
                 </div>
             </div>

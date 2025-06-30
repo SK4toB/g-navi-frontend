@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
-import { adminApi, type DashboardData } from "../api/admin"
+import { adminApi, type DashboardData, type LevelSkillStatistics } from "../api/admin"
 import useAuthStore from '../store/authStore';
 import StatsCards from '../components/admin/dashboard/StatsCards';
 import LevelCharts from '../components/admin/dashboard/LevelCharts';
 import ChatCharts from '../components/admin/dashboard/ChatCharts';
-import Loading from '../components/common/Loading'; // 추가
+import Loading from '../components/common/Loading';
 
 export default function DashBoardPage() {
     const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+    const [skillData, setSkillData] = useState<LevelSkillStatistics | null>(null);
     const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -16,7 +17,7 @@ export default function DashBoardPage() {
     const adminId = user?.memberId;
 
     useEffect(() => {
-        const fetchDashboardData = async () => {
+        const fetchData = async () => {
             if (!adminId) {
                 return;
             }
@@ -25,11 +26,20 @@ export default function DashBoardPage() {
             setError(null);
 
             try {
-                const response = await adminApi.getDashboardData(adminId);
-                console.log('Dashboard data:', response.result);
-                console.log('userStatistics:', response.result?.userStatistics);
-                console.log('categoryStatistics:', response.result?.categoryStatistics);
-                setDashboardData(response.result);
+                // 대시보드 데이터와 스킬 데이터를 병렬로 가져오기
+                const [dashboardResponse, skillResponse] = await Promise.all([
+                    adminApi.getDashboardData(adminId),
+                    adminApi.getLevelSkills(adminId)
+                ]);
+
+                console.log('Dashboard data:', dashboardResponse.result);
+                console.log('Skill data:', skillResponse.result);
+
+                setDashboardData(dashboardResponse.result);
+                
+                if (skillResponse.isSuccess) {
+                    setSkillData(skillResponse.result);
+                }
             } catch (err) {
                 setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.');
             } finally {
@@ -37,7 +47,7 @@ export default function DashBoardPage() {
             }
         };
 
-        fetchDashboardData();
+        fetchData();
     }, [adminId]);
 
     if (loading) {
@@ -76,9 +86,9 @@ export default function DashBoardPage() {
                     <p className="text-gray-600">시스템 사용 현황을 한눈에 확인하세요</p>
                 </div>
 
-                {/* 상단 통계 카드 */}
+                {/* 상단 통계 카드 - skillData 전달 */}
                 <div className="mb-4" style={{ maxHeight: '200px', overflow: 'visible' }}>
-                    <StatsCards data={dashboardData} />
+                    <StatsCards data={dashboardData} skillData={skillData} />
                 </div>
 
                 {/* 차트 섹션 */}
