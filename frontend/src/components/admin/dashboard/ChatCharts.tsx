@@ -10,7 +10,8 @@ export default function ChatCharts({ data }: { data: DashboardData }) {
         { name: '기타', value: data.categoryStatistics.otherQuestions, percentage: data.categoryStatistics.otherPercentage.toFixed(1) }
     ].filter(item => item.value > 0);
 
-    const CATEGORY_COLORS = ['#3b82f6', '#10b981', '#eab308', '#6b7280'];
+    // 기타 색을 더 밝게 수정
+    const CATEGORY_COLORS = ['#3b82f6', '#10b981', '#eab308', '#94a3b8'];
 
     const CustomTooltip = ({ active, payload }: any) => {
         if (active && payload && payload.length) {
@@ -35,7 +36,10 @@ export default function ChatCharts({ data }: { data: DashboardData }) {
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="name" />
                             <YAxis />
-                            <Tooltip content={<CustomTooltip />} />
+                            <Tooltip 
+                                content={<CustomTooltip />} 
+                                cursor={false}
+                            />
                             <Bar dataKey="value" fill="#8884d8">
                                 {categoryData.map((entry, index) => (
                                     <Cell key={`cell-${index}`} fill={CATEGORY_COLORS[index % CATEGORY_COLORS.length]} />

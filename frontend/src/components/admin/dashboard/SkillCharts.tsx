@@ -22,13 +22,9 @@ export default function SkillCharts({ skillData }: SkillChartsProps) {
         '#f59e0b', '#ef4444', '#f97316', '#84cc16'
     ];
 
-    // 초기값을 스킬이 있는 첫 번째 레벨로 설정
+    // 초기값을 전체로 설정
     const getInitialLevel = () => {
-        if (!skillData) return 'CL1';
-        const levelsWithSkills = Object.keys(skillData).filter(level => 
-            skillData[level] && skillData[level].skills && skillData[level].skills.length > 0
-        );
-        return levelsWithSkills.length > 0 ? levelsWithSkills[0] : 'CL1';
+        return 'ALL'; // 기본값을 전체로 설정
     };
 
     const [selectedLevel, setSelectedLevel] = useState<string>(getInitialLevel());
@@ -52,50 +48,97 @@ export default function SkillCharts({ skillData }: SkillChartsProps) {
 
     // 선택된 레벨의 스킬 분포 데이터 (원형 차트용)
     const getSelectedLevelSkills = () => {
-        if (!skillData || !selectedLevel) return [];
+        if (!skillData) return [];
 
-        const levelData = skillData[selectedLevel];
-        if (!levelData || !levelData.skills || levelData.skills.length === 0) {
-            return [];
-        }
-        
-        // 원형 차트용 데이터 구조
-        const skills = levelData.skills
-            .filter(skill => skill && skill.skillName && skill.userCount > 0)
-            .sort((a, b) => b.userCount - a.userCount)
-            .slice(0, 6) // 상위 6개만 (가독성을 위해)
-            .map((skill, index) => {
-                // 원형 차트용 스킬명 처리
-                let displayName = skill.skillName;
-                if (displayName.length > 12) {
-                    displayName = displayName.substring(0, 12) + '...';
+        if (selectedLevel === 'ALL') {
+            // 전체 레벨의 스킬 통합
+            const skillMap = new Map<string, number>();
+            let totalUsers = 0;
+
+            Object.values(skillData).forEach(levelData => {
+                if (levelData && levelData.skills) {
+                    totalUsers += levelData.memberCount || 0;
+                    levelData.skills.forEach(skill => {
+                        if (skill && skill.skillName && skill.userCount > 0) {
+                            const existing = skillMap.get(skill.skillName) || 0;
+                            skillMap.set(skill.skillName, existing + skill.userCount);
+                        }
+                    });
                 }
-                
-                return {
-                    name: displayName,
-                    fullName: skill.skillName,
-                    value: skill.userCount,
-                    percentage: Math.round(skill.percentage || 0),
-                    color: SKILL_COLORS[index % SKILL_COLORS.length]
-                };
             });
 
-        console.log(`Skills for ${selectedLevel} (pie chart):`, skills);
-        return skills;
+            const skills = Array.from(skillMap.entries())
+                .map(([skillName, userCount]) => ({
+                    skillName,
+                    userCount,
+                    percentage: totalUsers > 0 ? (userCount / totalUsers) * 100 : 0
+                }))
+                .sort((a, b) => b.userCount - a.userCount)
+                .slice(0, 6)
+                .map((skill, index) => {
+                    let displayName = skill.skillName;
+                    if (displayName.length > 12) {
+                        displayName = displayName.substring(0, 12) + '...';
+                    }
+                    
+                    return {
+                        name: displayName,
+                        fullName: skill.skillName,
+                        value: skill.userCount,
+                        percentage: Math.round(skill.percentage),
+                        color: SKILL_COLORS[index % SKILL_COLORS.length]
+                    };
+                });
+
+            console.log('Skills for ALL levels:', skills);
+            return skills;
+        } else {
+            // 특정 레벨의 스킬
+            const levelData = skillData[selectedLevel];
+            if (!levelData || !levelData.skills || levelData.skills.length === 0) {
+                return [];
+            }
+            
+            const skills = levelData.skills
+                .filter(skill => skill && skill.skillName && skill.userCount > 0)
+                .sort((a, b) => b.userCount - a.userCount)
+                .slice(0, 6)
+                .map((skill, index) => {
+                    let displayName = skill.skillName;
+                    if (displayName.length > 12) {
+                        displayName = displayName.substring(0, 12) + '...';
+                    }
+                    
+                    return {
+                        name: displayName,
+                        fullName: skill.skillName,
+                        value: skill.userCount,
+                        percentage: Math.round(skill.percentage || 0),
+                        color: SKILL_COLORS[index % SKILL_COLORS.length]
+                    };
+                });
+
+            console.log(`Skills for ${selectedLevel}:`, skills);
+            return skills;
+        }
     };
 
     const levelSkillCounts = getLevelSkillCounts();
     const selectedLevelSkills = getSelectedLevelSkills();
 
-    // 유효한 레벨 목록
-    const validLevels = Object.keys(skillData || {}).filter(level => 
+    // 유효한 레벨 목록 (전체 옵션 포함)
+    const levelsWithSkills = Object.keys(skillData || {}).filter(level => 
         skillData[level] && skillData[level].skills && skillData[level].skills.length > 0
     );
+    const validLevels = levelsWithSkills.length > 0 ? ['ALL', ...levelsWithSkills] : [];
 
-    // 선택된 레벨이 유효하지 않으면 첫 번째 유효한 레벨로 변경
+    // 선택된 레벨이 유효하지 않으면 처리
     useEffect(() => {
-        if (validLevels.length > 0 && !validLevels.includes(selectedLevel)) {
-            setSelectedLevel(validLevels[0]);
+        if (validLevels.length === 0) {
+            // 스킬이 전혀 없는 경우
+            setSelectedLevel('ALL');
+        } else if (!validLevels.includes(selectedLevel)) {
+            setSelectedLevel('ALL');
         }
     }, [validLevels, selectedLevel]);
 
@@ -152,7 +195,10 @@ export default function SkillCharts({ skillData }: SkillChartsProps) {
                                     tick={{ fontSize: 12, fill: '#6b7280' }}
                                     axisLine={{ stroke: '#d1d5db' }}
                                 />
-                                <Tooltip content={<LevelCountTooltip />} />
+                                <Tooltip 
+                                    content={<LevelCountTooltip />}
+                                    cursor={false}
+                                />
                                 <Bar 
                                     dataKey="skillCount" 
                                     radius={[4, 4, 0, 0]}
@@ -183,7 +229,7 @@ export default function SkillCharts({ skillData }: SkillChartsProps) {
             <div className="bg-white bg-opacity-80 rounded-lg shadow-sm p-6">
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-semibold text-gray-900">
-                        {selectedLevel ? `${selectedLevel} 레벨 스킬 분포` : '스킬 분포'}
+                        {selectedLevel === 'ALL' ? '전체 레벨 스킬 분포' : `${selectedLevel} 레벨 스킬 분포`}
                     </h2>
                     
                     {/* 레벨 선택만 남김 */}
@@ -194,14 +240,16 @@ export default function SkillCharts({ skillData }: SkillChartsProps) {
                             className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             {validLevels.map(level => (
-                                <option key={level} value={level}>{level}</option>
+                                <option key={level} value={level}>
+                                    {level === 'ALL' ? '전체' : level}
+                                </option>
                             ))}
                         </select>
                     )}
                 </div>
                 
-                {selectedLevelSkills.length > 0 ? (
-                    <div className="h-80">
+                {(selectedLevelSkills.length > 0 && validLevels.length > 0) ? (
+                    <div className="h-80 [&_*]:outline-none [&_*]:border-none">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
@@ -209,7 +257,6 @@ export default function SkillCharts({ skillData }: SkillChartsProps) {
                                     cx="50%"
                                     cy="50%"
                                     outerRadius={100}
-                                    fill="#8884d8"
                                     dataKey="value"
                                     label={({ name, percentage }) => `${name} (${percentage}%)`}
                                     labelLine={false}
@@ -221,7 +268,10 @@ export default function SkillCharts({ skillData }: SkillChartsProps) {
                                         />
                                     ))}
                                 </Pie>
-                                <Tooltip content={<SkillPieTooltip />} />
+                                <Tooltip 
+                                    content={<SkillPieTooltip />}
+                                    cursor={false}
+                                />
                             </PieChart>
                         </ResponsiveContainer>
                     </div>
@@ -232,7 +282,9 @@ export default function SkillCharts({ skillData }: SkillChartsProps) {
                             <p>
                                 {validLevels.length === 0 
                                     ? '스킬 데이터가 없습니다'
-                                    : `${selectedLevel} 레벨의 스킬 데이터가 없습니다`
+                                    : selectedLevel === 'ALL' 
+                                        ? '전체 레벨의 스킬 데이터가 없습니다'
+                                        : `${selectedLevel} 레벨의 스킬 데이터가 없습니다`
                                 }
                             </p>
                         </div>

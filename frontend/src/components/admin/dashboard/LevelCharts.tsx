@@ -1,4 +1,4 @@
-// \src\components\admin\dashboard\LevelCharts.tsx
+// src\components\admin\dashboard\LevelCharts.tsx
 
 import { type DashboardData } from "../../../api/admin";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
@@ -25,7 +25,8 @@ export default function LevelCharts({ data, selectedLevel, onLevelSelect }: {
         };
     });
 
-    const COLORS = ['#6366f1', '#8b5cf6', '#06b6d4', '#f59e0b', '#ef4444'];
+    // 더 조화로운 색상으로 수정
+    const COLORS = ['#4f46e5', '#7c3aed', '#0ea5e9', '#f97316', '#ef4444'];
 
     const onLevelPieClick = (data: any) => {
         setModalLevel(data.name);
@@ -95,6 +96,7 @@ export default function LevelCharts({ data, selectedLevel, onLevelSelect }: {
                             <Tooltip
                                 content={<CustomTooltip />}
                                 animationDuration={0}
+                                cursor={false}
                             />
                             <Legend />
                         </PieChart>
