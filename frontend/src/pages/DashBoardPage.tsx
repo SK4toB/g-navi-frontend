@@ -5,9 +5,10 @@ import StatsCards from '../components/admin/dashboard/StatsCards';
 import LevelCharts from '../components/admin/dashboard/LevelCharts';
 import ChatCharts from '../components/admin/dashboard/ChatCharts';
 import SkillCharts from '../components/admin/dashboard/SkillCharts';
+import WordCloudCharts from '../components/admin/dashboard/WordCloudCharts';
 import Loading from '../components/common/Loading';
 
-type TabType = 'user-analysis' | 'skill-analysis';
+type TabType = 'user-analysis' | 'skill-analysis' | 'wordcloud-analysis';
 
 export default function DashBoardPage() {
     const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
@@ -129,6 +130,21 @@ export default function DashBoardPage() {
                                     스킬 분석
                                 </div>
                             </button>
+                            <button
+                                onClick={() => setActiveTab('wordcloud-analysis')}
+                                className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                                    activeTab === 'wordcloud-analysis'
+                                        ? 'border-blue-500 text-blue-600'
+                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                }`}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                                    </svg>
+                                    워드클라우드
+                                </div>
+                            </button>
                         </nav>
                     </div>
                 </div>
@@ -163,7 +179,7 @@ export default function DashBoardPage() {
                                 </div>
                             )}
                         </div>
-                    ) : (
+                    ) : activeTab === 'skill-analysis' ? (
                         <div>
                             {skillData ? (
                                 <SkillCharts skillData={skillData} />
@@ -179,7 +195,23 @@ export default function DashBoardPage() {
                                 </div>
                             )}
                         </div>
-                    )}
+                    ) : activeTab === 'wordcloud-analysis' ? (
+                        <div>
+                            {adminId ? (
+                                <WordCloudCharts adminId={adminId} />
+                            ) : (
+                                <div className="bg-white rounded-lg shadow-sm p-6">
+                                    <h2 className="text-xl font-semibold text-gray-900 mb-4">워드클라우드</h2>
+                                    <div className="h-80 flex items-center justify-center text-gray-500">
+                                        <div className="text-center">
+                                            <div className="text-4xl mb-2">⚠️</div>
+                                            <p>관리자 정보가 필요합니다</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ) : null}
                 </div>
             </div>
         </div>

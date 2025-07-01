@@ -175,7 +175,7 @@ export default function SkillCharts({ skillData }: SkillChartsProps) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* 왼쪽: 레벨별 보유 스킬 개수 */}
             <div className="bg-white bg-opacity-80 rounded-lg shadow-sm p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-7">
                     레벨별 보유 스킬 개수
                 </h2>
                 {levelSkillCounts.length > 0 ? (
@@ -227,7 +227,7 @@ export default function SkillCharts({ skillData }: SkillChartsProps) {
 
             {/* 오른쪽: 선택된 레벨의 스킬 분포 (원형 차트) */}
             <div className="bg-white bg-opacity-80 rounded-lg shadow-sm p-6">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-4 pb-7">
                     <h2 className="text-xl font-semibold text-gray-900">
                         {selectedLevel === 'ALL' ? '전체 레벨 스킬 분포' : `${selectedLevel} 레벨 스킬 분포`}
                     </h2>
@@ -249,7 +249,7 @@ export default function SkillCharts({ skillData }: SkillChartsProps) {
                 </div>
                 
                 {(selectedLevelSkills.length > 0 && validLevels.length > 0) ? (
-                    <div className="h-80 [&_*]:outline-none [&_*]:border-none">
+                    <div className="h-80">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
