@@ -136,19 +136,19 @@ export default function News() {
                     <div className="flex gap-2">
                         <button
                             onClick={() => setStatusFilter('all')}
-                            className={`px-3 py-1 rounded text-sm ${statusFilter === 'all' ? 'bg-brand-indigo text-white' : 'bg-gray-200'}`}
+                            className={`px-3 py-1 rounded text-sm ${statusFilter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
                         >
                             전체
                         </button>
                         <button
                             onClick={() => setStatusFilter('registered')}
-                            className={`px-3 py-1 rounded text-sm ${statusFilter === 'registered' ? 'bg-brand-indigo text-white' : 'bg-gray-200'}`}
+                            className={`px-3 py-1 rounded text-sm ${statusFilter === 'registered' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
                         >
                             등록
                         </button>
                         <button
                             onClick={() => setStatusFilter('unregistered')}
-                            className={`px-3 py-1 rounded text-sm ${statusFilter === 'unregistered' ? 'bg-brand-indigo text-white' : 'bg-gray-200'}`}
+                            className={`px-3 py-1 rounded text-sm ${statusFilter === 'unregistered' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
                         >
                             미등록
                         </button>
@@ -169,9 +169,9 @@ export default function News() {
 
                 {/* 헤더 */}
                 <figure className="flex p-3 border-b-2 border-gray-400 mb-2">
-                    <span className="font-bold pr-4 lg:w-1/2 w-3/5">기사제목</span>
-                    <span className="font-bold text-center lg:w-1/4 w-2/5">작성자</span>
-                    <span className="font-bold text-center w-1/6 hidden xl:block">날짜</span>
+                    <span className="font-bold text-sm pr-4 lg:w-1/2 w-3/5">기사제목</span>
+                    <span className="font-bold text-sm text-center lg:w-1/4 w-2/5">작성자</span>
+                    <span className="font-bold text-sm text-center w-1/6 hidden xl:block">날짜</span>
                     <div className="w-24 text-center hidden xl:block">
                         <span className="font-bold text-sm">상태</span>
                     </div>

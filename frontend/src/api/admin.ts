@@ -9,6 +9,8 @@ export interface Member {
   role: 'USER' | 'EXPERT' | 'ADMIN';
   isExpert: boolean;
   joinDate: string;
+  expertiseArea: 'FINANCE' | 'MANUFACTURE' | 'SEMICONDUCTOR' | 'AI'
+  expertiseAreaText: string;
 }
 
 // 모든 회원 조회 응답 타입
@@ -23,6 +25,7 @@ export interface GetAllMembersResponse {
 export interface UpdateMemberRoleRequest {
   memberId: number;
   newRole: 'USER' | 'EXPERT';
+  expertiseArea: 'FINANCE' | 'MANUFACTURE' | 'SEMICONDUCTOR' | 'AI';
 }
 
 // 회원 역할 변경 응답 타입
