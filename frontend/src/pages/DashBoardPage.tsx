@@ -37,9 +37,6 @@ export default function DashBoardPage() {
                     adminApi.getLevelSkills(adminId)
                 ]);
 
-                console.log('Dashboard data:', dashboardResponse.result);
-                console.log('Skill data:', skillResponse.result);
-
                 setDashboardData(dashboardResponse.result);
                 
                 if (skillResponse.isSuccess) {

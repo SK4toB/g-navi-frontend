@@ -33,13 +33,11 @@ export default function ProfileSection({ name, level, onLevelUpdate }: UserInfo)
       if (response.isSuccess) {
         onLevelUpdate?.(selectedLevel);
         setIsEditing(false);
-        alert('레벨이 성공적으로 업데이트되었습니다.');
       } else {
         alert(`레벨 업데이트 실패: ${response.message}`);
         setSelectedLevel(level || 'CL1');
       }
     } catch (error) {
-      console.error('레벨 업데이트 중 오류:', error);
       alert('레벨 업데이트 중 오류가 발생했습니다.');
       setSelectedLevel(level || 'CL1');
     } finally {

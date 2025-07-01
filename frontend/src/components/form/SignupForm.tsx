@@ -49,7 +49,6 @@ export default function SignupForm() {
         alert(`회원가입 실패: ${response.message}`);
       }
     } catch (error) {
-      console.error("회원가입 실패:", error);
       alert("회원가입 중 오류가 발생했습니다.");
     }
   };

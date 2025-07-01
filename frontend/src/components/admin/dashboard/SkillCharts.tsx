@@ -50,7 +50,6 @@ export default function SkillCharts({ skillData }: SkillChartsProps) {
             .filter(item => item.memberCount > 0)
             .sort((a, b) => a.level.localeCompare(b.level));
 
-        console.log('Level Average Skill Counts:', result);
         return result;
     };
 
@@ -118,8 +117,6 @@ export default function SkillCharts({ skillData }: SkillChartsProps) {
                 });
             }
 
-            console.log('Skills for ALL levels:', skills);
-            console.log('Total members:', totalMembers, 'Total skill users:', totalSkillUsers);
             return skills;
         } else {
             // 특정 레벨의 스킬
@@ -165,8 +162,6 @@ export default function SkillCharts({ skillData }: SkillChartsProps) {
                 });
             }
 
-            console.log(`Skills for ${selectedLevel}:`, skills);
-            console.log(`Total members: ${totalMembers}, Displayed skills: ${displayedSkillUsers}, Others: ${otherUsers}`);
             return skills;
         }
     };

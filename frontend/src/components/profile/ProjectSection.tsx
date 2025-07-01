@@ -81,13 +81,11 @@ export default function ProjectSection({ projects, isLoading = false, onProjectD
       const response = await projectApi.deleteProject(projectId);
       
       if (response.isSuccess) {
-        alert('프로젝트가 성공적으로 삭제되었습니다.');
         onProjectDeleted(projectId);
       } else {
         alert(`프로젝트 삭제 실패: ${response.message}`);
       }
     } catch (error) {
-      console.error('프로젝트 삭제 중 오류:', error);
       alert('프로젝트 삭제 중 오류가 발생했습니다.');
     } finally {
       setDeletingProjectId(null);

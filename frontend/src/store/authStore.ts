@@ -71,8 +71,6 @@ const useAuthStore = create<AuthState>()(
         const currentState = get();
         
         if (storedMemberId && !currentState.isLoggedIn) {
-          console.log('localStorage에서 로그인 정보 복원 필요');
-          
           if (currentState.user && currentState.user.memberId.toString() === storedMemberId) {
             set({ isLoggedIn: true });
           }

@@ -28,7 +28,6 @@ export default function LoginForm() {
       const response = await authApi.login(formData);
       
       if (response.isSuccess) {
-        alert(`안녕하세요, ${response.result.name}님! 로그인되었습니다.`);
         
         // 역할에 따른 리다이렉트
         if (response.result.role === 'ADMIN') {
@@ -40,7 +39,6 @@ export default function LoginForm() {
         alert(`로그인 실패: ${response.message}`);
       }
     } catch (error) {
-      console.error("로그인 실패:", error);
       alert("로그인 중 오류가 발생했습니다.");
     }
   };

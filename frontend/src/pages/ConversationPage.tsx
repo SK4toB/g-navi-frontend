@@ -76,7 +76,6 @@ export default function ConversationPage() {
         navigate(`/conversation/${response.result.conversationId}`, { replace: true });
       }
     } catch (error) {
-      console.error('새 대화 시작 실패:', error);
     } finally {
       setIsLoading(false);
       setIsLoadingResponse(false);
@@ -102,7 +101,6 @@ export default function ConversationPage() {
         setIsNewChat(convertedMessages.length <= 1);
       }
     } catch (error) {
-      console.error('대화 내역 로드 실패:', error);
     } finally {
       setIsLoading(false);
     }
@@ -144,10 +142,8 @@ export default function ConversationPage() {
         // 실패 시 사용자 메시지 제거
         setMessages(prev => prev.slice(0, -1));
         setMessageIdCounter(prev => prev - 1);
-        console.error('메시지 전송 실패:', response.message);
       }
     } catch (error) {
-      console.error('메시지 전송 중 오류:', error);
       // 실패 시 사용자 메시지 제거
       setMessages(prev => prev.slice(0, -1));
       setMessageIdCounter(prev => prev - 1);

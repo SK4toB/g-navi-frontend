@@ -424,7 +424,6 @@ export default function Message({ sender, text }: MessageProps) {
             renderMermaidDiagrams((window as any).mermaid);
           }
         } catch (error) {
-          console.error('Mermaid loading error:', error);
         }
       };
 
@@ -442,7 +441,6 @@ export default function Message({ sender, text }: MessageProps) {
               // 드래그 기능 추가
               addDragFunctionality(element as HTMLElement);
             } catch (error) {
-              console.error('Mermaid rendering error:', error);
               element.innerHTML = `<div class="text-red-500 text-sm p-4">다이어그램 렌더링 오류</div>`;
             }
           }

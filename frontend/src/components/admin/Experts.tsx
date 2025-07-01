@@ -34,7 +34,6 @@ export default function Experts() {
             setLoading(true);
             setError(null);
             const response = await adminApi.getAllMembers(adminId);
-            console.log(response.result)
 
             if (response.isSuccess && response.result) {
                 setAllMembers(response.result);
@@ -83,12 +82,6 @@ export default function Experts() {
         try {
             setActionLoading(memberId);
 
-            console.log('전문가 등록 요청:', {
-                memberId,
-                newRole: 'EXPERT',
-                expertiseArea: selectedDomain
-            });
-
             const response = await adminApi.updateMemberRole(adminId, {
                 memberId,
                 newRole: 'EXPERT',
@@ -104,7 +97,6 @@ export default function Experts() {
                 
                 await fetchMembers();
                 setSearchTerm('');
-                alert(`${memberName}님이 전문가로 등록되었습니다.`);
             } else {
                 setError(`전문가 등록 실패: ${response.message}`);
             }
@@ -131,7 +123,6 @@ export default function Experts() {
 
             if (response.isSuccess) {
                 await fetchMembers();
-                alert(`${memberName}님이 일반 회원으로 변경되었습니다.`);
             } else {
                 setError(`전문가 해제 실패: ${response.message}`);
             }

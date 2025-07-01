@@ -127,14 +127,12 @@ export default function ProjectFormModal({ isOpen, onClose, onProjectAdded }: Pr
       const response = await projectApi.createProject(formData);
       
       if (response.isSuccess && response.result) {
-        alert('프로젝트가 성공적으로 추가되었습니다!');
         onProjectAdded(response.result as Project);
         onClose();
       } else {
         alert(`프로젝트 추가 실패: ${response.message}`);
       }
     } catch (error) {
-      console.error('프로젝트 추가 중 오류:', error);
       alert('프로젝트 추가 중 오류가 발생했습니다.');
     } finally {
       setIsSubmitting(false);

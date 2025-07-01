@@ -29,7 +29,6 @@ export default function Mypage() {
                 useAuthStore.getState().setHomeInfo(homeResponse.result);
             }
         } catch (error) {
-            console.error('홈 정보 새로고침 실패:', error);
         } finally {
             setIsLoadingHomeInfo(false);
         }
@@ -57,7 +56,6 @@ export default function Mypage() {
                     setProjects(projectResponse.result);
                 }
             } catch (error) {
-                console.error('프로젝트 목록 불러오기 실패:', error);
             } finally {
                 setIsLoadingProjects(false);
             }

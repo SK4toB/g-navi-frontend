@@ -128,7 +128,6 @@ export const authApi = {
 
       return null;
     } catch (error) {
-      console.error('사용자 정보 확인 실패:', error);
       useAuthStore.getState().logout();
       return null;
     }
@@ -145,7 +144,6 @@ export const authApi = {
     const data = await api.get<HomeResponseData>(`/api/auth/${user.memberId}/home`, {
       params: { memberId: user.memberId }
     });
-    console.log(data);
     return data;
   },
 
