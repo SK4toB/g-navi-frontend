@@ -35,13 +35,14 @@ export default function CommonInputField({
     py-3                        /* padding-top/bottom (상하 패딩): 16픽셀 */
     ml-[16px]                   /* 인풋 필드의 왼쪽 마진: 라벨과의 간격 */
     text-[18px]                 /* 글꼴 크기 */
-    bg-white/55                 /* 배경색(투명도) */
+    bg-white                    /* 배경색(투명도) */
     rounded-full                /* 모서리 둥글게 */
     border                      /* 테두리 */
     border-[#CDCDCD]            /* 테두리 색상 */
     pl-[16px]                   /* 텍스트 왼쪽 정렬 */
     placeholder:text-sm         /* 플레이스홀더 텍스트 사이즈 xs (12px) */
-  `.replace(/\s+/g, ' ');
+    focus:outline-none 
+    `.replace(/\s+/g, ' ');
 
   const containerClasses = `
     flex
@@ -53,7 +54,7 @@ export default function CommonInputField({
   return (
     <div className={containerClasses}>
       <label htmlFor={id} className={`${labelClasses}`}>
-      {label}
+        {label}
       </label>
       <input
         type={type}
