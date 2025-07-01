@@ -72,7 +72,7 @@ const CanvasWordCloud = ({ words, width = 600, height = 400 }: {
             );
         };
 
-        // 단어 배치 함수
+        // 나선형 기반 단어 배치 함수 (기존 방식 유지하되 약간 개선)
         const placeWord = (word: ApiWordData, fontSize: number, color: string) => {
             ctx.font = `${fontSize}px Inter, sans-serif`;
             ctx.fillStyle = color;
@@ -86,17 +86,17 @@ const CanvasWordCloud = ({ words, width = 600, height = 400 }: {
             const maxAttempts = 50;
             
             while (attempts < maxAttempts) {
-                // 중심부터 시작해서 점점 바깥쪽으로 배치
+                // 나선형 배치 (기존 방식 유지하되 약간 확장)
                 const angle = Math.random() * Math.PI * 2;
-                const radius = attempts * 5;
+                const radius = attempts * 6; // 5에서 6으로 약간 증가
                 const centerX = width / 2;
                 const centerY = height / 2;
                 
                 const x = centerX + Math.cos(angle) * radius - wordWidth / 2;
                 const y = centerY + Math.sin(angle) * radius + wordHeight / 2;
 
-                // 캔버스 영역 내부인지 확인
-                if (x >= 0 && y >= 0 && x + wordWidth <= width && y <= height) {
+                // 캔버스 영역 내부인지 확인 (여백 30px 유지)
+                if (x >= 30 && y >= 30 && x + wordWidth <= width - 30 && y <= height - 30) {
                     // 충돌 검사
                     if (!checkCollision(x, y - wordHeight, wordWidth, wordHeight)) {
                         // 텍스트 그리기
@@ -279,7 +279,7 @@ export default function WordCloudCharts({ adminId }: WordCloudChartsProps) {
                     </div>
                 </div>
 
-                {/* 워드클라우드 영역 */}
+                {/* 워드클라우드 영역 - 적당한 여백 유지 */}
                 <div className="flex justify-center">
                     {loading ? (
                         <div className="flex flex-col items-center justify-center h-96 w-full">
@@ -309,7 +309,7 @@ export default function WordCloudCharts({ adminId }: WordCloudChartsProps) {
                         <div className="w-full flex justify-center">
                             <CanvasWordCloud 
                                 words={wordData} 
-                                width={Math.min(1000, window.innerWidth - 120)} 
+                                width={Math.min(1100, window.innerWidth - 100)} 
                                 height={332} 
                             />
                         </div>
