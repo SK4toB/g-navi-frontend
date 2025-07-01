@@ -63,12 +63,10 @@ export default function SideBar() {
       if (response.isSuccess) {
         // 홈 정보 새로고침으로 대화 목록 업데이트
         await refreshHomeInfo();
-        console.log(`대화 "${chatTitle}" 삭제 완료`);
       } else {
         alert(`대화 삭제 실패: ${response.message}`);
       }
     } catch (error) {
-      console.error('대화 삭제 중 오류:', error);
       alert('대화 삭제 중 오류가 발생했습니다.');
     } finally {
       setDeletingChatId(null);
@@ -85,7 +83,6 @@ export default function SideBar() {
         useAuthStore.getState().setHomeInfo(response.result);
       }
     } catch (error) {
-      console.error('홈 정보 새로고침 실패:', error);
     }
   };
 
@@ -105,9 +102,7 @@ export default function SideBar() {
     for (const chat of emptyChats) {
       try {
         await conversationApi.deleteConversation(chat.conversationId);
-        console.log(`빈 대화 "${chat.title}" 자동 삭제`);
       } catch (error) {
-        console.error(`빈 대화 삭제 실패: ${chat.conversationId}`, error);
       }
     }
 
@@ -132,7 +127,6 @@ export default function SideBar() {
         setPendingNews(pending);
       }
     } catch (error) {
-      console.error('뉴스 목록 조회 실패:', error);
     } finally {
       setLoadingNews(false);
     }
@@ -170,12 +164,10 @@ export default function SideBar() {
         setPendingNews(prev => prev.filter(news => news.newsId !== newsId));
 
         const actionText = action === 'APPROVE' ? '승인' : action === 'REJECT' ? '거절' : '승인해제';
-        console.log(`"${newsTitle}" ${actionText} 완료`);
       } else {
         alert(`뉴스 ${action === 'APPROVE' ? '승인' : action === 'REJECT' ? '거절' : '승인해제'} 실패: ${response.message}`);
       }
     } catch (error) {
-      console.error('뉴스 관리 중 오류:', error);
       alert(`뉴스 ${action === 'APPROVE' ? '승인' : action === 'REJECT' ? '거절' : '승인해제'} 중 오류가 발생했습니다.`);
     } finally {
       setActionLoading(null);
@@ -187,7 +179,6 @@ export default function SideBar() {
       await authApi.logout();
       navigate('/');
     } catch (error) {
-      console.error('로그아웃 중 오류 발생:', error);
     }
   };
 
