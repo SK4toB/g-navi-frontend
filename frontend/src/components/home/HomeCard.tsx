@@ -3,20 +3,6 @@ import { newsApi } from '../../api/news';
 import type { NewsItem } from '../../api/news';
 import HomeCardSkeleton from './HomeCardSkeleton'; // 추가
 
-// 더미 이미지 생성
-const generateDummyImage = (index: number): string => {
-    const colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'];
-    const color = colors[index % colors.length];
-    const svg = `
-    <svg width="240" height="144" xmlns="http://www.w3.org/2000/svg">
-      <rect width="100%" height="100%" fill="${color}"/>
-      <text x="50%" y="50%" font-family="Arial" font-size="12" fill="white" text-anchor="middle" dominant-baseline="middle">
-        News Image ${index + 1}
-      </text>
-    </svg>`;
-    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-};
-
 export default function HomeCard() {
     const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
     const [scrollPosition, setScrollPosition] = useState(0);
@@ -122,7 +108,7 @@ export default function HomeCard() {
                 {/* 이전 버튼 */}
                 <button
                     onClick={prev}
-                    className="absolute -left-10 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 text-gray-600 border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="absolute -left-10 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 text-gray-600 border border-gray-200 disabled:opacity-50 disabled:cursor-default"
                     disabled={scrollPosition <= 0}
                 >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -133,7 +119,7 @@ export default function HomeCard() {
                 {/* 다음 버튼 */}
                 <button
                     onClick={next}
-                    className="absolute -right-10 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 text-gray-600 border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="absolute -right-10 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 text-gray-600 border border-gray-200 disabled:opacity-50 disabled:cursor-default"
                     disabled={scrollPosition >= maxScrollDistance}
                 >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
