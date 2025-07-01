@@ -27,6 +27,7 @@ export default function ConversationPage() {
   const [isLoadingResponse, setIsLoadingResponse] = React.useState(false); // 응답 대기 상태
   const [messageIdCounter, setMessageIdCounter] = React.useState(0);
   const [isNewChat, setIsNewChat] = React.useState(true); // 초기값은 true
+  const hasUserMessages = messages.some(msg => msg.sender === 'user');
 
   // conversationId가 변경될 때 상태 초기화
   React.useEffect(() => {
@@ -190,6 +191,7 @@ export default function ConversationPage() {
             <ConversationInput
               onSendMessage={handleSendMessage}
               isLoading={isLoadingResponse}
+              hasMessages={hasUserMessages}
             />
             <RecommendationCards
               onCardClick={handleCardClick}
@@ -216,6 +218,7 @@ export default function ConversationPage() {
             <ConversationInput
               onSendMessage={handleSendMessage}
               isLoading={isLoadingResponse}
+              hasMessages={hasUserMessages}
             />
           </>
         )}

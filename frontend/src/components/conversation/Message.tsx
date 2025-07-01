@@ -500,8 +500,8 @@ export default function Message({ sender, text }: MessageProps) {
   const finalMessageClasses = `
     max-w-[70%] p-4 mb-6 font-pretendard text-[15px] leading-[1.6em]
     ${isUser
-      ? 'bg-main-color text-white rounded-[20px_20px_6px_20px] self-end shadow-[0_4px_12px_0_rgba(79,70,229,0.25)]' // 사용자 메시지
-      : 'bg-white border border-[#E5E7EB] rounded-[20px_20px_20px_6px] self-start shadow-[0_2px_8px_0_rgba(0,0,0,0.08)] hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.12)] transition-shadow duration-200 text-gray-800' // 챗봇 메시지
+      ? 'bg-gradient-to-r from-blue-500 to-indigo-500 rounded-[20px_20px_6px_20px] self-end shadow-[0_4px_12px_0_rgba(79,70,229,0.25)]' // 사용자 메시지
+      : 'bg-white border border-[#E5E7EB] rounded-[20px_20px_20px_6px] self-start shadow-[0_2px_8px_0_rgba(0,0,0,0.08)] hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.12)] transition-shadow duration-200' // 챗봇 메시지
     }
   `.replace(/\s+/g, ' ');
 

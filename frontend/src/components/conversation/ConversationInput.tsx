@@ -5,15 +5,37 @@ import React from 'react';
 interface ConversationInputProps {
   placeholder?: string;
   onSendMessage: (message: string) => void;
-  isLoading?: boolean; // 추가
+  isLoading?: boolean;
+  hasMessages?: boolean; 
 }
 
 export default function ConversationInput({
-  placeholder = "",
   onSendMessage,
-  isLoading = false
+  isLoading = false,
+  hasMessages = false
 }: ConversationInputProps) {
   const [message, setMessage] = React.useState('');
+
+  const placeholders = [
+    "성장에 대한 고민이나 궁금한 점을 자유롭게 물어보세요 💪",
+    "커리어 관련 질문이나 고민을 편하게 말씀해 주세요 ✨",
+    "어떤 분야에서 성장하고 싶으신가요? 🥇"
+  ];
+
+  const [randomPlaceholder] = React.useState(() => {
+    const randomIndex = Math.floor(Math.random() * placeholders.length);
+    return placeholders[randomIndex];
+  });
+
+  const getPlaceholder = () => {
+    if (isLoading) {
+      return "응답을 기다리는 중...";
+    }
+    if (hasMessages) {
+      return "메시지를 입력하세요.";
+    }
+    return randomPlaceholder;
+  };
 
   const handleSendClick = () => {
     if (message.trim() && !isLoading) { // 로딩 중일 때 전송 방지
@@ -35,8 +57,8 @@ export default function ConversationInput({
 
       {/* 입력 필드 */}
       <textarea
-        placeholder={isLoading ? "응답을 기다리는 중..." : placeholder}
-        className="w-[90%] h-full text-left text-[#8E8585] text-[20px] border-none focus:outline-none resize-none bg-transparent placeholder-[#8E8585]"
+        placeholder={getPlaceholder()}
+        className="w-[90%] h-full text-left text-[#191919] text-[16px] border-none focus:outline-none resize-none bg-transparent placeholder-[#8E8585]"
         rows={3}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
@@ -50,7 +72,7 @@ export default function ConversationInput({
           flex items-center justify-center cursor-pointer transition-all gap-2
           ${isLoading
             ? 'bg-gray-400 cursor-not-allowed'
-            : 'bg-brand-indigo hover:opacity-80'
+            : 'bg-gray-800 hover:opacity-80'
           }
         `}
         onClick={handleSendClick}
