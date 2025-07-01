@@ -29,35 +29,43 @@ export default function SkillCharts({ skillData }: SkillChartsProps) {
 
     const [selectedLevel, setSelectedLevel] = useState<string>(getInitialLevel());
 
-    // 레벨별 보유 스킬 개수 데이터
+    // 레벨별 평균 보유 스킬 개수 데이터
     const getLevelSkillCounts = () => {
         if (!skillData) return [];
         
         const result = Object.entries(skillData)
-            .map(([level, levelData]) => ({
-                level,
-                skillCount: levelData?.skills?.length || 0,
-                memberCount: levelData?.memberCount || 0
-            }))
-            .filter(item => item.memberCount > 0 || item.skillCount > 0)
+            .map(([level, levelData]) => {
+                const totalSkillCount = levelData?.totalSkillCount || 0;
+                const memberCount = levelData?.memberCount || 0;
+                const avgSkillCount = memberCount > 0 ? totalSkillCount / memberCount : 0;
+                
+                return {
+                    level,
+                    skillCount: Math.round(avgSkillCount * 10) / 10, // 소수점 1자리로 반올림
+                    totalSkillCount,
+                    memberCount,
+                    avgSkillCount
+                };
+            })
+            .filter(item => item.memberCount > 0)
             .sort((a, b) => a.level.localeCompare(b.level));
 
-        console.log('Level Skill Counts:', result);
+        console.log('Level Average Skill Counts:', result);
         return result;
     };
 
-    // 선택된 레벨의 스킬 분포 데이터 (원형 차트용)
+    // 선택된 레벨의 스킬 분포 데이터 (원형 차트용) - 수정된 버전
     const getSelectedLevelSkills = () => {
         if (!skillData) return [];
 
         if (selectedLevel === 'ALL') {
             // 전체 레벨의 스킬 통합
             const skillMap = new Map<string, number>();
-            let totalUsers = 0;
+            let totalMembers = 0;
 
             Object.values(skillData).forEach(levelData => {
                 if (levelData && levelData.skills) {
-                    totalUsers += levelData.memberCount || 0;
+                    totalMembers += levelData.memberCount || 0;
                     levelData.skills.forEach(skill => {
                         if (skill && skill.skillName && skill.userCount > 0) {
                             const existing = skillMap.get(skill.skillName) || 0;
@@ -67,14 +75,20 @@ export default function SkillCharts({ skillData }: SkillChartsProps) {
                 }
             });
 
+            // 스킬을 가진 사용자 수 계산
+            const totalSkillUsers = Array.from(skillMap.values()).reduce((sum, count) => sum + count, 0);
+            
+            // 스킬이 없는 사용자 수 (중복 제거를 위해 추정)
+            const noSkillUsers = Math.max(0, totalMembers - totalSkillUsers);
+
             const skills = Array.from(skillMap.entries())
                 .map(([skillName, userCount]) => ({
                     skillName,
                     userCount,
-                    percentage: totalUsers > 0 ? (userCount / totalUsers) * 100 : 0
+                    percentage: totalMembers > 0 ? (userCount / totalMembers) * 100 : 0
                 }))
                 .sort((a, b) => b.userCount - a.userCount)
-                .slice(0, 6)
+                .slice(0, 5) // 상위 5개만 표시
                 .map((skill, index) => {
                     let displayName = skill.skillName;
                     if (displayName.length > 12) {
@@ -85,12 +99,27 @@ export default function SkillCharts({ skillData }: SkillChartsProps) {
                         name: displayName,
                         fullName: skill.skillName,
                         value: skill.userCount,
-                        percentage: Math.round(skill.percentage),
+                        percentage: Math.round(skill.percentage * 10) / 10, // 소수점 1자리
                         color: SKILL_COLORS[index % SKILL_COLORS.length]
                     };
                 });
 
+            // 기타 스킬 사용자와 스킬 없는 사용자를 합쳐서 "기타"로 표시
+            const displayedSkillUsers = skills.reduce((sum, skill) => sum + skill.value, 0);
+            const otherUsers = totalMembers - displayedSkillUsers;
+            
+            if (otherUsers > 0) {
+                skills.push({
+                    name: '기타',
+                    fullName: '기타 (표시되지 않은 스킬 + 스킬 없음)',
+                    value: otherUsers,
+                    percentage: Math.round((otherUsers / totalMembers) * 100 * 10) / 10,
+                    color: '#9ca3af'
+                });
+            }
+
             console.log('Skills for ALL levels:', skills);
+            console.log('Total members:', totalMembers, 'Total skill users:', totalSkillUsers);
             return skills;
         } else {
             // 특정 레벨의 스킬
@@ -99,10 +128,13 @@ export default function SkillCharts({ skillData }: SkillChartsProps) {
                 return [];
             }
             
-            const skills = levelData.skills
+            const totalMembers = levelData.memberCount || 0;
+            const skillUsers = levelData.skills
                 .filter(skill => skill && skill.skillName && skill.userCount > 0)
-                .sort((a, b) => b.userCount - a.userCount)
-                .slice(0, 6)
+                .sort((a, b) => b.userCount - a.userCount);
+            
+            const skills = skillUsers
+                .slice(0, 5) // 상위 5개만 표시
                 .map((skill, index) => {
                     let displayName = skill.skillName;
                     if (displayName.length > 12) {
@@ -113,12 +145,28 @@ export default function SkillCharts({ skillData }: SkillChartsProps) {
                         name: displayName,
                         fullName: skill.skillName,
                         value: skill.userCount,
-                        percentage: Math.round(skill.percentage || 0),
+                        percentage: Math.round((skill.userCount / totalMembers) * 100 * 10) / 10,
                         color: SKILL_COLORS[index % SKILL_COLORS.length]
                     };
                 });
 
+            // 기타 계산
+            const displayedSkillUsers = skills.reduce((sum, skill) => sum + skill.value, 0);
+            const allSkillUsers = skillUsers.reduce((sum, skill) => sum + skill.userCount, 0);
+            const otherUsers = totalMembers - displayedSkillUsers;
+            
+            if (otherUsers > 0) {
+                skills.push({
+                    name: '기타',
+                    fullName: `기타 (표시되지 않은 스킬 ${skillUsers.length - skills.length + 1}개 + 스킬 없음)`,
+                    value: otherUsers,
+                    percentage: Math.round((otherUsers / totalMembers) * 100 * 10) / 10,
+                    color: '#9ca3af'
+                });
+            }
+
             console.log(`Skills for ${selectedLevel}:`, skills);
+            console.log(`Total members: ${totalMembers}, Displayed skills: ${displayedSkillUsers}, Others: ${otherUsers}`);
             return skills;
         }
     };
@@ -149,8 +197,9 @@ export default function SkillCharts({ skillData }: SkillChartsProps) {
             return (
                 <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
                     <p className="font-semibold text-gray-900">{data.level} 레벨</p>
-                    <p className="text-blue-600">보유 스킬: {data.skillCount}개</p>
+                    <p className="text-blue-600">평균 보유 스킬: {data.skillCount}개</p>
                     <p className="text-green-600">구성원 수: {data.memberCount}명</p>
+                    <p className="text-gray-600">총 스킬 수: {data.totalSkillCount}개</p>
                 </div>
             );
         }
@@ -173,10 +222,10 @@ export default function SkillCharts({ skillData }: SkillChartsProps) {
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* 왼쪽: 레벨별 보유 스킬 개수 */}
+            {/* 왼쪽: 레벨별 평균 보유 스킬 개수 */}
             <div className="bg-white bg-opacity-80 rounded-lg shadow-sm p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-7">
-                    레벨별 보유 스킬 개수
+                    레벨별 평균 보유 스킬 개수
                 </h2>
                 {levelSkillCounts.length > 0 ? (
                     <div className="h-80">
@@ -219,7 +268,7 @@ export default function SkillCharts({ skillData }: SkillChartsProps) {
                     <div className="h-80 flex items-center justify-center text-gray-500">
                         <div className="text-center">
                             <div className="text-4xl mb-2">📊</div>
-                            <p>레벨별 스킬 데이터가 없습니다</p>
+                            <p>레벨별 평균 스킬 데이터가 없습니다</p>
                         </div>
                     </div>
                 )}

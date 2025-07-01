@@ -237,9 +237,10 @@ export default function WordCloudCharts({ adminId }: WordCloudChartsProps) {
                                     onChange={(e) => setSelectedCategory(e.target.value as CategoryType)}
                                     className="px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 >
-                                    <option value="skill">스킬</option>
                                     <option value="career">커리어</option>
+                                    <option value="skill">스킬</option>
                                     <option value="project">프로젝트</option>
+                                    <option value="other">기타</option>
                                 </select>
                             </div>
                         )}
@@ -298,10 +299,10 @@ export default function WordCloudCharts({ adminId }: WordCloudChartsProps) {
                             </button>
                         </div>
                     ) : wordData.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center h-96 w-full text-center">
+                        <div className="flex flex-col items-center justify-center h-80 mb-4 w-full text-center">
                             <div className="text-4xl mb-4">📝</div>
                             <p className="text-gray-500">분석할 키워드가 없습니다</p>
-                            <p className="text-sm text-gray-400 mt-2">
+                            <p className="text-sm text-gray-400 mt-4">
                                 사용자들이 질문을 하면 키워드가 표시됩니다
                             </p>
                         </div>
