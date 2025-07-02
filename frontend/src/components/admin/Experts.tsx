@@ -54,7 +54,7 @@ export default function Experts() {
     const currentExperts = allMembers.filter(member => {
         const isExpert = member.role === 'EXPERT' || member.isExpert;
         if (!isExpert) return false;
-        
+
         if (domainFilter === 'all') return true;
         return member.expertiseArea === domainFilter;
     });
@@ -68,7 +68,7 @@ export default function Experts() {
 
     const handleRegisterExpert = async (memberId: number, memberName: string) => {
         const selectedDomain = selectedDomains[memberId];
-        
+
         if (!selectedDomain) {
             alert('도메인을 선택해주세요.');
             return;
@@ -94,7 +94,7 @@ export default function Experts() {
                     delete newState[memberId];
                     return newState;
                 });
-                
+
                 await fetchMembers();
                 setSearchTerm('');
             } else {
@@ -195,8 +195,8 @@ export default function Experts() {
                                                     className="text-xs border border-gray-300 rounded px-2 py-1 bg-white focus:outline-none focus:border-blue-500 min-w-[90px] flex items-center justify-between"
                                                 >
                                                     <span>
-                                                        {selectedDomains[member.memberId] 
-                                                            ? domainOptions.find(d => d.value === selectedDomains[member.memberId])?.label 
+                                                        {selectedDomains[member.memberId]
+                                                            ? domainOptions.find(d => d.value === selectedDomains[member.memberId])?.label
                                                             : '도메인 선택'
                                                         }
                                                     </span>
@@ -204,7 +204,7 @@ export default function Experts() {
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                                     </svg>
                                                 </button>
-                                                
+
                                                 {/* 도메인 선택 드롭다운 */}
                                                 {selectedDomains[`${member.memberId}_dropdown`] && (
                                                     <div className="absolute top-8 left-0 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-20 min-w-[120px]">
@@ -218,9 +218,8 @@ export default function Experts() {
                                                                         [`${member.memberId}_dropdown`]: false
                                                                     }));
                                                                 }}
-                                                                className={`w-full text-left px-3 py-2 text-xs hover:bg-gray-100 ${
-                                                                    selectedDomains[member.memberId] === domain.value ? 'bg-blue-50 text-blue-600' : ''
-                                                                }`}
+                                                                className={`w-full text-left px-3 py-2 text-xs hover:bg-gray-100 ${selectedDomains[member.memberId] === domain.value ? 'bg-blue-50 text-blue-600' : ''
+                                                                    }`}
                                                             >
                                                                 {domain.label}
                                                             </button>
@@ -233,13 +232,12 @@ export default function Experts() {
                                         <button
                                             onClick={() => handleRegisterExpert(member.memberId, member.name)}
                                             disabled={actionLoading === member.memberId || !selectedDomains[member.memberId]}
-                                            className={`px-3 py-1 text-xs rounded transition-colors ${
-                                                actionLoading === member.memberId
+                                            className={`px-3 py-1 text-xs rounded transition-colors ${actionLoading === member.memberId
                                                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                                     : selectedDomains[member.memberId]
                                                         ? 'bg-blue-500 text-white hover:bg-blue-600'
                                                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                            }`}
+                                                }`}
                                         >
                                             {actionLoading === member.memberId ? '처리중...' : '등록'}
                                         </button>
@@ -265,7 +263,7 @@ export default function Experts() {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                             </svg>
                         </button>
-                        
+
                         {/* 필터 드롭다운 */}
                         {showFilterDropdown && (
                             <div className="absolute top-8 right-0 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-10 min-w-[120px]">
@@ -303,10 +301,9 @@ export default function Experts() {
                                 <div key={expert.memberId} className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm border border-gray-100">
                                     <div>
                                         <div className='flex items-center gap-2'>
-                                            <span className={`text-xs px-2 py-1 rounded ${
-                                                expert.role === 'ADMIN' ? 'bg-purple-100 text-purple-700' :
-                                                'bg-blue-100 text-blue-700'
-                                            }`}>
+                                            <span className={`text-xs px-2 py-1 rounded ${expert.role === 'ADMIN' ? 'bg-purple-100 text-purple-700' :
+                                                    'bg-blue-100 text-blue-700'
+                                                }`}>
                                                 {expert.role === 'ADMIN' ? '관리자' : `${expert.expertiseAreaText} 전문가`}
                                             </span>
                                             <span className="font-medium">{expert.name}</span>
@@ -315,8 +312,8 @@ export default function Experts() {
                                             가입일: {expert.joinDate}
                                         </div>
                                     </div>
-                                    <div className="flex gap-2">
-                                        {expert.role !== 'ADMIN' ? (
+                                    <div className="flex gap-1">
+                                        {expert.role !== 'ADMIN' && (
                                             <button
                                                 onClick={() => handleRemoveExpert(expert.memberId, expert.name)}
                                                 className="text-sm text-red-600 hover:text-red-800 disabled:text-gray-400"
@@ -324,8 +321,6 @@ export default function Experts() {
                                             >
                                                 {actionLoading === expert.memberId ? '처리중...' : '해제'}
                                             </button>
-                                        ) : (
-                                            <span className="text-xs text-gray-400">변경불가</span>
                                         )}
                                     </div>
                                 </div>
