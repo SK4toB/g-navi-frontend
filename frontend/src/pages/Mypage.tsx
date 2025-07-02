@@ -11,10 +11,11 @@ import { projectApi } from '../api/project';
 
 export default function Mypage() {
     const { user, homeInfo } = useAuthStore();
+    console.log(user)
     const [projects, setProjects] = React.useState([]);
     const [isLoadingHomeInfo, setIsLoadingHomeInfo] = React.useState(false);
     const [isLoadingProjects, setIsLoadingProjects] = React.useState(false);
-    
+
     // 모달 관리 (마이페이지 레벨에서)
     const [isProjectModalOpen, setIsProjectModalOpen] = React.useState(false);
 
@@ -102,6 +103,7 @@ export default function Mypage() {
                 {user && (
                     <ProfileSection
                         name={user.name}
+                        isExpert={user.isExpert}
                         level={homeInfo?.level}
                         onLevelUpdate={handleLevelUpdate}
                     />
@@ -129,6 +131,7 @@ export default function Mypage() {
             {/* 프로젝트 추가 모달 - 마이페이지 레벨에서 관리 */}
             <ProjectFormModal
                 isOpen={isProjectModalOpen}
+                isExpert={user.isExpert}
                 onClose={() => setIsProjectModalOpen(false)}
                 onProjectAdded={handleProjectAdded}
             />

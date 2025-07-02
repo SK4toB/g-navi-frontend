@@ -5,13 +5,14 @@ import useAuthStore from '../../store/authStore';
 
 interface UserInfo {
   name: string;
+  isExpert: boolean;
   level?: string;
   onLevelUpdate?: (newLevel: string) => void;
 }
 
 const LEVEL_OPTIONS = ['CL1', 'CL2', 'CL3', 'CL4', 'CL5'] as const;
 
-export default function ProfileSection({ name, level, onLevelUpdate }: UserInfo) {
+export default function ProfileSection({ name, isExpert, level, onLevelUpdate }: UserInfo) {
   const { user } = useAuthStore();
   const [isEditing, setIsEditing] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState(level || 'CL1');
@@ -53,37 +54,34 @@ export default function ProfileSection({ name, level, onLevelUpdate }: UserInfo)
   return (
     <div className="w-[945px] min-h-[75px] flex flex-col">
       <div className="min-h-[74px] flex items-center justify-between border-[#E2E8F0] px-[24px]">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <span className="font-bold text-[22px] text-[#1E293B]">{name}</span>
-          
+          {isEditing ? (
+            <div className="relative">
+              <select
+                value={selectedLevel}
+                onChange={(e) => setSelectedLevel(e.target.value)}
+                className="appearance-none px-5 py-1.5 bg-white text-black-700 text-xs rounded-md font-semibold border cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-50 pr-8"
+                disabled={isUpdating}
+              >
+                {LEVEL_OPTIONS.map((levelOption) => (
+                  <option key={levelOption} value={levelOption} className="bg-white text-gray-800">
+                    {levelOption}
+                  </option>
+                ))}
+              </select>
+              <svg className="absolute right-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-black-700 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          ) : (
+            <span className="px-5 py-1.5 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs rounded-md font-semibold shadow-md">
+              {level || 'CL1'}
+            </span>
+          )}
+
           <div className="flex items-center gap-3">
-            {isEditing ? (
-              // 수정 모드: select를 기존 태그와 동일한 모양으로
-              <div className="relative">
-                <select
-                  value={selectedLevel}
-                  onChange={(e) => setSelectedLevel(e.target.value)}
-                  className="appearance-none px-5 py-1.5 bg-white text-black-700 text-xs rounded-md font-semibold border cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-50 pr-8"
-                  disabled={isUpdating}
-                >
-                  {LEVEL_OPTIONS.map((levelOption) => (
-                    <option key={levelOption} value={levelOption} className="bg-white text-gray-800">
-                      {levelOption}
-                    </option>
-                  ))}
-                </select>
-                {/* 드롭다운 화살표 */}
-                <svg className="absolute right-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-black-700 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </div>
-            ) : (
-              <span className="px-5 py-1.5 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs rounded-md font-semibold shadow-md">
-                {level || 'CL1'}
-              </span>
-            )}
-            
-            {/* 버튼 부분 - 모드에 따라 다른 버튼들 */}
+            {/* 버튼들 */}
             {isEditing ? (
               <>
                 <button
@@ -105,7 +103,7 @@ export default function ProfileSection({ name, level, onLevelUpdate }: UserInfo)
                     </>
                   )}
                 </button>
-                
+
                 <button
                   onClick={handleCancel}
                   disabled={isUpdating}
@@ -118,7 +116,6 @@ export default function ProfileSection({ name, level, onLevelUpdate }: UserInfo)
                 </button>
               </>
             ) : (
-              // 기본 모드: 수정 버튼
               <button
                 onClick={() => setIsEditing(true)}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 opacity-70 hover:opacity-100"
@@ -132,7 +129,15 @@ export default function ProfileSection({ name, level, onLevelUpdate }: UserInfo)
             )}
           </div>
         </div>
+
+        <div className="flex justify-end">
+          {isExpert && (
+            <span className="px-3 py-1 text-xs font-medium bg-orange-100 text-orange-600 rounded-full border border-orange-200">
+              전문가
+            </span>
+          )}
+        </div>
       </div>
     </div>
-  );
-}
+  )
+};

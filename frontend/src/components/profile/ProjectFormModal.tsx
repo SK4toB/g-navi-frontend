@@ -8,13 +8,14 @@ interface ProjectFormData extends Omit<Project, 'projectId'> {
 
 interface ProjectFormModalProps {
   isOpen: boolean;
+  isExpert: boolean;
   onClose: () => void;
   onProjectAdded: (project: Project) => void;
 }
 
 const USER_ROLES = [
   'Software Development',
-  'Manufacturing Engineering', 
+  'Manufacturing Engineering',
   'Solution Development',
   'Cloud/Infra Engineering',
   'Architect',
@@ -47,11 +48,11 @@ const AVAILABLE_SKILLS = [
   'AI/Data Development', 'Generative AI Development',
   '제 1금융', '제 2금융', '공공', 'Global', '제조-대외', '제조-대내 Hi-Tech', '제조-대내 Process', '통신', '유통/물류/서비스', '미디어/콘텐츠',
   'ESG/SHE', 'ERP', 'SCM', 'CRM', 'AIX',
-  'Strategy Planning', 'New Biz. Development', 'Financial Management', 
+  'Strategy Planning', 'New Biz. Development', 'Financial Management',
   'Human Resource Management', 'Stakeholder Management', 'Governance & Public Management'
 ];
 
-export default function ProjectFormModal({ isOpen, onClose, onProjectAdded }: ProjectFormModalProps) {
+export default function ProjectFormModal({ isOpen, isExpert, onClose, onProjectAdded }: ProjectFormModalProps) {
   const [formData, setFormData] = React.useState<ProjectFormData>({
     projectName: '',
     userRole: '',
@@ -116,7 +117,7 @@ export default function ProjectFormModal({ isOpen, onClose, onProjectAdded }: Pr
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.projectName || !formData.userRole || !formData.domain) {
       alert('필수 항목을 모두 입력해주세요.');
       return;
@@ -125,7 +126,7 @@ export default function ProjectFormModal({ isOpen, onClose, onProjectAdded }: Pr
     try {
       setIsSubmitting(true);
       const response = await projectApi.createProject(formData);
-      
+
       if (response.isSuccess && response.result) {
         onProjectAdded(response.result as Project);
         onClose();
@@ -150,7 +151,10 @@ export default function ProjectFormModal({ isOpen, onClose, onProjectAdded }: Pr
         <div className="p-6">
           {/* 모달 헤더 */}
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">프로젝트 추가</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-2xl font-bold text-gray-800">프로젝트 추가</h2>
+              {isExpert && <span className="text-sm text-gray-600">💡 전문가의 프로젝트는 롤모델 데이터로 사용될 수 있습니다.</span>}
+            </div>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 text-2xl font-bold transition-colors"
@@ -158,7 +162,7 @@ export default function ProjectFormModal({ isOpen, onClose, onProjectAdded }: Pr
               ×
             </button>
           </div>
-          
+
           <form onSubmit={handleSubmit}>
             {/* 폼 내용 */}
             <div className="border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
@@ -344,6 +348,6 @@ export default function ProjectFormModal({ isOpen, onClose, onProjectAdded }: Pr
           </form>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
