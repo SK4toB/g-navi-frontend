@@ -184,7 +184,7 @@ export default function ProjectFormModal({ isOpen, isExpert, onClose, onProjectA
                     type="text"
                     value={formData.domain}
                     onChange={(e) => handleInputChange('domain', e.target.value)}
-                    placeholder="도메인 (예: FE/BE, 금융 등)"
+                    placeholder="도메인 (예: B2B, 공공, 금융 등)"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
