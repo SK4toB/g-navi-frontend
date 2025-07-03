@@ -8,7 +8,7 @@ export default function AdminPage() {
                 {/* 헤더 */}
                 <div className="mb-8">
                     <h1 className="text-4xl font-bold text-gray-900 mb-2">관리자 페이지</h1>
-                    <p className="text-gray-600">뉴스 카드와 전문가 목록을 관리하세요</p>
+                    <p className="text-gray-600">카드 인사이트와 전문가 목록을 관리하세요</p>
                 </div>
 
                 <main className="flex gap-10 h-[calc(100vh-280px)] overflow-hidden">

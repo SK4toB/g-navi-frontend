@@ -102,7 +102,7 @@ export default function HomeCard() {
 
     return (
         <div className="w-full max-w-6xl mx-auto px-4 my-4">
-            <div className='py-8 font-bold text-lg' style={{ width: containerWidth, margin: '0 auto' }}>NEWS</div>
+            <div className='py-8 font-bold text-lg' style={{ width: containerWidth, margin: '0 auto' }}>Insights</div>
             {/* 캐러셀 컨테이너 */}
             <div className="relative" style={{ width: containerWidth, margin: '0 auto' }}>
                 {/* 이전 버튼 */}

@@ -26,15 +26,9 @@ export default function LoginForm() {
 
     try {
       const response = await authApi.login(formData);
-      
+
       if (response.isSuccess) {
-        
-        // 역할에 따른 리다이렉트
-        if (response.result.role === 'ADMIN') {
-          navigate('/admin');
-        } else {
-          navigate('/');
-        }
+        navigate('/');
       } else {
         alert(`로그인 실패: ${response.message}`);
       }
@@ -44,7 +38,7 @@ export default function LoginForm() {
   };
 
   const formFields = [
-    { id: 'email', label: '이메일', type: 'email', value: formData.email, placeholder: 'example@email.com'},
+    { id: 'email', label: '이메일', type: 'email', value: formData.email, placeholder: 'example@email.com' },
     { id: 'password', label: '비밀번호', type: 'password', value: formData.password, placeholder: '비밀번호를 입력하세요' },
   ];
 

@@ -13,11 +13,6 @@ export default function ExpertPage() {
     const [successMessage, setSuccessMessage] = useState('');
 
 
-    const validateNaverNewsUrl = (url) => {
-        const naverNewsPattern = /^https:\/\/n\.news\.naver\.com\//;
-        return naverNewsPattern.test(url);
-    };
-
     const handleSubmit = async () => {
         setError('');
         setSuccessMessage('');
@@ -34,30 +29,25 @@ export default function ExpertPage() {
             return;
         }
 
-        // 네이버 뉴스 링크 유효성 검사
-        if (!validateNaverNewsUrl(articleUrl)) {
-            setError('네이버 뉴스 링크만 등록 가능합니다.');
-            return;
-        }
         
         setIsSubmitting(true);
 
         try {
             const response = await newsApi.registerNews(
-                user.memberId, // expertId 대신 user.memberId 사용
+                user.memberId,
                 articleTitle.trim(),
                 articleUrl.trim()
             );
 
             if (response.isSuccess && response.result) {
-                setSuccessMessage('카드뉴스 등록 요청이 완료되었습니다! 관리자 승인 후 게시됩니다.');
+                setSuccessMessage('인사이트 신청이 완료되었습니다! 관리자 승인 후 게시됩니다.');
                 setArticleUrl('');
                 setArticleTitle('');
             } else {
-                setError(`등록 실패: ${response.message || '알 수 없는 오류가 발생했습니다.'}`);
+                setError(`신청 실패: ${response.message || '알 수 없는 오류가 발생했습니다.'}`);
             }
         } catch (err) {
-            setError(err instanceof Error ? err.message : '등록 요청 중 오류가 발생했습니다. 다시 시도해주세요.');
+            setError(err instanceof Error ? err.message : '요청 중 오류가 발생했습니다. 다시 시도해주세요.');
         } finally {
             setIsSubmitting(false);
         }
@@ -77,7 +67,7 @@ export default function ExpertPage() {
                     로그인이 필요합니다
                 </div>
                 <p className="text-gray-600">
-                    카드뉴스 등록을 위해서는 로그인이 필요합니다.
+                    인사이트 신청을 위해서는 로그인이 필요합니다.
                 </p>
             </div>
         );
@@ -92,27 +82,23 @@ export default function ExpertPage() {
             <div className="max-w-2xl mx-auto w-full mt-10 px-6">
                 <div className="bg-white bg-opacity-80 rounded-lg shadow-md p-6">
                     <h2 className="text-lg font-semibold mb-8 text-gray-700">
-                        카드 뉴스 등록 요청
+                        카드 인사이트 신청
                     </h2>
 
                     <div className="mb-4">
                         <label htmlFor="articleUrl" className="block text-sm font-medium text-gray-600 mb-2">
-                            네이버 뉴스 기사 링크
+                            인사이트 링크
                         </label>
                         <input
                             id="articleUrl"
                             type="url"
                             value={articleUrl}
                             onChange={handleInputChange}
-                            placeholder="https://n.news.naver.com/article/으로 시작하는 링크를 입력해주세요"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                            placeholder="예시) https://n.news.naver.com/article/1"
+                            className="w-full px-4 py-3 font-mono border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                             disabled={isSubmitting}
                         />
 
-                        {/* 안내 메시지 */}
-                        <div className="mt-2 text-sm text-gray-500">
-                            💡 네이버 뉴스 기사 링크만 등록 가능합니다
-                        </div>
                     </div>
 
                     {/* 에러 메시지 */}
@@ -138,27 +124,20 @@ export default function ExpertPage() {
                             </div>
                         </div>
                     )}
-                    <div className='flex justify-center mt-5'>
+                    <div className='flex justify-center mt-8'>
                         <CommonButton
                             type="submit"
                             onClick={handleSubmit}
                             disabled={isSubmitting}
                             loading={isSubmitting}
                             loadingText="등록 요청 중..."
-                            width={500}
+                            width={240}
                         >
                             등록 요청하기
                         </CommonButton>
                     </div>
                 </div>
 
-                {/* 사용 예시 */}
-                <div className="mt-6 p-4 bg-gray-50 bg-opacity-80 rounded-lg">
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">올바른 링크 예시:</h3>
-                    <div className="text-sm text-gray-600 font-mono bg-white p-2 rounded border">
-                        https://n.news.naver.com/article/...
-                    </div>
-                </div>
             </div>
         </div>
     );
