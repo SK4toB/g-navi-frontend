@@ -39,7 +39,7 @@ export default function LoginForm() {
         alert(`로그인 실패: ${response.message}`);
       }
     } catch (error) {
-      alert("로그인 중 오류가 발생했습니다.");
+      alert(error.message)
     }
   };
 
