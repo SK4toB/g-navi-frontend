@@ -181,7 +181,7 @@ export default function ConversationPage() {
             </div>
             <ConversationContent
               messages={messages}
-              height="h-[600px]" // 452px
+              height="h-[450px]"
               isLoading={isLoadingResponse}
             />
             <ConversationInput
@@ -198,7 +198,7 @@ export default function ConversationPage() {
             <div className='mt-8'>
               <ConversationContent
                 messages={messages}
-                height="h-[800px]" // 670
+                height="h-[670px]"
                 isLoading={isLoadingResponse}
               />
             </div>

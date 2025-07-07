@@ -24,6 +24,16 @@ const ensureProtocol = (url: string): string => {
   return `https://${url}`;
 };
 
+// Mermaid 코드 전처리 함수
+const preprocessMermaidCode = (code: string): string => {
+  return code
+    .trim()
+    .split('\n')
+    .map(line => line.trim())
+    .filter(line => line.length > 0)
+    .join('\n');
+};
+
 export default function Message({ sender, text }: MessageProps) {
   const isUser = sender === 'user';
 
@@ -106,8 +116,8 @@ export default function Message({ sender, text }: MessageProps) {
 
   // 간단한 마크다운 파싱 함수
   const parseMarkdown = useCallback((text: string, isUser: boolean = false): React.ReactNode => {
-    // Mermaid 다이어그램 감지 및 처리
-    const mermaidRegex = /```mermaid\n([\s\S]*?)\n```/g;
+    // 더 엄격한 Mermaid 다이어그램 감지 및 처리
+    const mermaidRegex = /```mermaid\s*\n([\s\S]*?)\n\s*```/g;
     const parts: React.ReactNode[] = [];
     let lastIndex = 0;
     let match;
@@ -398,6 +408,7 @@ export default function Message({ sender, text }: MessageProps) {
   // Mermaid 초기화 및 렌더링
   useEffect(() => {
     if (typeof text === 'string' && text.includes('```mermaid')) {
+
       // Mermaid를 동적으로 로드하고 초기화
       const initMermaid = async () => {
         try {
@@ -408,15 +419,22 @@ export default function Message({ sender, text }: MessageProps) {
             script.onload = () => {
               const mermaid = (window as any).mermaid;
               if (mermaid) {
-                // Mermaid 설정
+                // 개선된 Mermaid 설정
                 mermaid.initialize({ 
                   startOnLoad: false,
                   theme: 'default',
                   securityLevel: 'loose',
                   flowchart: {
                     useMaxWidth: true,
-                    htmlLabels: true
-                  }
+                    htmlLabels: true,
+                    curve: 'basis'
+                  },
+                  // 한글 지원을 위한 설정 추가
+                  fontFamily: 'Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif',
+                  fontSize: 14,
+                  // 렌더링 타임아웃 설정
+                  maxTextSize: 90000,
+                  maxEdges: 2000
                 });
                 renderMermaidDiagrams(mermaid);
               }
@@ -426,6 +444,7 @@ export default function Message({ sender, text }: MessageProps) {
             renderMermaidDiagrams((window as any).mermaid);
           }
         } catch (error) {
+          console.error('Mermaid 로드 오류:', error);
         }
       };
 
@@ -434,16 +453,46 @@ export default function Message({ sender, text }: MessageProps) {
         const mermaidElements = document.querySelectorAll('.mermaid');
         mermaidElements.forEach(async (element) => {
           if (element.getAttribute('data-processed') !== 'true') {
-            try {
-              const graphDefinition = element.textContent || '';
-              const { svg } = await mermaid.render(`graph-${Date.now()}`, graphDefinition);
-              element.innerHTML = svg;
-              element.setAttribute('data-processed', 'true');
-              
-              // 드래그 기능 추가
-              addDragFunctionality(element as HTMLElement);
-            } catch (error) {
-              element.innerHTML = `<div class="text-red-500 text-sm p-4">다이어그램 렌더링 오류</div>`;
+            // 재시도 로직 추가
+            let attempts = 0;
+            const maxAttempts = 3;
+            
+            while (attempts < maxAttempts) {
+              try {
+                let graphDefinition = element.textContent || '';
+                
+                // 코드 전처리 적용
+                graphDefinition = preprocessMermaidCode(graphDefinition);
+                
+                const { svg } = await mermaid.render(`graph-${Date.now()}-${attempts}`, graphDefinition);
+                element.innerHTML = svg;
+                element.setAttribute('data-processed', 'true');
+                
+                // 드래그 기능 추가
+                addDragFunctionality(element as HTMLElement);
+                break; // 성공 시 루프 종료
+              } catch (error) {
+                attempts++;
+                console.error(`Mermaid 렌더링 오류 (시도 ${attempts}/${maxAttempts}):`, error);
+                
+                if (attempts >= maxAttempts) {
+                  // 최종 실패 시 fallback 표시
+                  element.innerHTML = `<div class="text-gray-500 text-sm p-4 border border-dashed border-gray-300 rounded">
+                    <div class="font-medium mb-2">📊 다이어그램 표시 불가</div>
+                    <details class="text-xs">
+                      <summary class="cursor-pointer">원본 코드 보기</summary>
+                      <pre class="mt-2 p-2 bg-gray-50 rounded overflow-x-auto">${element.textContent}</pre>
+                    </details>
+                    <details class="text-xs mt-2">
+                      <summary class="cursor-pointer text-red-600">오류 세부정보</summary>
+                      <pre class="mt-1 p-2 bg-red-50 rounded text-red-700">${error}</pre>
+                    </details>
+                  </div>`;
+                } else {
+                  // 재시도 전 잠시 대기
+                  await new Promise(resolve => setTimeout(resolve, 100 * attempts));
+                }
+              }
             }
           }
         });
