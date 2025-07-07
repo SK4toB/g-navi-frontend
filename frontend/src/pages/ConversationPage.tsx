@@ -181,7 +181,7 @@ export default function ConversationPage() {
             </div>
             <ConversationContent
               messages={messages}
-              height="h-[620px]" // 452px
+              height="h-[600px]" // 452px
               isLoading={isLoadingResponse}
             />
             <ConversationInput
