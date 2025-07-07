@@ -52,7 +52,7 @@ export default function ConversationInput({
   };
 
   return (
-    <div className="h-[160px] bg-white rounded-[20px] border border-[#D1D5DB] flex relative p-[24px] box-border mt-[20px] mb-[20px]"
+    <div className="h-[160px] bg-white rounded-[20px] border border-[#D1D5DB] flex relative p-[24px] box-border mt-[20px]"
       style={{ boxShadow: '0 4px 8px 0 rgba(0,0,0,0.06)' }}>
 
       {/* 입력 필드 */}

@@ -48,7 +48,7 @@ export default function Message({ sender, text }: MessageProps) {
     }
   }, []);
 
-  // Mermaid 다이어그램 확대/축소 함수
+  // Mermaid 다이어그램 확대/축소 함수 - 더 큰 사이즈로 수정
   const zoomMermaidDiagram = useCallback((elementId: string) => {
     const element = document.getElementById(elementId);
     if (element) {
@@ -64,26 +64,28 @@ export default function Message({ sender, text }: MessageProps) {
         };
         
         const modalContent = document.createElement('div');
-        modalContent.className = 'relative max-w-[95vw] max-h-[95vh] bg-white rounded-lg p-4 overflow-auto';
+        // 모달 컨테이너 크기를 더 크게 설정
+        modalContent.className = 'relative max-w-[98vw] max-h-[98vh] bg-white rounded-lg p-6 overflow-auto';
         modalContent.onclick = (e) => e.stopPropagation();
         
         // 닫기 버튼
         const closeButton = document.createElement('button');
         closeButton.innerHTML = '✕';
-        closeButton.className = 'absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl font-bold z-10 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md border border-gray-200';
+        closeButton.className = 'absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-xl font-bold z-10 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md border border-gray-200';
         closeButton.onclick = () => {
           if (document.body.contains(modal)) {
             document.body.removeChild(modal);
           }
         };
         
-        // SVG 복제 및 스타일링
+        // SVG 복제 및 스타일링 - 더 큰 사이즈로 설정
         const clonedSvg = svgElement.cloneNode(true) as SVGElement;
         clonedSvg.style.width = 'auto';
         clonedSvg.style.height = 'auto';
         clonedSvg.style.maxWidth = '100%';
-        clonedSvg.style.maxHeight = '80vh';
-        clonedSvg.style.minWidth = '400px';
+        clonedSvg.style.maxHeight = '90vh'; // 80vh → 90vh로 증가
+        clonedSvg.style.minWidth = '800px'; // 400px → 800px로 증가
+        clonedSvg.style.minHeight = '500px'; // 최소 높이 추가
         
         modalContent.appendChild(closeButton);
         modalContent.appendChild(clonedSvg);

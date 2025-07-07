@@ -162,7 +162,7 @@ export default function ConversationPage() {
   }, [conversationId, user?.memberId]); // conversationId 의존성을 명확히 분리
 
   return (
-    <div className="w-full flex flex-col items-center justify-start mb-2">
+    <div className="w-full flex flex-col items-center justify-start">
       <div className="w-[816px]">
 
         {isNewChat ? (
@@ -181,7 +181,7 @@ export default function ConversationPage() {
             </div>
             <ConversationContent
               messages={messages}
-              height="h-[452px]"
+              height="h-[620px]" // 452px
               isLoading={isLoadingResponse}
             />
             <ConversationInput
@@ -196,21 +196,12 @@ export default function ConversationPage() {
         ) : (
           <>
             <div className='mt-8'>
-              <div className="relative w-[60px] h-[60px] flex items-center justify-center group mb-4 pl-1">
-                <div className="absolute inset-0 bg-[#FEEDE8] rounded-full"></div>
-                {/* 로고 이미지 */}
-                <img
-                  src={logo}
-                  alt="G-Navi Logo"
-                  className="relative z-10 w-[40px] h-[40px] object-contain"
-                />
-              </div>
+              <ConversationContent
+                messages={messages}
+                height="h-[800px]" // 670
+                isLoading={isLoadingResponse}
+              />
             </div>
-            <ConversationContent
-              messages={messages}
-              height="h-[560px]"
-              isLoading={isLoadingResponse}
-            />
             <ConversationInput
               onSendMessage={handleSendMessage}
               isLoading={isLoadingResponse}
@@ -218,7 +209,6 @@ export default function ConversationPage() {
             />
           </>
         )}
-
       </div>
     </div>
   );

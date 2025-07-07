@@ -81,8 +81,8 @@ export default function RecommendationCards({ onCardClick }: RecommendationCards
     <div className="flex flex-row gap-[23px] mt-[27px] break-keep">
       <CardItem
         label="Career path"
-        description={<>나와 유사한 경력을 가진 선배 구성원들은 어떤 경로로 성장 했어?</>}
-        onClick={() => handleCardClick("나와 유사한 경력을 가진 선배 구성원들은 어떤 경로로 성장 했어?")}
+        description={<>현재 나의 역량과 경험을 바탕으로 앞으로의 커리어 상담을 진행해줘</>}
+        onClick={() => handleCardClick("현재 나의 역량과 경험을 바탕으로 앞으로의 커리어 상담을 진행해줘")}
       />
       <CardItem
         label="Skills"
